@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Osh City — квартиры в рассрочку</title>
+<meta name="description" content="Актуальные свободные квартиры в Osh City (Ош Сити — IT городок): планировки, цены и платёж в месяц по рассрочке застройщика без процентов.">
+<meta name="theme-color" content="#0d3326">
+<meta property="og:title" content="Osh City — квартиры в рассрочку без процентов">
+<meta property="og:description" content="Свободные квартиры, планировки и расчёт платежа в месяц.">
+<meta property="og:image" content="img/photos/aerial-sm.webp">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="img/photos/aerial-sm.webp" media="(max-width: 900px)">
+<link rel="preload" as="image" href="img/photos/aerial.webp" media="(min-width: 901px)">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar" id="topbar">
+  <a class="logo" href="#top" aria-label="Osh City — наверх">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 24V12l8-6v18M18 24V9l8 5v10" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/></svg>
+    <span>OSH&nbsp;CITY</span>
+  </a>
+  <nav class="topnav">
+    <a href="#about">О проекте</a>
+    <a href="#genplan">Генплан</a>
+    <a href="#flats">Квартиры</a>
+    <a href="#calc">Калькулятор</a>
+    <a href="#faq">Вопросы</a>
+  </nav>
+  <a class="btn btn-wa btn-sm topbar-wa" data-wa="general" href="#" target="_blank" rel="noopener">
+    <svg class="ico"><use href="#i-wa"/></svg><span>WhatsApp</span>
+  </a>
+</header>
+
+<main id="top">
+
+  <!-- ГЛАВНЫЙ ЭКРАН -->
+  <section class="hero">
+    <div class="hero-media" aria-hidden="true">
+      <picture>
+        <source media="(max-width: 900px)" srcset="img/photos/aerial-sm.webp">
+        <img src="img/photos/aerial.webp" alt="" class="hero-img">
+      </picture>
+    </div>
+    <div class="hero-shade" aria-hidden="true"></div>
+    <div class="hero-inner wrap">
+      <p class="eyebrow reveal">г. Ош · Кызыл-Кыштак · IT городок</p>
+      <h1 class="hero-title reveal"><span>Osh City</span><br>город в&nbsp;городе</h1>
+      <p class="hero-sub reveal">Квартиры в рассрочку <b>без процентов</b> на <b data-cfg="months">67</b> месяцев.
+        Первый взнос всего <b data-cfg="down">500 000</b> сом.</p>
+      <div class="hero-cta reveal">
+        <a href="#flats" class="btn btn-gold">Подобрать квартиру</a>
+        <a href="#calc" class="btn btn-ghost">Рассчитать платёж</a>
+      </div>
+      <dl class="hero-stats reveal">
+        <div><dt>свободных квартир</dt><dd><span class="count" id="st-free">0</span></dd></div>
+        <div><dt>платёж от, сом/мес</dt><dd><span class="count" id="st-month">0</span></dd></div>
+        <div><dt>блоков в продаже</dt><dd><span class="count" id="st-blocks">0</span></dd></div>
+      </dl>
+    </div>
+    <a href="#about" class="hero-scroll" aria-label="Листать вниз"><span></span></a>
+  </section>
+
+  <!-- О ПРОЕКТЕ -->
+  <section class="section" id="about">
+    <div class="wrap">
+      <p class="eyebrow reveal">О проекте</p>
+      <h2 class="h2 reveal">Больше чем комплекс — новый район Оша</h2>
+      <p class="lead reveal">Osh City — масштабный городок на улицах Курманжан-Датка и Беш-Капа: жилые дома,
+        школы, детские сады, больница, парк, мечети и торгово-развлекательный центр. Всё для жизни — рядом с домом.</p>
+
+      <div class="facts">
+        <div class="fact reveal"><b class="count" data-to="4.5" data-dec="1">0</b><span>га — центральный парк с аллеями и фонтанами</span></div>
+        <div class="fact reveal"><b class="count" data-to="4">0</b><span>школы на 3 000 учеников</span></div>
+        <div class="fact reveal"><b class="count" data-to="2">0</b><span>детских сада на 620 детей</span></div>
+        <div class="fact reveal"><b class="count" data-to="430">0</b><span>мест — больница, роддом на 350 мест</span></div>
+        <div class="fact reveal"><b class="count" data-to="3">0</b><span>мечети на территории</span></div>
+        <div class="fact reveal"><b>ТРЦ</b><span>4 этажа: кино, рестораны, магазины, отель</span></div>
+      </div>
+    </div>
+
+    <div class="gallery" aria-label="Визуализации проекта">
+      <figure class="g-item"><img loading="lazy" src="img/photos/aerial2-sm.webp" alt="Вид на Osh City с высоты"><figcaption>Вид на городок</figcaption></figure>
+      <figure class="g-item"><img loading="lazy" src="img/photos/blocks-sm.webp" alt="Жилые кварталы с закрытыми дворами"><figcaption>Кварталы с закрытыми дворами</figcaption></figure>
+      <figure class="g-item"><img loading="lazy" src="img/photos/towers-sm.webp" alt="Современные жилые дома"><figcaption>Современные дома</figcaption></figure>
+      <figure class="g-item"><img loading="lazy" src="img/photos/school-sm.webp" alt="Школа"><figcaption>Школы и детские сады</figcaption></figure>
+      <figure class="g-item"><img loading="lazy" src="img/photos/fountain-sm.webp" alt="Площадь с фонтаном"><figcaption>Площади и фонтаны</figcaption></figure>
+      <figure class="g-item"><img loading="lazy" src="img/photos/sport-sm.webp" alt="Спортивный комплекс"><figcaption>Спорт</figcaption></figure>
+      <figure class="g-item"><img loading="lazy" src="img/photos/mosque-sm.webp" alt="Мечеть"><figcaption>Мечети</figcaption></figure>
+      <figure class="g-item"><img loading="lazy" src="img/photos/business-sm.webp" alt="Деловой центр"><figcaption>Деловой центр</figcaption></figure>
+    </div>
+
+    <div class="wrap">
+      <div class="features">
+        <div class="feature reveal"><svg class="ico"><use href="#i-fire"/></svg><div><b>Свой газовый котёл</b><span>Индивидуальное отопление в каждой квартире</span></div></div>
+        <div class="feature reveal"><svg class="ico"><use href="#i-drop"/></svg><div><b>Центральные коммуникации</b><span>Газ, вода, канализация</span></div></div>
+        <div class="feature reveal"><svg class="ico"><use href="#i-tree"/></svg><div><b>Благоустройство</b><span>Озеленение, аллеи, детские и спортивные площадки</span></div></div>
+        <div class="feature reveal"><svg class="ico"><use href="#i-pin"/></svg><div><b>Локация</b><span>г. Ош, село Кызыл-Кыштак, ул. Курманжан-Датка и Беш-Капа</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ГЕНПЛАН -->
+  <section class="section section-dark" id="genplan">
+    <div class="wrap">
+      <p class="eyebrow reveal">Генплан</p>
+      <h2 class="h2 reveal">Выберите блок на плане</h2>
+      <p class="lead reveal">Подсвечены блоки, где сейчас есть свободные квартиры. Нажмите на блок, и мы покажем его квартиры.</p>
+    </div>
+    <div class="genplan-scroll reveal" id="genplanScroll">
+      <div class="genplan" id="genplan-map">
+        <img src="img/photos/genplan-crop.webp" alt="Генеральный план Osh City (фрагмент с блоками в продаже)" loading="lazy" width="1984" height="722">
+      </div>
+    </div>
+    <div class="wrap"><p class="hint">← листайте план пальцем →</p></div>
+  </section>
+
+  <!-- КВАРТИРЫ -->
+  <section class="section" id="flats">
+    <div class="wrap">
+      <p class="eyebrow reveal">Свободные квартиры</p>
+      <h2 class="h2 reveal">Подберите свою квартиру</h2>
+      <p class="updated">Наличие обновлено: <b id="updated">—</b></p>
+
+      <div class="filters" id="filters">
+        <div class="f-row">
+          <div class="chips" role="group" aria-label="Комнат">
+            <button class="chip on" data-rooms="0">Все</button>
+            <button class="chip" data-rooms="1">1-комн</button>
+            <button class="chip" data-rooms="2">2-комн</button>
+            <button class="chip" data-rooms="3">3-комн</button>
+          </div>
+        </div>
+        <label class="budget">
+          <span>Могу платить в месяц до <b id="budgetOut">любой суммы</b></span>
+          <input type="range" id="fBudget" min="40000" max="110000" step="1000" value="110000">
+        </label>
+        <div class="f-grid">
+          <label class="field"><span>Блок</span><select id="fBlock"><option value="">Все блоки</option></select></label>
+          <label class="field"><span>Этаж</span><select id="fFloor">
+            <option value="">Любой</option><option value="2-5">2–5</option><option value="6-9">6–9</option>
+            <option value="10-13">10–13 (92 400/м²)</option><option value="14-99">14+ (дешевле — 88 000/м²)</option></select></label>
+          <label class="field"><span>Сортировка</span><select id="fSort">
+            <option value="month">Сначала дешевле</option><option value="area">Сначала просторнее</option>
+            <option value="floorDesc">Выше этаж</option><option value="floorAsc">Ниже этаж</option></select></label>
+        </div>
+      </div>
+
+      <div class="result-bar">
+        <span id="resultCount">—</span>
+        <button class="link" id="resetFilters" hidden>Сбросить фильтры</button>
+      </div>
+      <div class="cards" id="cards"></div>
+      <div class="more"><button class="btn btn-outline" id="moreBtn" hidden>Показать ещё</button></div>
+    </div>
+  </section>
+
+  <!-- КАЛЬКУЛЯТОР -->
+  <section class="section section-tint" id="calc">
+    <div class="wrap calc-wrap">
+      <div>
+        <p class="eyebrow reveal">Калькулятор</p>
+        <h2 class="h2 reveal">Сколько вы будете платить</h2>
+        <p class="lead reveal">Рассрочка от застройщика <b>без процентов и без банка</b>. Увеличьте взнос, и платёж в месяц станет меньше.</p>
+      </div>
+      <div class="calc card-glass reveal">
+        <label class="field"><span>Квартира</span><select id="cType"></select></label>
+        <label class="field"><span>Этаж: <b id="cFloorOut">9</b></span><input type="range" id="cFloor" min="2" max="20" value="9"></label>
+        <label class="field"><span>Первый взнос: <b id="cDownOut">500 000</b> сом</span><input type="range" id="cDown" min="500000" max="4000000" step="50000" value="500000"></label>
+        <label class="field"><span>Срок: <b id="cMonthsOut">67</b> мес.</span><input type="range" id="cMonths" min="12" max="67" value="67"></label>
+        <div class="calc-out">
+          <div><span>Цена квартиры</span><b id="cTotal">—</b></div>
+          <div><span>Цена за м²</span><b id="cPpm">—</b></div>
+          <div class="big"><span>В месяц</span><b id="cMonthly">—</b></div>
+          <p class="note" id="cNote"></p>
+        </div>
+        <a class="btn btn-gold w100" href="#flats" id="cShow">Показать такие квартиры</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ВОПРОСЫ -->
+  <section class="section" id="faq">
+    <div class="wrap narrow">
+      <p class="eyebrow reveal">Вопросы</p>
+      <h2 class="h2 reveal">Частые вопросы</h2>
+      <details class="qa reveal"><summary>Есть ли проценты по рассрочке?</summary><p>Нет. Рассрочка от застройщика без процентов и без банка: вы платите ровно стоимость квартиры. Первый взнос от 500 000 сом, остаток делится на срок до 67 месяцев.</p></details>
+      <details class="qa reveal"><summary>Почему на высоких этажах дешевле?</summary><p>Цена за м² зависит от этажа: до 13 этажа — 92 400 сом, с 14 этажа — 88 000 сом. Это уже учтено во всех расчётах на сайте.</p></details>
+      <details class="qa reveal"><summary>Насколько актуален список квартир?</summary><p>Список обновляется автоматически каждое утро из базы отдела продаж. Проданные квартиры исчезают с сайта. Перед бронью менеджер ещё раз подтвердит наличие.</p></details>
+      <details class="qa reveal"><summary>Можно ли заплатить больше первый взнос?</summary><p>Да. Чем больше взнос, тем меньше платёж в месяц. Поставьте свою сумму в калькуляторе.</p></details>
+      <details class="qa reveal"><summary>Как забронировать квартиру?</summary><p>Нажмите «Написать в WhatsApp» на странице квартиры: номер и расчёт уже будут в сообщении. Менеджер ответит, пригласит на просмотр и оформление.</p></details>
+      <details class="qa reveal"><summary>Какое отопление?</summary><p>Индивидуальный газовый котёл в каждой квартире. Газоснабжение, водоснабжение и канализация централизованные.</p></details>
+    </div>
+  </section>
+
+  <!-- КОНТАКТЫ -->
+  <section class="section section-dark" id="contacts">
+    <div class="wrap contacts">
+      <div>
+        <p class="eyebrow">Контакты</p>
+        <h2 class="h2">Приезжайте посмотреть</h2>
+        <p class="lead">Отдел продаж в Оше: ул. Масалиева 118а, ул. Осмонова 19.</p>
+        <div class="contact-btns">
+          <a class="btn btn-wa" data-wa="general" href="#" target="_blank" rel="noopener"><svg class="ico"><use href="#i-wa"/></svg>Написать в WhatsApp</a>
+          <a class="btn btn-ghost" id="callBtn" href="tel:+996508890202"><svg class="ico"><use href="#i-phone"/></svg><span data-cfg="phone">+996 508 890 202</span></a>
+        </div>
+        <form class="lead-form" id="leadForm">
+          <p><b>Перезвоним за 15 минут</b></p>
+          <input name="name" placeholder="Ваше имя" autocomplete="name" required>
+          <input name="phone" placeholder="Телефон" type="tel" inputmode="tel" autocomplete="tel" required>
+          <input type="hidden" name="flat">
+          <button class="btn btn-gold w100" type="submit">Перезвоните мне</button>
+          <p class="form-ok" hidden>Спасибо! Мы скоро позвоним.</p>
+        </form>
+      </div>
+      <div class="map-box">
+        <iframe title="Карта: Osh City" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          src="https://maps.google.com/maps?q=%D0%9A%D1%8B%D0%B7%D1%8B%D0%BB-%D0%9A%D1%8B%D1%88%D1%82%D0%B0%D0%BA%2C%20%D0%9E%D1%88&z=14&output=embed"></iframe>
+      </div>
+    </div>
+    <footer class="wrap footer">© Osh City · Цены и наличие носят информационный характер, точные условия уточняйте у менеджера.</footer>
+  </section>
+</main>
+
+<!-- НИЖНЯЯ ПАНЕЛЬ (ТЕЛЕФОН) -->
+<nav class="tabbar" aria-label="Быстрая навигация">
+  <a href="#flats"><svg class="ico"><use href="#i-home"/></svg><span>Квартиры</span></a>
+  <a href="#genplan"><svg class="ico"><use href="#i-map"/></svg><span>Генплан</span></a>
+  <a href="#calc"><svg class="ico"><use href="#i-calc"/></svg><span>Расчёт</span></a>
+  <a href="#/compare" id="tabCompare"><svg class="ico"><use href="#i-compare"/></svg><span>Сравнить</span><i class="badge" id="cmpBadge" hidden>0</i></a>
+  <a data-wa="general" href="#" target="_blank" rel="noopener" class="tab-wa"><svg class="ico"><use href="#i-wa"/></svg><span>WhatsApp</span></a>
+</nav>
+
+<!-- ШТОРКА: КВАРТИРА / СРАВНЕНИЕ -->
+<div class="sheet" id="sheet" aria-hidden="true">
+  <div class="sheet-bg" data-close></div>
+  <div class="sheet-panel" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-grip" data-close aria-hidden="true"></div>
+    <button class="sheet-x" data-close aria-label="Закрыть">×</button>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
+</div>
+
+<!-- ПРОСМОТР ПЛАНИРОВКИ -->
+<div class="zoom" id="zoom" hidden>
+  <button class="sheet-x" id="zoomClose" aria-label="Закрыть">×</button>
+  <div class="zoom-stage" id="zoomStage"><img id="zoomImg" alt=""></div>
+  <p class="zoom-hint">Разведите пальцы, чтобы увеличить</p>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- ИКОНКИ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4a.5.5 0 0 0 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3Z"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 11 12 4l9 7v9h-6v-6H9v6H3z"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14"/></symbol>
+  <symbol id="i-calc" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" d="M8 7h8M8 12h2m4 0h2M8 16h2m4 0h2"/></symbol>
+  <symbol id="i-compare" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M5 20V10m7 10V4m7 16v-7"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></symbol>
+  <symbol id="i-fire" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3s6 5 6 10a6 6 0 0 1-12 0c0-3 2-5 2-5s0 3 2 4c0-4 2-9 2-9Z"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11Z"/></symbol>
+  <symbol id="i-tree" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 21v-5m0 0a6 6 0 0 0 4-10.5A5 5 0 0 0 7 7a5 5 0 0 0 5 9Z"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 21s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="m5 12 5 5 9-10"/></symbol>
+</svg>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script src="js/config.js" defer></script>
+<script src="js/calc.js" defer></script>
+<script src="js/app.js" defer></script>
+</body>
+</html>

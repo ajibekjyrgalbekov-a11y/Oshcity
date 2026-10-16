@@ -1,0 +1,13 @@
+# большие исходники и служебное
+*.pdf
+.venv/
+__pycache__/
+export/profile/
+export/log.txt
+site/data/*.tmp
+desktop.ini
+Текстовый документ.txt
+site/.claude/
+.claude/
+export/.env
+*.env
