@@ -7,7 +7,7 @@
     python export/export.py           # выгрузка (это и запускает планировщик в 9:00)
 
 На сайт попадают только свободные квартиры, разложенные по файлам блоков (site/data/blocks/*.json),
-и список блоков, где они есть (site/data/index.json) — без общих счётчиков.
+и сколько свободных в каждом блоке (site/data/index.json) — без общего итога.
 ФИО покупателей и кураторов не выгружаются.
 """
 import json, os, re, sys, datetime
@@ -75,7 +75,8 @@ def write_site_data(rows, updated):
         if fn.endswith(".json") and fn not in wanted:
             os.remove(os.path.join(blocks_dir, fn))
     with open(os.path.join(SITE_DATA, "index.json"), "w", encoding="utf-8") as f:
-        json.dump({"updated": updated, "blocks": sorted(by_block, key=lambda b: (int(re.match(r"\d+", b).group()), b))},
+        order = sorted(by_block, key=lambda b: (int(re.match(r"\d+", b).group()), b))
+        json.dump({"updated": updated, "blocks": {b: len(by_block[b]) for b in order}},
                   f, ensure_ascii=False, separators=(",", ":"))
 
 

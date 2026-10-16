@@ -11,7 +11,7 @@
   const MAX_CMP = 3;
 
   const state = {
-    blocksFree: new Set(), loaded: new Map(), byId: new Map(), plans: new Map(), floors: new Map(),
+    blocksFree: new Map(), loaded: new Map(), byId: new Map(), plans: new Map(), floors: new Map(),
     block: null, filter: { rooms: 0, budget: Infinity, floor: "", sort: "month" },
     shown: PAGE, list: [], cmp: loadCmp(), updated: ""
   };
@@ -39,7 +39,9 @@
     plans.plans.forEach((p) => state.plans.set(p.id, p));
     plans.floors.forEach((p) => state.floors.set(p.id, p));
     state.updated = index.updated;
-    index.blocks.forEach((b) => state.blocksFree.add(b));
+    // блок → сколько свободных (старый формат — просто список блоков)
+    if (Array.isArray(index.blocks)) index.blocks.forEach((b) => state.blocksFree.set(b, 0));
+    else Object.entries(index.blocks).forEach(([b, n]) => state.blocksFree.set(b, n));
   }
 
   const blockOf = (id) => String(id).split("-")[0].replace("_", "/");
@@ -119,7 +121,7 @@
   function renderGenplan() {
     const map = $("#genplan-map");
     Object.entries(CFG.blocks).forEach(([b, blk]) => {
-      const n = state.blocksFree.has(b);
+      const n = state.blocksFree.get(b) || 0;
       if (!n && /^(185|190)$/.test(b)) return;
       const el = document.createElement("button");
       el.className = "hot " + (n ? "has" : "none");
@@ -127,8 +129,8 @@
       el.style.left = ((blk.pos[0] - cx0) / (cx1 - cx0)) * 100 + "%";
       el.style.top = ((blk.pos[1] - cy0) / (cy1 - cy0)) * 100 + "%";
       el.dataset.block = b;
-      el.innerHTML = `${b}<span class="hot-tip">${n ? "смотреть квартиры" : "продано"}</span>`;
-      el.setAttribute("aria-label", `${blockName(b)}: ${n ? "есть квартиры" : "продано"}`);
+      el.innerHTML = `${b}${n ? `<i class="hot-n">${n}</i>` : ""}<span class="hot-tip">${n ? `свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "продано"}</span>`;
+      el.setAttribute("aria-label", `${blockName(b)}: ${n ? `свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "продано"}`);
       if (n) el.addEventListener("click", () => { selectBlock(b); track("genplan_block", { block: b }); });
       map.appendChild(el);
     });
@@ -141,7 +143,9 @@
   async function selectBlock(b) {
     state.block = b;
     $$(".hot").forEach((h) => h.classList.toggle("sel", h.dataset.block === b));
+    const n = state.blocksFree.get(b) || 0;
     $("#blockTitle").textContent = `${blockName(b)} · лот ${CFG.blocks[b].lot}`;
+    $("#blockFree").textContent = n ? `Свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "";
     $("#flatsPick").hidden = true; $("#flatsBlock").hidden = false;
     $("#cards").innerHTML = `<div class="empty">Загружаем квартиры…</div>`;
     $("#flats").scrollIntoView({ behavior: "smooth" });
