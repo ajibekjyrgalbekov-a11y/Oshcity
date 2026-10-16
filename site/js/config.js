@@ -15,7 +15,7 @@ window.CONFIG = {
   months: 67,                        // срок рассрочки, месяцев
 
   // Ссылка на Google Apps Script (аналитика и заявки). Пусто — статистика не пишется.
-  sheetUrl: "",
+  sheetUrl: "https://script.google.com/macros/s/AKfycbwnMqQ92sExpb5jnfQaNT5OTVmNjqCRSvhURWcaDdAnq1AjYOOvEryXgNTaMlYybYYMHg/exec",
 
   // Адрес сайта (для ссылок «поделиться»). Пусто — берётся текущий адрес.
   siteUrl: "https://ajibekjyrgalbekov-a11y.github.io/Oshcity/",
