@@ -129,7 +129,7 @@
       el.style.left = ((blk.pos[0] - cx0) / (cx1 - cx0)) * 100 + "%";
       el.style.top = ((blk.pos[1] - cy0) / (cy1 - cy0)) * 100 + "%";
       el.dataset.block = b;
-      el.innerHTML = `${b}${n ? `<i class="hot-n">${n}</i>` : ""}<span class="hot-tip">${n ? `свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "продано"}</span>`;
+      el.innerHTML = `${b}<span class="hot-tip">${n ? `свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "продано"}</span>`;
       el.setAttribute("aria-label", `${blockName(b)}: ${n ? `свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "продано"}`);
       if (n) el.addEventListener("click", () => { selectBlock(b); track("genplan_block", { block: b }); });
       map.appendChild(el);

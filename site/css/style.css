@@ -383,3 +383,9 @@ input[type="range"] { width: 100%; accent-color: var(--gold-600); height: 28px; 
 .hot.has .hot-n { color: var(--green-950); }
 .hot.sel .hot-n { color: var(--gold); background: none; }
 .hot.has::after { border-radius: 12px; }
+
+/* только номер блока; свободные квартиры — в подсказке при наведении */
+.hot { font-size: 12px; padding: 3px 8px; }
+.hot-tip { bottom: calc(100% + 8px); font-size: 13px; font-weight: 800; padding: 6px 10px; border-radius: 10px; box-shadow: 0 8px 20px -6px rgba(0, 0, 0, .5); z-index: 5; }
+.hot-tip::after { content: ""; position: absolute; left: 50%; top: 100%; margin-left: -6px; border: 6px solid transparent; border-top-color: #fff; }
+.hot:hover, .hot:focus-visible { z-index: 6; }
