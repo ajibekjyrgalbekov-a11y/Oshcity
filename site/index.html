@@ -15,7 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/photos/aerial-sm.webp" media="(max-width: 900px)">
 <link rel="preload" as="image" href="img/photos/aerial.webp" media="(min-width: 901px)">
-<link rel="stylesheet" href="css/style.css?v=202610161321">
+<link rel="stylesheet" href="css/style.css?v=202610161400">
 </head>
 <body>
 
@@ -155,9 +155,11 @@
   <!-- ГЕНПЛАН -->
   <section class="section section-dark" id="genplan">
     <div class="wrap">
-      <p class="eyebrow reveal">Генплан</p>
-      <h2 class="h2 reveal">Выберите блок на плане</h2>
-      <p class="lead reveal">На каждом блоке указано, сколько в нём свободных квартир. Нажмите на блок, и мы покажем их с планировками и расчётом.</p>
+      <ol class="steps reveal" aria-label="Как подобрать квартиру">
+        <li class="on"><b>1</b>Блок</li><li><b>2</b>Этаж</li><li><b>3</b>Планировка</li>
+      </ol>
+      <h2 class="h2 reveal">В каком блоке хотите жить?</h2>
+      <p class="lead reveal">Наведите на блок, чтобы увидеть, сколько в нём свободных квартир, и нажмите, чтобы выбрать.</p>
     </div>
     <div class="genplan-scroll reveal" id="genplanScroll">
       <div class="genplan" id="genplan-map">
@@ -170,7 +172,9 @@
   <!-- КВАРТИРЫ -->
   <section class="section" id="flats">
     <div class="wrap">
-      <p class="eyebrow reveal">Квартиры</p>
+      <ol class="steps steps-light" id="flatSteps" aria-label="Шаги подбора">
+        <li class="done"><b>1</b>Блок</li><li><b>2</b>Этаж</li><li><b>3</b>Планировка</li>
+      </ol>
       <h2 class="h2 reveal">Подберите свою квартиру</h2>
 
       <div class="pick" id="flatsPick">
@@ -184,6 +188,10 @@
         <div><b id="blockTitle">Блок</b><span class="block-free" id="blockFree"></span><span class="updated">Наличие на <b id="updated">—</b></span></div>
         <button class="btn btn-outline btn-sm" id="changeBlock">Другой блок</button>
       </div>
+      <div class="step-title"><b>2</b>На каком этаже?</div>
+      <div class="floor-grid" id="floorChips" role="group" aria-label="Этаж"></div>
+      <p class="floor-note">до 13 этажа — 92 400 сом/м², с 14 этажа — 88 000 сом/м²</p>
+      <div class="step-title" id="step3"><b>3</b>Выберите планировку</div>
       <div class="filters" id="filters">
         <div class="f-row">
           <div class="chips" role="group" aria-label="Комнат">
@@ -198,9 +206,6 @@
           <input type="range" id="fBudget" min="40000" max="110000" step="1000" value="110000">
         </label>
         <div class="f-grid">
-          <label class="field"><span>Этаж</span><select id="fFloor">
-            <option value="">Любой</option><option value="2-5">2–5</option><option value="6-9">6–9</option>
-            <option value="10-13">10–13 (92 400/м²)</option><option value="14-99">14+ (дешевле — 88 000/м²)</option></select></label>
           <label class="field"><span>Сортировка</span><select id="fSort">
             <option value="month">Сначала дешевле</option><option value="area">Сначала просторнее</option>
             <option value="floorDesc">Выше этаж</option><option value="floorAsc">Ниже этаж</option></select></label>
@@ -261,7 +266,7 @@
         <p class="eyebrow">Контакты</p>
         <h2 class="h2">Приезжайте посмотреть</h2>
         <div class="manager">
-          <div class="manager-ava" aria-hidden="true">ЖА</div>
+          <img class="manager-ava" src="img/manager/ajibek-ava.webp" alt="" width="52" height="52">
           <div><span>Ваш менеджер</span><b>Жыргалбеков Ажибек</b></div>
         </div>
         <p class="lead">Офис продаж: г. Ош, проспект Абсамата Масалиева, 118а.
@@ -289,6 +294,28 @@
     <footer class="wrap footer">© Osh City · Цены и наличие носят информационный характер, точные условия уточняйте у менеджера.</footer>
   </section>
 </main>
+
+
+<!-- ПРИВЕТСТВИЕ МЕНЕДЖЕРА -->
+<div class="welcome" id="welcome" hidden role="dialog" aria-modal="true" aria-labelledby="wTitle">
+  <div class="welcome-bg" aria-hidden="true"></div>
+  <button class="welcome-skip" id="wSkip">Пропустить</button>
+  <div class="welcome-inner">
+    <figure class="welcome-photo"><img src="img/manager/ajibek.webp" alt="Ажибек — ваш персональный менеджер Osh City" width="497" height="883"></figure>
+    <div class="welcome-chat">
+      <p class="w-name"><img src="img/manager/ajibek-ava.webp" alt="" width="40" height="40"><span><b id="wTitle">Ажибек</b><i>персональный менеджер · онлайн</i></span></p>
+      <div class="bubble" data-delay="300">Здравствуйте! 👋</div>
+      <div class="bubble" data-delay="1200">Я Ажибек — ваш персональный менеджер в&nbsp;Osh&nbsp;City.</div>
+      <div class="bubble" data-delay="2300">Идём искать вашу квартиру мечты? 🏡</div>
+      <div class="bubble small" data-delay="3300">Сначала выберем блок, в котором хотите жить, потом этаж и планировку. Я сразу посчитаю платёж в месяц.</div>
+      <div class="typing" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="w-actions" data-delay="4100">
+        <button class="btn btn-gold" id="wGo">Да, идём! →</button>
+        <a class="btn btn-ghost" id="wWa" href="#" target="_blank" rel="noopener"><svg class="ico"><use href="#i-wa"/></svg>Написать мне</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- НИЖНЯЯ ПАНЕЛЬ (ТЕЛЕФОН) -->
 <nav class="tabbar" aria-label="Быстрая навигация">
@@ -337,8 +364,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-<script src="js/config.js?v=202610161321" defer></script>
-<script src="js/calc.js?v=202610161321" defer></script>
-<script src="js/app.js?v=202610161321" defer></script>
+<script src="js/config.js?v=202610161400" defer></script>
+<script src="js/calc.js?v=202610161400" defer></script>
+<script src="js/app.js?v=202610161400" defer></script>
 </body>
 </html>

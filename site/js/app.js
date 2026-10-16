@@ -149,8 +149,21 @@
     $("#flatsPick").hidden = true; $("#flatsBlock").hidden = false;
     $("#cards").innerHTML = `<div class="empty">Загружаем квартиры…</div>`;
     $("#flats").scrollIntoView({ behavior: "smooth" });
-    await loadBlock(b);
+    const list = await loadBlock(b);
+    state.filter.floor = "";
+    renderFloors(list);
+    setStep(2);
     applyFilters();
+  }
+
+  // Шаг 2: этажи, где в этом блоке есть квартиры
+  function renderFloors(list) {
+    const floors = [...new Set(list.map((a) => a.f))].sort((x, y) => x - y);
+    $("#floorChips").innerHTML = `<button class="fl on" data-floor="">Все</button>` +
+      floors.map((f) => `<button class="fl${f >= 14 ? " cheap" : ""}" data-floor="${f}">${f}</button>`).join("");
+  }
+  function setStep(n) {
+    $$("#flatSteps li").forEach((li, i) => { li.classList.toggle("done", i + 1 < n); li.classList.toggle("on", i + 1 === n); });
   }
 
   function applyFilters() {
@@ -158,7 +171,7 @@
     let list = (state.loaded.get(state.block) || []).filter((a) =>
       (!f.rooms || a.r === f.rooms) &&
       a.q.monthly <= f.budget &&
-      (!f.floor || (a.f >= +f.floor.split("-")[0] && a.f <= +f.floor.split("-")[1])));
+      (!f.floor || a.f === +f.floor));
     const sorts = {
       month: (x, y) => x.q.monthly - y.q.monthly || y.f - x.f,
       area: (x, y) => y.a - x.a || x.q.monthly - y.q.monthly,
@@ -235,12 +248,20 @@
       clearTimeout(budgetTimer);
       budgetTimer = setTimeout(() => track("filter_budget", { budget: v }), 1500);
     });
-    $("#fFloor").addEventListener("change", (e) => setFilter({ floor: e.target.value }));
+    $("#floorChips").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-floor]");
+      if (!btn) return;
+      $$("#floorChips .fl").forEach((x) => x.classList.toggle("on", x === btn));
+      setFilter({ floor: btn.dataset.floor });
+      setStep(btn.dataset.floor ? 3 : 2);
+      if (btn.dataset.floor) { track("filter_floor", { block: state.block, budget: btn.dataset.floor }); $("#step3").scrollIntoView({ behavior: "smooth", block: "start" }); }
+    });
     $("#fSort").addEventListener("change", (e) => setFilter({ sort: e.target.value }));
     $("#resetFilters").addEventListener("click", () => {
       $$("[data-rooms]").forEach((x) => x.classList.toggle("on", x.dataset.rooms === "0"));
       budget.value = max; $("#budgetOut").textContent = "любой суммы";
-      $("#fFloor").value = "";
+      $$("#floorChips .fl").forEach((x) => x.classList.toggle("on", x.dataset.floor === ""));
+      setStep(2);
       setFilter({ rooms: 0, budget: Infinity, floor: "" });
     });
     $("#changeBlock").addEventListener("click", () => $("#genplan").scrollIntoView({ behavior: "smooth" }));
@@ -587,6 +608,40 @@
     });
   }
 
+  // ---------- приветствие менеджера ----------
+  function welcome() {
+    const w = $("#welcome");
+    let seen = false;
+    try { seen = sessionStorage.getItem("oc_welcome") === "1"; } catch (e) { /* приватный режим */ }
+    if (seen || location.hash.startsWith("#/")) return;
+    w.hidden = false;
+    document.documentElement.style.overflow = "hidden";
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const items = $$("[data-delay]", w);
+    const typing = $(".typing", w);
+    items.forEach((el) => {
+      const d = reduce ? 0 : +el.dataset.delay;
+      setTimeout(() => {
+        el.classList.add("show");
+        typing.classList.toggle("show", el !== items[items.length - 1] && !el.classList.contains("w-actions"));
+        if (el === items[items.length - 1]) typing.classList.remove("show");
+      }, d);
+    });
+    requestAnimationFrame(() => w.classList.add("open"));
+    const close = (go) => {
+      try { sessionStorage.setItem("oc_welcome", "1"); } catch (e) { /* ничего */ }
+      w.classList.remove("open"); w.classList.add("leave");
+      document.documentElement.style.overflow = "";
+      setTimeout(() => { w.hidden = true; }, 500);
+      if (go) setTimeout(() => $("#genplan").scrollIntoView({ behavior: "smooth" }), 250);
+      track(go ? "welcome_go" : "welcome_skip");
+    };
+    $("#wGo").addEventListener("click", () => close(true));
+    $("#wSkip").addEventListener("click", () => close(false));
+    bindWa($("#wWa"), null);
+    $("#wWa").addEventListener("click", () => close(false));
+  }
+
   // ---------- мои клиенты ----------
   function bindClients() {
     $("#clientPhotos").addEventListener("click", (e) => {
@@ -667,6 +722,7 @@
   // ---------- старт ----------
   document.documentElement.classList.add("js-anim");
   window.addEventListener("DOMContentLoaded", async () => {
+    welcome();                       // приветствие сразу, не дожидаясь данных о квартирах
     try {
       await load();
     } catch (e) {
