@@ -18,7 +18,7 @@ window.CONFIG = {
   sheetUrl: "",
 
   // Адрес сайта (для ссылок «поделиться»). Пусто — берётся текущий адрес.
-  siteUrl: "",
+  siteUrl: "https://ajibekjyrgalbekov-a11y.github.io/Oshcity/",
 
   // Какая часть полного генплана показана на сайте (% слева, сверху, справа, снизу)
   genplanCrop: [24, 30, 84, 70],
