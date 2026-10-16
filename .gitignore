@@ -11,3 +11,8 @@ site/.claude/
 .claude/
 export/.env
 *.env
+export/apartments.json
+*.HEIC
+*.heic
+*.mov
+*.MOV

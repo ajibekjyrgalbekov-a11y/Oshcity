@@ -26,6 +26,7 @@
   </a>
   <nav class="topnav">
     <a href="#about">О проекте</a>
+    <a href="#clients">Отзывы</a>
     <a href="#genplan">Генплан</a>
     <a href="#flats">Квартиры</a>
     <a href="#calc">Калькулятор</a>
@@ -53,13 +54,13 @@
       <p class="hero-sub reveal">Квартиры в рассрочку <b>без процентов</b> на <b data-cfg="months">67</b> месяцев.
         Первый взнос всего <b data-cfg="down">500 000</b> сом.</p>
       <div class="hero-cta reveal">
-        <a href="#flats" class="btn btn-gold">Подобрать квартиру</a>
+        <a href="#genplan" class="btn btn-gold">Подобрать квартиру</a>
         <a href="#calc" class="btn btn-ghost">Рассчитать платёж</a>
       </div>
       <dl class="hero-stats reveal">
-        <div><dt>свободных квартир</dt><dd><span class="count" id="st-free">0</span></dd></div>
-        <div><dt>платёж от, сом/мес</dt><dd><span class="count" id="st-month">0</span></dd></div>
-        <div><dt>блоков в продаже</dt><dd><span class="count" id="st-blocks">0</span></dd></div>
+        <div><dt>переплата по рассрочке</dt><dd><span class="count" data-to="0">0</span>%</dd></div>
+        <div><dt>месяцев рассрочки</dt><dd><span class="count" data-to="67">0</span></dd></div>
+        <div><dt>сом — первый взнос от</dt><dd><span class="count" data-to="500000">0</span></dd></div>
       </dl>
     </div>
     <a href="#about" class="hero-scroll" aria-label="Листать вниз"><span></span></a>
@@ -104,16 +105,63 @@
     </div>
   </section>
 
+  <!-- МОИ КЛИЕНТЫ -->
+  <section class="section section-tint" id="clients">
+    <div class="wrap">
+      <p class="eyebrow reveal">Отзывы</p>
+      <h2 class="h2 reveal">Мои клиенты уже с ключом к новой жизни</h2>
+      <p class="lead reveal">Каждое фото — реальная семья, которая оформила квартиру в Osh City вместе со мной. Помогаю выбрать квартиру, считаю рассрочку и сопровождаю до подписания договора.</p>
+      <div class="videos">
+        <figure class="video reveal"><video src="video/review-1.mp4" poster="video/review-1.jpg" preload="none" playsinline controls></video><figcaption>Видеоотзыв клиента</figcaption></figure>
+        <figure class="video reveal"><video src="video/review-2.mp4" poster="video/review-2.jpg" preload="none" playsinline controls></video><figcaption>Видеоотзыв клиентки</figcaption></figure>
+      </div>
+    </div>
+    <div class="c-strip" id="clientPhotos" aria-label="Фото клиентов">
+        <button class="c-photo" data-full="img/clients/client-01.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-01-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-02.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-02-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-03.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-03-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-04.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-04-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-05.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-05-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-06.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-06-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-07.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-07-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-08.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-08-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-09.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-09-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-10.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-10-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-11.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-11-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-12.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-12-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-13.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-13-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-14.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-14-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-15.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-15-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-16.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-16-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-17.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-17-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-18.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-18-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-19.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-19-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-20.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-20-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-21.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-21-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-22.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-22-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-23.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-23-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-24.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-24-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-25.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-25-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-26.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-26-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-27.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-27-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-28.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-28-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-29.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-29-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-30.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-30-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+        <button class="c-photo" data-full="img/clients/client-31.webp" aria-label="Открыть фото"><img loading="lazy" decoding="async" src="img/clients/client-31-sm.webp" alt="Клиент Osh City с договором на квартиру" width="480" height="640"></button>
+    </div>
+    <div class="wrap"><p class="hint">← листайте фото →</p></div>
+  </section>
+
   <!-- ГЕНПЛАН -->
   <section class="section section-dark" id="genplan">
     <div class="wrap">
       <p class="eyebrow reveal">Генплан</p>
       <h2 class="h2 reveal">Выберите блок на плане</h2>
-      <p class="lead reveal">Подсвечены блоки, где сейчас есть свободные квартиры. Нажмите на блок, и мы покажем его квартиры.</p>
+      <p class="lead reveal">Нажмите на золотой блок, и мы покажем его квартиры с планировками и расчётом.</p>
     </div>
     <div class="genplan-scroll reveal" id="genplanScroll">
       <div class="genplan" id="genplan-map">
-        <img src="img/photos/genplan-crop.webp" alt="Генеральный план Osh City (фрагмент с блоками в продаже)" loading="lazy" width="1984" height="722">
+        <img src="img/photos/genplan-crop.webp" alt="Генеральный план Osh City" loading="lazy" width="1984" height="722">
       </div>
     </div>
     <div class="wrap"><p class="hint">← листайте план пальцем →</p></div>
@@ -122,10 +170,20 @@
   <!-- КВАРТИРЫ -->
   <section class="section" id="flats">
     <div class="wrap">
-      <p class="eyebrow reveal">Свободные квартиры</p>
+      <p class="eyebrow reveal">Квартиры</p>
       <h2 class="h2 reveal">Подберите свою квартиру</h2>
-      <p class="updated">Наличие обновлено: <b id="updated">—</b></p>
 
+      <div class="pick" id="flatsPick">
+        <svg class="ico" aria-hidden="true"><use href="#i-map"/></svg>
+        <p><b>Сначала выберите блок на генплане</b><br>Нажмите на золотой блок, и здесь появятся его квартиры с планировками и платежом в месяц.</p>
+        <a href="#genplan" class="btn btn-gold">Открыть генплан</a>
+      </div>
+
+      <div id="flatsBlock" hidden>
+      <div class="block-bar">
+        <div><b id="blockTitle">Блок</b><span class="updated">Наличие на <b id="updated">—</b></span></div>
+        <button class="btn btn-outline btn-sm" id="changeBlock">Другой блок</button>
+      </div>
       <div class="filters" id="filters">
         <div class="f-row">
           <div class="chips" role="group" aria-label="Комнат">
@@ -140,7 +198,6 @@
           <input type="range" id="fBudget" min="40000" max="110000" step="1000" value="110000">
         </label>
         <div class="f-grid">
-          <label class="field"><span>Блок</span><select id="fBlock"><option value="">Все блоки</option></select></label>
           <label class="field"><span>Этаж</span><select id="fFloor">
             <option value="">Любой</option><option value="2-5">2–5</option><option value="6-9">6–9</option>
             <option value="10-13">10–13 (92 400/м²)</option><option value="14-99">14+ (дешевле — 88 000/м²)</option></select></label>
@@ -151,11 +208,12 @@
       </div>
 
       <div class="result-bar">
-        <span id="resultCount">—</span>
+        <span></span>
         <button class="link" id="resetFilters" hidden>Сбросить фильтры</button>
       </div>
       <div class="cards" id="cards"></div>
       <div class="more"><button class="btn btn-outline" id="moreBtn" hidden>Показать ещё</button></div>
+      </div>
     </div>
   </section>
 

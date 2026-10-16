@@ -11,8 +11,8 @@
   const MAX_CMP = 3;
 
   const state = {
-    all: [], free: [], byId: new Map(), plans: new Map(), floors: new Map(),
-    filter: { rooms: 0, budget: Infinity, block: "", floor: "", sort: "month" },
+    blocksFree: new Set(), loaded: new Map(), byId: new Map(), plans: new Map(), floors: new Map(),
+    block: null, filter: { rooms: 0, budget: Infinity, floor: "", sort: "month" },
     shown: PAGE, list: [], cmp: loadCmp(), updated: ""
   };
 
@@ -31,21 +31,41 @@
     return blk ? state.floors.get(CFG.floorPlans[blk.type]) : null;
   }
 
+  // Клиенту не показываем общее количество: квартиры грузятся по одному блоку, когда его выбрали на генплане
   async function load() {
-    const [aRes, pRes] = await Promise.all([fetch("data/apartments.json", { cache: "no-cache" }), fetch("data/plans.json")]);
-    const data = await aRes.json();
+    const [iRes, pRes] = await Promise.all([fetch("data/index.json", { cache: "no-cache" }), fetch("data/plans.json")]);
+    const index = await iRes.json();
     const plans = await pRes.json();
     plans.plans.forEach((p) => state.plans.set(p.id, p));
     plans.floors.forEach((p) => state.floors.set(p.id, p));
-    state.updated = data.updated;
-    state.all = data.apartments.map((a) => {
-      const q = Calc.quote(a, CFG);
-      return Object.assign({}, a, { id: aptId(a), q, layout: null });
-    });
-    state.all.forEach((a) => { a.layout = layoutFor(a); state.byId.set(a.id, a); });
-    state.free = state.all.filter((a) => a.s === "free" && CFG.blocks[a.b]);
-    state.cmp = state.cmp.filter((id) => state.byId.has(id));
+    state.updated = index.updated;
+    index.blocks.forEach((b) => state.blocksFree.add(b));
   }
+
+  const blockOf = (id) => String(id).split("-")[0].replace("_", "/");
+  async function loadBlock(b) {
+    if (state.loaded.has(b)) return state.loaded.get(b);
+    let list = [];
+    if (state.blocksFree.has(b) && CFG.blocks[b]) {
+      try {
+        const res = await fetch(`data/blocks/${b.replace("/", "_")}.json`, { cache: "no-cache" });
+        if (res.ok) list = (await res.json()).apartments;
+      } catch (e) { /* нет сети — покажем пусто */ }
+    }
+    list = list.map((x) => {
+      const a = Object.assign({ b, s: "free" }, x);
+      a.id = aptId(a); a.q = Calc.quote(a, CFG); a.layout = layoutFor(a);
+      state.byId.set(a.id, a);
+      return a;
+    });
+    // «лучшая цена» — самая доступная квартира каждой планировки внутри блока
+    const best = new Map();
+    list.forEach((a) => { const k = a.layout ? a.layout.id : a.a; const c = best.get(k); if (!c || a.q.monthly < c.q.monthly) best.set(k, a); });
+    best.forEach((a, k) => minByLayout.set(b + "|" + k, a.id));
+    state.loaded.set(b, list);
+    return list;
+  }
+  const loadBlocksFor = (ids) => Promise.all([...new Set(ids.map(blockOf))].map(loadBlock));
 
   // ---------- аналитика (Google Таблица) ----------
   function track(action, extra) {
@@ -79,11 +99,6 @@
 
   // ---------- главный экран ----------
   function renderStats() {
-    const blocks = new Set(state.free.map((a) => a.b));
-    const minMonth = Math.min(...state.free.map((a) => a.q.monthly));
-    $("#st-free").dataset.to = state.free.length;
-    $("#st-month").dataset.to = minMonth;
-    $("#st-blocks").dataset.to = blocks.size;
     $("#updated").textContent = state.updated.split(" ")[0].split("-").reverse().join(".") + " в " + (state.updated.split(" ")[1] || "");
     $$('[data-cfg="months"]').forEach((e) => (e.textContent = CFG.months));
     $$('[data-cfg="down"]').forEach((e) => (e.textContent = fmt(CFG.downPayment)));
@@ -103,23 +118,18 @@
   // ---------- генплан ----------
   function renderGenplan() {
     const map = $("#genplan-map");
-    const counts = {};
-    state.free.forEach((a) => (counts[a.b] = (counts[a.b] || 0) + 1));
     Object.entries(CFG.blocks).forEach(([b, blk]) => {
-      const n = counts[b] || 0;
+      const n = state.blocksFree.has(b);
       if (!n && /^(185|190)$/.test(b)) return;
       const el = document.createElement("button");
       el.className = "hot " + (n ? "has" : "none");
       const [cx0, cy0, cx1, cy1] = CFG.genplanCrop;
       el.style.left = ((blk.pos[0] - cx0) / (cx1 - cx0)) * 100 + "%";
       el.style.top = ((blk.pos[1] - cy0) / (cy1 - cy0)) * 100 + "%";
-      el.innerHTML = `${b}<span class="hot-tip">${n ? `свободно ${n}` : "всё продано"}</span>`;
-      el.setAttribute("aria-label", `${blockName(b)}: ${n ? "свободно " + n : "нет свободных"}`);
-      if (n) el.addEventListener("click", () => {
-        setFilter({ block: b }); $("#fBlock").value = b;
-        track("genplan_block", { block: b });
-        $("#flats").scrollIntoView({ behavior: "smooth" });
-      });
+      el.dataset.block = b;
+      el.innerHTML = `${b}<span class="hot-tip">${n ? "смотреть квартиры" : "продано"}</span>`;
+      el.setAttribute("aria-label", `${blockName(b)}: ${n ? "есть квартиры" : "продано"}`);
+      if (n) el.addEventListener("click", () => { selectBlock(b); track("genplan_block", { block: b }); });
       map.appendChild(el);
     });
     // на телефоне показываем сразу середину плана, где ваши блоки
@@ -127,24 +137,23 @@
     requestAnimationFrame(() => (sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) * 0.55));
   }
 
-  // ---------- фильтры и список ----------
-  function fillBlockSelect() {
-    const sel = $("#fBlock");
-    const counts = {};
-    state.free.forEach((a) => (counts[a.b] = (counts[a.b] || 0) + 1));
-    Object.keys(CFG.blocks).filter((b) => counts[b]).forEach((b) => {
-      const o = document.createElement("option");
-      o.value = b; o.textContent = `${b} (лот ${CFG.blocks[b].lot}) — ${counts[b]} кв.`;
-      sel.appendChild(o);
-    });
+  // ---------- выбранный блок и список ----------
+  async function selectBlock(b) {
+    state.block = b;
+    $$(".hot").forEach((h) => h.classList.toggle("sel", h.dataset.block === b));
+    $("#blockTitle").textContent = `${blockName(b)} · лот ${CFG.blocks[b].lot}`;
+    $("#flatsPick").hidden = true; $("#flatsBlock").hidden = false;
+    $("#cards").innerHTML = `<div class="empty">Загружаем квартиры…</div>`;
+    $("#flats").scrollIntoView({ behavior: "smooth" });
+    await loadBlock(b);
+    applyFilters();
   }
 
   function applyFilters() {
     const f = state.filter;
-    let list = state.free.filter((a) =>
+    let list = (state.loaded.get(state.block) || []).filter((a) =>
       (!f.rooms || a.r === f.rooms) &&
       a.q.monthly <= f.budget &&
-      (!f.block || a.b === f.block) &&
       (!f.floor || (a.f >= +f.floor.split("-")[0] && a.f <= +f.floor.split("-")[1])));
     const sorts = {
       month: (x, y) => x.q.monthly - y.q.monthly || y.f - x.f,
@@ -156,7 +165,7 @@
     state.list = list;
     state.shown = PAGE;
     renderCards(true);
-    const dirty = f.rooms || f.budget !== Infinity || f.block || f.floor;
+    const dirty = f.rooms || f.budget !== Infinity || f.floor;
     $("#resetFilters").hidden = !dirty;
   }
 
@@ -168,7 +177,7 @@
   const minByLayout = new Map();
   function cardHtml(a) {
     const key = a.layout ? a.layout.id : a.a;
-    const cheapest = minByLayout.get(key) === a.id;
+    const cheapest = minByLayout.get(a.b + "|" + key) === a.id;
     const on = state.cmp.includes(a.id);
     return `<article class="card" data-id="${a.id}" tabindex="0" aria-label="${roomsLabel(a.r)} ${fmtArea(a.a)} м², ${fmt(a.q.monthly)} сом в месяц">
       <div class="card-plan">
@@ -190,9 +199,8 @@
   function renderCards(reset) {
     const box = $("#cards");
     const list = state.list;
-    $("#resultCount").textContent = list.length ? `Найдено: ${fmt(list.length)} ${plural(list.length, "квартира", "квартиры", "квартир")}` : "Ничего не найдено";
     if (!list.length) {
-      box.innerHTML = `<div class="empty">Под такие условия квартир нет. Попробуйте увеличить бюджет или выбрать другой этаж.</div>`;
+      box.innerHTML = `<div class="empty">В этом блоке под такие условия квартир нет. Измените бюджет или этаж, либо выберите другой блок на генплане.</div>`;
       $("#moreBtn").hidden = true; return;
     }
     const from = reset ? 0 : box.children.length;
@@ -200,21 +208,11 @@
     const html = slice.map(cardHtml).join("");
     if (reset) box.innerHTML = html; else box.insertAdjacentHTML("beforeend", html);
     $("#moreBtn").hidden = state.shown >= list.length;
-    $("#moreBtn").textContent = `Показать ещё (${fmt(list.length - Math.min(state.shown, list.length))})`;
     if (window.gsap && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
       gsap.fromTo([...box.children].slice(from), { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: .5, stagger: .04, ease: "power2.out" });
     }
   }
 
-  function computeCheapest() {
-    const best = new Map();
-    state.free.forEach((a) => {
-      const key = a.layout ? a.layout.id : a.a;
-      const cur = best.get(key);
-      if (!cur || a.q.monthly < cur.q.monthly) best.set(key, a);
-    });
-    best.forEach((a, k) => minByLayout.set(k, a.id));
-  }
 
   function bindFilters() {
     $$("[data-rooms]").forEach((b) => b.addEventListener("click", () => {
@@ -223,9 +221,8 @@
       track("filter_rooms", { rooms: +b.dataset.rooms });
     }));
     const budget = $("#fBudget");
-    const max = Math.ceil(Math.max(...state.free.map((a) => a.q.monthly)) / 1000) * 1000;
-    const min = Math.floor(Math.min(...state.free.map((a) => a.q.monthly)) / 1000) * 1000;
-    budget.min = min; budget.max = max; budget.value = max;
+    const max = +budget.max;
+    budget.value = max;
     let budgetTimer;
     budget.addEventListener("input", () => {
       const v = +budget.value;
@@ -234,15 +231,15 @@
       clearTimeout(budgetTimer);
       budgetTimer = setTimeout(() => track("filter_budget", { budget: v }), 1500);
     });
-    $("#fBlock").addEventListener("change", (e) => setFilter({ block: e.target.value }));
     $("#fFloor").addEventListener("change", (e) => setFilter({ floor: e.target.value }));
     $("#fSort").addEventListener("change", (e) => setFilter({ sort: e.target.value }));
     $("#resetFilters").addEventListener("click", () => {
       $$("[data-rooms]").forEach((x) => x.classList.toggle("on", x.dataset.rooms === "0"));
       budget.value = max; $("#budgetOut").textContent = "любой суммы";
-      $("#fBlock").value = ""; $("#fFloor").value = "";
-      setFilter({ rooms: 0, budget: Infinity, block: "", floor: "" });
+      $("#fFloor").value = "";
+      setFilter({ rooms: 0, budget: Infinity, floor: "" });
     });
+    $("#changeBlock").addEventListener("click", () => $("#genplan").scrollIntoView({ behavior: "smooth" }));
     $("#moreBtn").addEventListener("click", () => { state.shown += PAGE; renderCards(false); });
     $("#cards").addEventListener("click", (e) => {
       const cmp = e.target.closest("[data-cmp]");
@@ -287,7 +284,7 @@
     const list = ids.map((id) => state.byId.get(id)).filter(Boolean);
     if (!list.length) {
       return `<div class="flat-head"><h3 id="sheetTitle">Сравнение</h3><p>Нажмите «+» на карточках квартир, чтобы сравнить до трёх вариантов.</p></div>
-        <p><a class="btn btn-gold" href="#flats" data-close-go>Выбрать квартиры</a></p>`;
+        <p><a class="btn btn-gold" href="#genplan" data-close-go>Выбрать на генплане</a></p>`;
     }
     const best = (fn, minIsBest = true) => {
       const vals = list.map(fn); const b = minIsBest ? Math.min(...vals) : Math.max(...vals);
@@ -321,7 +318,7 @@
 
   // ---------- карточка квартиры ----------
   function similar(a) {
-    return state.free.filter((x) => x.id !== a.id && x.r === a.r && Math.abs(x.a - a.a) < 4)
+    return (state.loaded.get(a.b) || []).filter((x) => x.id !== a.id && x.r === a.r && Math.abs(x.a - a.a) < 4)
       .sort((x, y) => Math.abs(x.f - a.f) - Math.abs(y.f - a.f) || x.q.monthly - y.q.monthly).slice(0, 6);
   }
 
@@ -329,11 +326,13 @@
     const a = state.byId.get(id);
     if (!a || a.s !== "free") {
       const parts = id.split("-");
-      const guess = a || state.all.find((x) => x.b === parts[0].replace("_", "/") && x.f === +parts[2]) || state.free[0];
-      const sim = guess ? similar(guess) : [];
-      return `<div class="sold-box"><h3 id="sheetTitle" class="h2" style="font-size:26px">${a && a.s === "booked" ? "Эта квартира забронирована" : "Эта квартира уже продана"}</h3>
-        <p class="lead" style="margin:0 auto 18px">Но есть похожие свободные варианты:</p></div>
-        <div class="cards">${sim.map(cardHtml).join("")}</div>`;
+      const same = state.loaded.get(blockOf(id)) || [];
+      const guess = same.find((x) => x.f === +parts[2]) || same[0];
+      const sim = guess ? [guess, ...similar(guess)].slice(0, 6) : [];
+      return `<div class="sold-box"><h3 id="sheetTitle" class="h2" style="font-size:26px">Эта квартира уже продана</h3>
+        <p class="lead" style="margin:0 auto 18px">${sim.length ? "Посмотрите другие квартиры в этом блоке:" : "Выберите другой блок на генплане или напишите нам в WhatsApp."}</p></div>
+        <div class="cards">${sim.map(cardHtml).join("")}</div>
+        ${sim.length ? "" : `<p style="text-align:center"><a class="btn btn-gold" href="#genplan" data-close-go>Открыть генплан</a></p>`}`;
     }
     const lay = a.layout, fp = floorPlanFor(a);
     const q = a.q;
@@ -447,15 +446,17 @@
     lastFocus && lastFocus.focus && lastFocus.focus({ preventScroll: true });
   }
 
-  function route() {
+  async function route() {
     const h = decodeURIComponent(location.hash);
     if (h.startsWith("#/kv/")) {
       const id = h.slice(5);
+      await loadBlock(blockOf(id));
       const a = state.byId.get(id);
       openSheet(renderFlat(id), () => bindFlat(a));
       track(a && a.s === "free" ? "view_flat" : "view_sold", { flat: id, area: a ? a.a : "", monthly: a ? a.q.monthly : "" });
     } else if (h.startsWith("#/compare")) {
       const ids = h.length > 10 ? h.slice(10).split(",") : state.cmp;
+      await loadBlocksFor(ids);
       if (h.length > 10) { state.cmp = ids.filter((id) => state.byId.has(id)).slice(0, MAX_CMP); saveCmp(); }
       openSheet(renderCompare(state.cmp));
       track("view_compare", { flats: state.cmp.join(",") });
@@ -546,9 +547,9 @@
   // ---------- калькулятор ----------
   function bindCalc() {
     const types = new Map();
-    state.free.forEach((a) => {
-      const k = a.r + "|" + a.a.toFixed(2);
-      if (!types.has(k)) types.set(k, a);
+    state.plans.forEach((p) => {
+      const k = p.rooms + "|" + p.area.toFixed(2);
+      if (!types.has(k)) types.set(k, { r: p.rooms, a: p.area });
     });
     const sorted = [...types.values()].sort((x, y) => x.r - y.r || x.a - y.a);
     const sel = $("#cType");
@@ -580,6 +581,18 @@
       setFilter({ rooms: r });
       track("calc_show", { rooms: r });
     });
+  }
+
+  // ---------- мои клиенты ----------
+  function bindClients() {
+    $("#clientPhotos").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-full]");
+      if (b) { openZoom(b.dataset.full); track("client_photo"); }
+    });
+    $$(".video video").forEach((v, i) => v.addEventListener("play", () => {
+      $$(".video video").forEach((o) => o !== v && o.pause());
+      track("review_video", { flat: "video-" + (i + 1) });
+    }));
   }
 
   // ---------- заявка ----------
@@ -643,6 +656,7 @@
     });
     $$(".facts .count").forEach((el) => ScrollTrigger.create({ trigger: el, start: "top 90%", once: true, onEnter: () => animateCount(el) }));
     gsap.from(".g-item", { scrollTrigger: { trigger: ".gallery", start: "top 85%" }, x: 80, opacity: 0, duration: .9, stagger: .08, ease: "power3.out" });
+    gsap.from(".c-photo", { scrollTrigger: { trigger: "#clientPhotos", start: "top 88%" }, y: 40, opacity: 0, duration: .7, stagger: .03, ease: "power3.out" });
     gsap.from(".hot", { scrollTrigger: { trigger: "#genplan-map", start: "top 75%" }, scale: 0, opacity: 0, duration: .5, stagger: .02, ease: "back.out(2)" });
   }
 
@@ -652,20 +666,21 @@
     try {
       await load();
     } catch (e) {
-      $("#cards").innerHTML = `<div class="empty">Не удалось загрузить список квартир. Напишите нам в WhatsApp — пришлём актуальные варианты.</div>`;
+      $("#flatsPick").innerHTML = `<div class="empty">Не удалось загрузить список квартир. Напишите нам в WhatsApp — пришлём актуальные варианты.</div>`;
       document.documentElement.classList.remove("js-anim");
       chrome(); return;
     }
-    computeCheapest();
+    state.cmp = state.cmp.slice(0, MAX_CMP);
+    await loadBlocksFor(state.cmp);
+    state.cmp = state.cmp.filter((id) => state.byId.has(id));
     renderStats();
     renderGenplan();
-    fillBlockSelect();
     bindFilters();
-    applyFilters();
     bindCalc();
     bindSheet();
     bindZoom();
     bindLead();
+    bindClients();
     chrome();
     saveCmp();
     animations();

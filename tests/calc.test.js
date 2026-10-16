@@ -18,7 +18,7 @@ assert.strictEqual(C.quote({ a: 40.19, f: 9 }, cfg).total, 3713556);
 assert.strictEqual(C.quote({ a: 76.95, f: 17 }, cfg).total, 6771600);
 
 // сумма графика всегда равна цене до сома, для всех площадей из базы
-const data = require("../site/data/apartments.json").apartments;
+const data = require("../export/apartments.json").apartments;
 for (const a of data) {
   for (const down of [500000, 777777, 1500000]) {
     const r = C.quote(a, cfg, { down });

@@ -6,7 +6,8 @@
     python export/export.py --login   # один раз: откроется окно Chrome, войдите в базу и закройте окно
     python export/export.py           # выгрузка (это и запускает планировщик в 9:00)
 
-На сайт попадают только блок, подъезд, этаж, № квартиры, площадь, комнаты и статус.
+На сайт попадают только свободные квартиры, разложенные по файлам блоков (site/data/blocks/*.json),
+и список блоков, где они есть (site/data/index.json) — без общих счётчиков.
 ФИО покупателей и кураторов не выгружаются.
 """
 import json, os, re, sys, datetime
@@ -14,7 +15,8 @@ from playwright.sync_api import sync_playwright
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROFILE = os.path.join(ROOT, "export", "profile")
-OUT = os.path.join(ROOT, "site", "data", "apartments.json")
+OUT = os.path.join(ROOT, "export", "apartments.json")           # полный список — только у вас, в git не попадает
+SITE_DATA = os.path.join(ROOT, "site", "data")
 CONFIG_JS = os.path.join(ROOT, "site", "js", "config.js")
 BASE = "https://dbbase.kutstroy.kg"
 OBJECT_PAGE = BASE + "/object/49/6013"          # любой блок ЖК «Ош сити»; поиск идёт по всем блокам
@@ -53,6 +55,28 @@ def log(msg):
     print(line)
     with open(os.path.join(ROOT, "export", "log.txt"), "a", encoding="utf-8") as f:
         f.write(line + "\n")
+
+
+def write_site_data(rows, updated):
+    """Публичные файлы сайта: по одному файлу на блок, только свободные квартиры."""
+    blocks_dir = os.path.join(SITE_DATA, "blocks")
+    os.makedirs(blocks_dir, exist_ok=True)
+    by_block = {}
+    for a in rows:
+        if a["s"] == "free":
+            by_block.setdefault(a["b"], []).append({k: a[k] for k in ("p", "f", "n", "a", "r", "new") if k in a})
+    wanted = set()
+    for b, items in by_block.items():
+        fn = b.replace("/", "_") + ".json"
+        wanted.add(fn)
+        with open(os.path.join(blocks_dir, fn), "w", encoding="utf-8") as f:
+            json.dump({"b": b, "apartments": items}, f, ensure_ascii=False, separators=(",", ":"))
+    for fn in os.listdir(blocks_dir):                     # блоки, где всё продано
+        if fn.endswith(".json") and fn not in wanted:
+            os.remove(os.path.join(blocks_dir, fn))
+    with open(os.path.join(SITE_DATA, "index.json"), "w", encoding="utf-8") as f:
+        json.dump({"updated": updated, "blocks": sorted(by_block, key=lambda b: (int(re.match(r"\d+", b).group()), b))},
+                  f, ensure_ascii=False, separators=(",", ":"))
 
 
 def login():
@@ -105,6 +129,7 @@ def export():
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
     os.replace(tmp, OUT)
+    write_site_data(rows, data["updated"])
     log(f"OK: свободных {free}, бронь {len(rows) - free}, ушло с продажи {sold}, новых {sum(1 for a in rows if a.get('new'))}")
     return 0
 
