@@ -99,7 +99,7 @@ function weeklyReport() {
   const wa = count(function (r) { return String(r[1]).indexOf("whatsapp") === 0; });
   const favs = count(function (r) { return r[1] === "fav_send"; });
   const phones = count(function (r) { return r[3] === "телефон" || r[7] === "телефон"; });
-  const site = "https://ajibekjyrgalbekov-a11y.github.io/Oshcity/#/kv/";
+  const site = "https://ajibekoshcity.com/#/kv/";
   const li = function (list, link) {
     return list.length ? "<ol>" + list.map(function (x) {
       return "<li>" + (link ? '<a href="' + site + x[0] + '">' + x[0] + "</a>" : x[0]) + " — " + x[1] + "</li>";
