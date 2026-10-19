@@ -5,152 +5,171 @@
    "rooms": 1,
    "area": 40.19,
    "img": "img/plans/k40_19.webp",
-   "w": 303,
-   "h": 260
+   "thumb": "img/plans/thumb/k40_19.webp",
+   "w": 1214,
+   "h": 1040
   },
   {
    "id": "k56_79",
    "rooms": 2,
    "area": 56.79,
    "img": "img/plans/k56_79.webp",
-   "w": 376,
-   "h": 303
+   "thumb": "img/plans/thumb/k56_79.webp",
+   "w": 1400,
+   "h": 1130
   },
   {
    "id": "k76_95",
    "rooms": 2,
    "area": 76.95,
    "img": "img/plans/k76_95.webp",
-   "w": 433,
-   "h": 369
+   "thumb": "img/plans/thumb/k76_95.webp",
+   "w": 1400,
+   "h": 1152
   },
   {
    "id": "s1_40_99",
    "rooms": 1,
    "area": 40.99,
    "img": "img/plans/s1_40_99.webp",
-   "w": 296,
-   "h": 336
+   "thumb": "img/plans/thumb/s1_40_99.webp",
+   "w": 1185,
+   "h": 1344
   },
   {
    "id": "s2_56_75",
    "rooms": 2,
    "area": 56.75,
    "img": "img/plans/s2_56_75.webp",
-   "w": 390,
-   "h": 506
+   "thumb": "img/plans/thumb/s2_56_75.webp",
+   "w": 1080,
+   "h": 1400
   },
   {
    "id": "s3_72_66",
    "rooms": 3,
    "area": 72.66,
    "img": "img/plans/s3_72_66.webp",
-   "w": 498,
-   "h": 339
+   "thumb": "img/plans/thumb/s3_72_66.webp",
+   "w": 1400,
+   "h": 953
   },
   {
    "id": "s4_47_16",
    "rooms": 1,
    "area": 47.16,
    "img": "img/plans/s4_47_16.webp",
-   "w": 289,
-   "h": 339
+   "thumb": "img/plans/thumb/s4_47_16.webp",
+   "w": 1155,
+   "h": 1357
   },
   {
    "id": "s5_40_99",
    "rooms": 1,
    "area": 40.99,
    "img": "img/plans/s5_40_99.webp",
-   "w": 292,
-   "h": 339
+   "thumb": "img/plans/thumb/s5_40_99.webp",
+   "w": 1170,
+   "h": 1357
   },
   {
    "id": "s6_57_14",
    "rooms": 2,
    "area": 57.14,
    "img": "img/plans/s6_57_14.webp",
-   "w": 404,
-   "h": 484
+   "thumb": "img/plans/thumb/s6_57_14.webp",
+   "w": 1171,
+   "h": 1400
   },
   {
    "id": "s7_72_66",
    "rooms": 3,
    "area": 72.66,
    "img": "img/plans/s7_72_66.webp",
-   "w": 477,
-   "h": 379
+   "thumb": "img/plans/thumb/s7_72_66.webp",
+   "w": 1400,
+   "h": 1114
   },
   {
    "id": "l5_62_39",
    "rooms": 2,
    "area": 62.39,
    "img": "img/plans/l5_62_39.webp",
-   "w": 250,
-   "h": 300
+   "thumb": "img/plans/thumb/l5_62_39.webp",
+   "w": 1000,
+   "h": 1200
   },
   {
    "id": "l5_57_31v",
    "rooms": 2,
    "area": 57.31,
    "img": "img/plans/l5_57_31v.webp",
-   "w": 313,
-   "h": 240
+   "thumb": "img/plans/thumb/l5_57_31v.webp",
+   "w": 1252,
+   "h": 960
   },
   {
    "id": "l5_57_31g",
    "rooms": 2,
    "area": 57.31,
    "img": "img/plans/l5_57_31g.webp",
-   "w": 325,
-   "h": 240
+   "thumb": "img/plans/thumb/l5_57_31g.webp",
+   "w": 1300,
+   "h": 960
   },
   {
    "id": "l5_62_3",
    "rooms": 2,
    "area": 62.3,
    "img": "img/plans/l5_62_3.webp",
-   "w": 235,
-   "h": 305
+   "thumb": "img/plans/thumb/l5_62_3.webp",
+   "w": 940,
+   "h": 1220
   },
   {
    "id": "l5_48_53",
    "rooms": 1,
    "area": 48.53,
    "img": "img/plans/l5_48_53.webp",
-   "w": 320,
-   "h": 210
+   "thumb": "img/plans/thumb/l5_48_53.webp",
+   "w": 1280,
+   "h": 840
   },
   {
    "id": "l5_84_45",
    "rooms": 3,
    "area": 84.45,
    "img": "img/plans/l5_84_45.webp",
-   "w": 355,
-   "h": 285
+   "thumb": "img/plans/thumb/l5_84_45.webp",
+   "w": 1400,
+   "h": 1124
   },
   {
    "id": "l5_38_84",
    "rooms": 1,
    "area": 38.84,
    "img": "img/plans/l5_38_84.webp",
-   "w": 215,
-   "h": 230
+   "thumb": "img/plans/thumb/l5_38_84.webp",
+   "w": 860,
+   "h": 920
   },
   {
    "id": "l5_38_85",
    "rooms": 1,
    "area": 38.85,
    "img": "img/plans/l5_38_85.webp",
-   "w": 217,
-   "h": 230
+   "thumb": "img/plans/thumb/l5_38_85.webp",
+   "w": 868,
+   "h": 920
   },
   {
    "id": "l5_84_28",
    "rooms": 3,
    "area": 84.28,
    "img": "img/plans/l5_84_28.webp",
-   "w": 353,
-   "h": 285
+   "thumb": "img/plans/thumb/l5_84_28.webp",
+   "w": 1400,
+   "h": 1130
   }
  ],
  "floors": [
@@ -158,22 +177,22 @@
    "id": "floor_k",
    "title": "Типовой этаж (блоки 157–158, 160–178, Лот-6)",
    "img": "img/plans/floor_k.webp",
-   "w": 957,
-   "h": 1282
+   "w": 1792,
+   "h": 2400
   },
   {
    "id": "floor_s",
    "title": "Типовой этаж (блоки 156, 159, 170, 173)",
    "img": "img/plans/floor_s.webp",
-   "w": 1170,
-   "h": 798
+   "w": 2400,
+   "h": 1637
   },
   {
    "id": "floor_l5",
    "title": "Типовой этаж (блоки 152–154)",
    "img": "img/plans/floor_l5.webp",
-   "w": 1085,
-   "h": 770
+   "w": 2400,
+   "h": 1703
   }
  ]
 }

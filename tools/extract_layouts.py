@@ -9,12 +9,13 @@ import pymupdf
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT_IMG = os.path.join(ROOT, "site", "img", "plans")
+OUT_IMG = os.environ.get("PLANS_OUT") or os.path.join(ROOT, "site", "img", "plans")
+SCALE = 4   # рендер в SCALE раз крупнее dpi из layout_jobs.json, чтобы планировки были чёткими
 JOBS = json.load(open(os.path.join(ROOT, "tools", "layout_jobs.json"), encoding="utf-8"))
 
 def prepare(src):
     page = pymupdf.open(os.path.join(ROOT, src["pdf"]))[src["page"] - 1]
-    pix = page.get_pixmap(dpi=src["dpi"], clip=pymupdf.Rect(*src["clip"]))
+    pix = page.get_pixmap(dpi=src["dpi"] * SCALE, clip=pymupdf.Rect(*src["clip"]))
     im = Image.frombytes("RGB", (pix.w, pix.h), pix.samples)
     if src["rotate"]:
         im = im.rotate(src["rotate"], expand=True, fillcolor="white", resample=Image.BICUBIC)
@@ -22,8 +23,8 @@ def prepare(src):
 
 def box_px(job, src):
     if "px" in job:
-        return job["px"]
-    s = src["dpi"] / 72
+        return [v * SCALE for v in job["px"]]
+    s = src["dpi"] * SCALE / 72
     cx, cy = src["clip"][:2]
     return [round((v - (cx if i % 2 == 0 else cy)) * s) for i, v in enumerate(job["pt"])]
 
@@ -47,15 +48,20 @@ def main():
             if area[2] > area[0] and area[3] > area[1]:
                 part = crop.crop(area)
                 crop.paste(Image.blend(part, Image.new("RGB", part.size, "white"), 0.78), area[:2])
-        w, h = save(crop, f"{job['id']}.webp", 1200)
-        plans.append({"id": job["id"], "rooms": job["rooms"], "area": job["area"], "img": f"img/plans/{job['id']}.webp", "w": w, "h": h})
+        w, h = save(crop, f"{job['id']}.webp", 1400)
+        os.makedirs(os.path.join(OUT_IMG, "thumb"), exist_ok=True)
+        save(crop, os.path.join("thumb", f"{job['id']}.webp"), 640)   # для карточек: лёгкая версия
+        plans.append({"id": job["id"], "rooms": job["rooms"], "area": job["area"], "img": f"img/plans/{job['id']}.webp",
+                      "thumb": f"img/plans/thumb/{job['id']}.webp", "w": w, "h": h})
         print("plan", job["id"], (w, h))
     for job in JOBS["floors"]:
         src = JOBS["sources"][job["src"]]
         crop = sources[job["src"]].crop(box_px(job, src))
-        w, h = save(crop, f"{job['id']}.webp", 1800)
+        w, h = save(crop, f"{job['id']}.webp", 2400)
         floors.append({"id": job["id"], "title": job["title"], "img": f"img/plans/{job['id']}.webp", "w": w, "h": h})
         print("floor", job["id"], (w, h))
+    if os.environ.get("PLANS_OUT"):
+        return
     json.dump({"plans": plans, "floors": floors}, open(os.path.join(ROOT, "site", "data", "plans.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 if __name__ == "__main__":

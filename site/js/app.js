@@ -118,25 +118,41 @@
   }
 
   // ---------- генплан ----------
+  // Картинка генплана (img/photos/genplan-crop.webp, 1984×722) — это часть полного плана CFG.genplanCrop.
+  // На телефоне показываем две обзорные части одну под другой, чтобы не листать вбок.
+  const GP = { w: 1984, h: 722, src: "img/photos/genplan-crop.webp" };
+  const GP_PARTS = {
+    wide: [{ box: [0, 0, 1984, 722] }],
+    phone: [{ title: "Лот 5 и Лот 6", box: [190, 150, 1080, 625] }, { title: "Лоты 7, 8, 14, 15, 16", box: [1090, 200, 1860, 610] }]
+  };
   function renderGenplan() {
-    const map = $("#genplan-map");
-    Object.entries(CFG.blocks).forEach(([b, blk]) => {
-      const n = state.blocksFree.get(b) || 0;
-      if (!n && /^(185|190)$/.test(b)) return;
-      const el = document.createElement("button");
-      el.className = "hot " + (n ? "has" : "none");
-      const [cx0, cy0, cx1, cy1] = CFG.genplanCrop;
-      el.style.left = ((blk.pos[0] - cx0) / (cx1 - cx0)) * 100 + "%";
-      el.style.top = ((blk.pos[1] - cy0) / (cy1 - cy0)) * 100 + "%";
-      el.dataset.block = b;
-      el.innerHTML = `${b}<span class="hot-tip">${n ? `свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "продано"}</span>`;
-      el.setAttribute("aria-label", `${blockName(b)}: ${n ? `свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "продано"}`);
-      if (n) el.addEventListener("click", () => { selectBlock(b); track("genplan_block", { block: b }); });
-      map.appendChild(el);
-    });
-    // на телефоне показываем сразу середину плана, где ваши блоки
-    const sc = $("#genplanScroll");
-    requestAnimationFrame(() => (sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) * 0.55));
+    const wrap = $("#genplanScroll");
+    const phone = window.matchMedia("(max-width: 899px)").matches;
+    const [cx0, cy0, cx1, cy1] = CFG.genplanCrop;
+    wrap.innerHTML = GP_PARTS[phone ? "phone" : "wide"].map((part, i) => {
+      const [x0, y0, x1, y1] = part.box, w = x1 - x0, h = y1 - y0;
+      const pins = Object.entries(CFG.blocks).map(([b, blk]) => {
+        const n = state.blocksFree.get(b) || 0;
+        if (!n && /^(185|190)$/.test(b)) return "";
+        const x = ((blk.pos[0] - cx0) / (cx1 - cx0)) * GP.w, y = ((blk.pos[1] - cy0) / (cy1 - cy0)) * GP.h;
+        if (x < x0 || x > x1 || y < y0 || y > y1) return "";
+        const txt = n ? `свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "продано";
+        return `<button class="hot ${n ? "has" : "none"}${state.block === b ? " sel" : ""}" data-block="${b}" style="left:${((x - x0) / w) * 100}%;top:${((y - y0) / h) * 100}%"
+          aria-label="${blockName(b)}: ${txt}">${b}<span class="hot-tip">${txt}</span></button>`;
+      }).join("");
+      return `${part.title ? `<p class="gp-title">${part.title}</p>` : ""}
+        <div class="genplan" style="aspect-ratio:${w}/${h}">
+          <img src="${GP.src}" alt="${i ? "" : "Генеральный план Osh City"}" loading="lazy" width="${GP.w}" height="${GP.h}"
+            style="width:${(GP.w / w) * 100}%;left:${(-x0 / w) * 100}%;top:${(-y0 / h) * 100}%">${pins}</div>`;
+    }).join("");
+    if (!renderGenplan.bound) {
+      renderGenplan.bound = true;
+      wrap.addEventListener("click", (e) => {
+        const el = e.target.closest(".hot.has");
+        if (el) { selectBlock(el.dataset.block); track("genplan_block", { block: el.dataset.block }); }
+      });
+      window.matchMedia("(max-width: 899px)").addEventListener("change", renderGenplan);
+    }
   }
 
   // ---------- выбранный блок и список ----------
@@ -198,7 +214,7 @@
     const on = state.cmp.includes(a.id);
     return `<article class="card" data-id="${a.id}" tabindex="0" aria-label="${roomsLabel(a.r)} ${fmtArea(a.a)} м², ${fmt(a.q.monthly)} сом в месяц">
       <div class="card-plan">
-        ${a.layout ? `<img loading="lazy" decoding="async" src="${a.layout.img}" alt="Планировка ${fmtArea(a.a)} м²" width="${a.layout.w}" height="${a.layout.h}">` : `<span class="card-meta">Планировка по запросу</span>`}
+        ${a.layout ? `<img loading="lazy" decoding="async" src="${a.layout.thumb || a.layout.img}" alt="Планировка ${fmtArea(a.a)} м²" width="${a.layout.w}" height="${a.layout.h}">` : `<span class="card-meta">Планировка по запросу</span>`}
         <span class="card-tag">${roomsLabel(a.r)}</span>
         ${cheapest ? `<span class="card-tag cheap">лучшая цена</span>` : a.new ? `<span class="card-tag cheap">новинка</span>` : ""}
         <button class="fav-btn ${state.fav.includes(a.id) ? "on" : ""}" data-fav="${a.id}" aria-label="${state.fav.includes(a.id) ? "Убрать из избранного" : "В избранное"}" aria-pressed="${state.fav.includes(a.id)}">
@@ -336,7 +352,7 @@
     const list = state.recent.map((id) => state.byId.get(id)).filter(Boolean);
     if (!list.length) { box.hidden = true; return; }
     $("#recentList").innerHTML = list.map((a) => `<button class="mini" data-open="${a.id}">
-      ${a.layout ? `<img src="${a.layout.img}" alt="" loading="lazy">` : ""}
+      ${a.layout ? `<img src="${a.layout.thumb || a.layout.img}" alt="" loading="lazy">` : ""}
       <b>${fmtArea(a.a)} м² · ${a.f} эт.</b><span>${fmt(a.q.monthly)} сом/мес</span></button>`).join("");
     box.hidden = false;
   }
@@ -380,7 +396,7 @@
     };
     const bMonth = best((a) => a.q.monthly), bArea = best((a) => a.a, false), bTotal = best((a) => a.q.total), bPpm = best((a) => a.q.ppm);
     const cols = list.map((a) => `<div class="cmp-col">
-      <div class="card-plan">${a.layout ? `<img src="${a.layout.img}" alt="Планировка ${fmtArea(a.a)} м²">` : ""}</div>
+      <div class="card-plan">${a.layout ? `<img src="${a.layout.thumb || a.layout.img}" alt="Планировка ${fmtArea(a.a)} м²">` : ""}</div>
       <div class="cmp-rows">
         <div><span>Комнат</span><b>${a.r}</b></div>
         <div><span>Площадь</span><b class="${bArea(a)}">${fmtArea(a.a)} м²</b></div>
@@ -432,7 +448,8 @@
           <p>${a.f} этаж · подъезд ${a.p} · квартира №${a.n}</p>
         </div>
         <div style="margin-top:14px">
-          ${fp ? `<div class="tabs" role="tablist"><button class="on" data-tab="plan" role="tab">Планировка</button><button data-tab="floor" role="tab">На этаже</button></div>` : ""}
+          ${lay ? `<div class="tabs" role="tablist"><button class="on" data-tab="plan" role="tab">Планировка</button>${fp ? `<button data-tab="floor" role="tab">На этаже</button>` : ""}</div>` : ""}
+          <div class="flat-3d" hidden></div>
           <div class="flat-plan" data-zoom="${lay ? lay.img : ""}">
             ${lay ? `<span class="fp-wrap"><img src="${lay.img}" alt="Планировка квартиры ${fmtArea(a.a)} м²" data-plan="${lay.img}" data-floor="${fp ? fp.img : ""}">${spotHtml(a)}</span>` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
             ${lay ? `<span class="zoom-ico">Увеличить</span>` : ""}
@@ -504,14 +521,27 @@
     refresh();
     wa.addEventListener("click", () => track("whatsapp", { flat: a.id, area: a.a, monthly: q.monthly }));
     $("#fDown").addEventListener("input", (e) => { q = Calc.quote(a, CFG, { down: +e.target.value }); refresh(); });
-    $$("[data-tab]", body).forEach((t) => t.addEventListener("click", () => {
+    const showTab = (t) => {
       $$("[data-tab]", body).forEach((x) => x.classList.toggle("on", x === t));
+      const is3d = t.dataset.tab === "3d";
+      $(".flat-3d", body).hidden = !is3d;
+      $(".flat-plan", body).hidden = is3d;
+      if (is3d) { View3D.open($(".flat-3d", body), a.layout.id); track("view_3d", { flat: a.id }); return; }
+      View3D.dispose();
       const img = $("[data-plan]", body);
       const src = t.dataset.tab === "floor" ? img.dataset.floor : img.dataset.plan;
       img.src = src; $(".flat-plan", body).dataset.zoom = src;
       const spot = $(".fp-spot", body);
       if (spot) spot.hidden = t.dataset.tab !== "floor";
-    }));
+    };
+    $(".tabs", body) && $(".tabs", body).addEventListener("click", (e) => { const t = e.target.closest("[data-tab]"); if (t) showTab(t); });
+    // 3D-вкладка первой: сначала эмоция, потом чертёж
+    if (a.layout && window.View3D) View3D.has(a.layout.id).then((ok) => {
+      const tabs = $(".tabs", body);
+      if (!ok || !tabs || !tabs.isConnected) return;
+      tabs.insertAdjacentHTML("afterbegin", `<button data-tab="3d" role="tab">3D</button>`);
+      showTab($("[data-tab='3d']", tabs));
+    });
     const plan = $(".flat-plan", body);
     if (plan.dataset.zoom) plan.addEventListener("click", () => openZoom(plan.dataset.zoom));
     $("#flatPdf").addEventListener("click", () => { $(".sched", body).open = true; track("pdf", { flat: a.id }); setTimeout(() => window.print(), 50); });
@@ -541,6 +571,7 @@
   function closeSheet() {
     const sheet = $("#sheet");
     if (!sheet.classList.contains("open")) return;
+    window.View3D && View3D.dispose();
     sheet.classList.remove("open"); sheet.setAttribute("aria-hidden", "true");
     document.documentElement.style.overflow = "";
     if (location.hash.startsWith("#/")) history.replaceState(null, "", location.pathname + location.search);
@@ -769,7 +800,30 @@
     return many;
   }
 
+  // главный экран: живые фото комплекса сменяют друг друга (сначала эмоция)
+  function heroSlides() {
+    const slides = $$(".hero-slide");
+    if (slides.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const cap = $(".hero-cap span"), bar = $(".hero-cap i");
+    const load = (p) => p.querySelectorAll("[data-src],[data-srcset]").forEach((el) => {
+      if (el.dataset.srcset) { el.srcset = el.dataset.srcset; el.removeAttribute("data-srcset"); }
+      if (el.dataset.src) { el.src = el.dataset.src; el.removeAttribute("data-src"); }
+    });
+    let i = 0;
+    setTimeout(() => slides.forEach(load), 2500);
+    setInterval(() => {
+      if (document.hidden) return;
+      slides[i].classList.remove("on");
+      i = (i + 1) % slides.length;
+      load(slides[i]);
+      slides[i].classList.add("on");
+      cap.textContent = slides[i].dataset.cap;
+      bar.style.animation = "none"; void bar.offsetWidth; bar.style.animation = "";
+    }, 6000);
+  }
+
   function bindExtras() {
+    heroSlides();
     const big = $("#bigFont");
     let on = false;
     try { on = localStorage.getItem("oc_big") === "1"; } catch (e) { /* ничего */ }
@@ -826,7 +880,7 @@
     $$(".facts .count").forEach((el) => ScrollTrigger.create({ trigger: el, start: "top 90%", once: true, onEnter: () => animateCount(el) }));
     gsap.from(".g-item", { scrollTrigger: { trigger: ".gallery", start: "top 85%" }, x: 80, opacity: 0, duration: .9, stagger: .08, ease: "power3.out" });
     gsap.from(".c-photo", { scrollTrigger: { trigger: "#clientPhotos", start: "top 88%" }, y: 40, opacity: 0, duration: .7, stagger: .03, ease: "power3.out" });
-    gsap.from(".hot", { scrollTrigger: { trigger: "#genplan-map", start: "top 75%" }, scale: 0, opacity: 0, duration: .5, stagger: .02, ease: "back.out(2)" });
+    gsap.from(".hot", { scrollTrigger: { trigger: "#genplanScroll", start: "top 75%" }, scale: 0, opacity: 0, duration: .5, stagger: .02, ease: "back.out(2)" });
   }
 
   // ---------- старт ----------
