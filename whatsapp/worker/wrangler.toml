@@ -1,0 +1,22 @@
+name = "oshcity-whatsapp"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+# Каждый клиент — отдельный Durable Object: история разговора, анкета, пауза.
+[[durable_objects.bindings]]
+name = "CHAT"
+class_name = "Chat"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Chat"]
+
+[vars]
+MODEL = "claude-opus-5-5"
+EFFORT = "low"          # low / medium / high — глубже думает, но дороже и медленнее
+PAUSE_HOURS = "12"      # сколько бот молчит в чате после того, как вы сами написали клиенту
+WA_PHONE_NUMBER_ID = "" # Phone number ID из WhatsApp Manager / провайдера
+TG_CHAT_ID = ""         # ваш chat id в Telegram (см. ИНСТРУКЦИЯ.md)
+
+# Секреты задаются командой `npx wrangler secret put ИМЯ` (не в этом файле):
+# ANTHROPIC_API_KEY, WA_TOKEN, WA_APP_SECRET, WA_VERIFY_TOKEN, TG_TOKEN, TG_SECRET, SHEET_URL

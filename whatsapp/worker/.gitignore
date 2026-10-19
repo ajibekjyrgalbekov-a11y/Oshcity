@@ -1,0 +1,5 @@
+node_modules/
+src/generated.js
+.dev.vars
+.wrangler/
+dist/

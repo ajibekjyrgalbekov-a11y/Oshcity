@@ -2,7 +2,8 @@
 const fs = require("fs"), assert = require("assert");
 const sheets = {}, mails = [];
 const mkSheet = (n) => (sheets[n] = sheets[n] || { rows: [], appendRow(r) { this.rows.push(r); }, getLastRow() { return this.rows.length; },
-  getRange() { return { setFontWeight() { return this; }, setBackground() { return this; }, setFontColor() { return this; }, setValue() { return this; }, setFormula() { return this; }, setFontSize() { return this; } }; },
+  getDataRange() { return { getValues: () => this.rows }; },
+  getRange(r) { const sh = this; return { setValues(v) { sh.rows[r - 1] = v[0]; return this; }, setFontWeight() { return this; }, setBackground() { return this; }, setFontColor() { return this; }, setValue() { return this; }, setFormula() { return this; }, setFontSize() { return this; } }; },
   setFrozenRows() {}, clear() {}, setColumnWidths() {} });
 global.SpreadsheetApp = { getActive: () => ({ getSheetByName: (n) => sheets[n], insertSheet: (n) => mkSheet(n) }) };
 global.LockService = { getScriptLock: () => ({ tryLock() {}, releaseLock() {} }) };
@@ -17,4 +18,14 @@ assert.strictEqual(sheets["События"].rows[1][5], "156/1");
 assert.strictEqual(sheets["Заявки"].rows[1][1][0], "'");              // защита от формул
 assert.strictEqual(sheets["Заявки"].rows[1][4], "https://x.github.io/oshcity/#/kv/160-1-17-5");
 assert.ok(mails[0][2].includes("wa.me/996555123456"));
+// WhatsApp-ассистент: строка на клиента, повторная запись обновляет её
+doPost({ postData: { contents: JSON.stringify({ type: "wa", wa: "996555123456", name: "Айбек", rooms: 2, status: "новый" }) } });
+doPost({ postData: { contents: JSON.stringify({ type: "wa", wa: "996700000001", name: "Нурай", status: "новый" }) } });
+doPost({ postData: { contents: JSON.stringify({ type: "wa", wa: "996555123456", name: "Айбек", rooms: 2, status: "встреча2", meeting: "вт 11:00" }) } });
+const wa = sheets["WhatsApp"].rows;
+assert.strictEqual(wa.length, 3);
+assert.strictEqual(wa[1][8], "встреча2");
+assert.strictEqual(wa[1][10], "вт 11:00");
+assert.strictEqual(wa[1][2], "'+996555123456");
+assert.strictEqual(wa[1][12], "https://wa.me/996555123456");
 console.log("apps script tests passed");

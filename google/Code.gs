@@ -5,6 +5,7 @@
  */
 
 const NOTIFY_EMAIL = ""; // пусто = письма приходят на ваш Gmail (владельца таблицы)
+const WA_HEADER = ["Обновлено", "Имя", "WhatsApp", "Доп. телефон", "Комнат", "Взнос", "Бюджет", "В месяц до", "Список", "Квартиры", "Встреча", "Заметки", "Чат"];
 
 function setup() {
   const ss = SpreadsheetApp.getActive();
@@ -19,6 +20,7 @@ function setup() {
   };
   sheet("События", ["Время", "Действие", "Квартира", "Площадь", "В месяц", "Блок", "Бюджет", "Устройство", "Откуда пришёл"]);
   sheet("Заявки", ["Время", "Имя", "Телефон", "Квартира", "Ссылка", "Статус"]);
+  sheet("WhatsApp", WA_HEADER);
 
   const sum = ss.getSheetByName("Сводка") || ss.insertSheet("Сводка", 0);
   sum.clear();
@@ -46,7 +48,19 @@ function doPost(e) {
     const ss = SpreadsheetApp.getActive();
     const when = d.ts ? new Date(d.ts) : new Date();
     const clean = (v) => String(v == null ? "" : v).slice(0, 200).replace(/^[=+\-@]/, "'$&");
-    if (d.type === "lead") {
+    if (d.type === "wa") {
+      // AI-ассистент WhatsApp: одна строка на клиента, обновляется по номеру
+      const sh = ss.getSheetByName("WhatsApp") || ss.insertSheet("WhatsApp");
+      if (sh.getLastRow() === 0) sh.appendRow(WA_HEADER);
+      const wa = String(d.wa || "").replace(/\D/g, "");
+      const row = [when, clean(d.name), clean("+" + wa), clean(d.phone), clean(d.rooms), clean(d.down), clean(d.budget), clean(d.monthly),
+        clean(d.status), clean(d.flats), clean(d.meeting), clean(d.notes), "https://wa.me/" + wa];
+      const rows = sh.getDataRange().getValues();
+      let at = -1;
+      for (let i = 1; i < rows.length; i++) if (String(rows[i][2]).replace(/\D/g, "") === wa) at = i;
+      if (at > 0) sh.getRange(at + 1, 1, 1, row.length).setValues([row]);
+      else sh.appendRow(row);
+    } else if (d.type === "lead") {
       const link = d.flat ? (d.site || "") + "#/kv/" + d.flat : "";
       ss.getSheetByName("Заявки").appendRow([when, clean(d.name), clean(d.phone), clean(d.flat), clean(link), "новая"]);
       const to = NOTIFY_EMAIL || Session.getEffectiveUser().getEmail();
