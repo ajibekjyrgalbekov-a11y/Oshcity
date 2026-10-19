@@ -68,3 +68,54 @@ function doPost(e) {
 function doGet() {
   return ContentService.createTextOutput("Osh City: скрипт работает");
 }
+
+/* ============ Еженедельный отчёт на Gmail ============
+ * Один раз запустите setupWeeklyReport() — письмо будет приходить каждый понедельник в 9:00 (Бишкек).
+ * Проверить сразу: запустите weeklyReport() вручную.
+ */
+function setupWeeklyReport() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === "weeklyReport") ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger("weeklyReport").timeBased().onWeekDay(ScriptApp.WeekDay.MONDAY).atHour(9)
+    .inTimezone("Asia/Bishkek").create();
+}
+
+function weeklyReport() {
+  const ss = SpreadsheetApp.getActive();
+  const since = new Date(Date.now() - 7 * 24 * 3600 * 1000);
+  const rows = (ss.getSheetByName("События").getDataRange().getValues() || []).slice(1)
+    .filter(function (r) { return r[0] instanceof Date && r[0] >= since; });
+  const leads = (ss.getSheetByName("Заявки").getDataRange().getValues() || []).slice(1)
+    .filter(function (r) { return r[0] instanceof Date && r[0] >= since; });
+  const count = function (pred) { return rows.filter(pred).length; };
+  const top = function (col, action, n) {
+    const m = {};
+    rows.forEach(function (r) { if (r[1] === action && r[col]) m[r[col]] = (m[r[col]] || 0) + 1; });
+    return Object.keys(m).map(function (k) { return [k, m[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, n);
+  };
+  const visits = count(function (r) { return r[1] === "visit"; });
+  const views = count(function (r) { return r[1] === "view_flat"; });
+  const wa = count(function (r) { return String(r[1]).indexOf("whatsapp") === 0; });
+  const favs = count(function (r) { return r[1] === "fav_send"; });
+  const phones = count(function (r) { return r[3] === "телефон" || r[7] === "телефон"; });
+  const site = "https://ajibekjyrgalbekov-a11y.github.io/Oshcity/#/kv/";
+  const li = function (list, link) {
+    return list.length ? "<ol>" + list.map(function (x) {
+      return "<li>" + (link ? '<a href="' + site + x[0] + '">' + x[0] + "</a>" : x[0]) + " — " + x[1] + "</li>";
+    }).join("") + "</ol>" : "<p>пока нет данных</p>";
+  };
+  const html =
+    "<h2>Osh City — неделя на сайте</h2>" +
+    "<p><b>" + visits + "</b> заходов · <b>" + views + "</b> просмотров квартир · <b>" + wa + "</b> нажатий WhatsApp · <b>" +
+    favs + "</b> отправленных подборок · <b>" + leads.length + "</b> заявок «Перезвоните»</p>" +
+    "<h3>Самые просматриваемые квартиры</h3>" + li(top(2, "view_flat", 10), true) +
+    "<h3>Популярные блоки</h3>" + li(top(5, "view_flat", 8), false) +
+    "<h3>Чаще выбирали на генплане</h3>" + li(top(5, "genplan_block", 8), false) +
+    "<h3>Заявки за неделю</h3>" + (leads.length ? "<ul>" + leads.map(function (r) {
+      return "<li>" + Utilities.formatDate(r[0], "Asia/Bishkek", "dd.MM HH:mm") + " — " + r[1] + ", " + r[2] + (r[3] ? " (кв. " + r[3] + ")" : "") + "</li>";
+    }).join("") + "</ul>" : "<p>нет</p>") +
+    '<p style="color:#888">Подробно — в таблице: ' + ss.getUrl() + "</p>";
+  const to = NOTIFY_EMAIL || Session.getEffectiveUser().getEmail();
+  MailApp.sendEmail({ to: to, subject: "Osh City: отчёт за неделю — " + views + " просмотров, " + wa + " WhatsApp", htmlBody: html });
+}

@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Osh City</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  // Ссылка на квартиру, которую уже продали (её страничка удалена) → открываем сайт на этой квартире:
+  // сайт покажет «уже продана» и похожие варианты в том же блоке.
+  (function () {
+    var m = location.pathname.match(/^(.*\/)kv\/([\w-]+)\.html$/);
+    var base = m ? m[1] : location.pathname.replace(/[^/]*$/, "");
+    location.replace(base + (m ? "#/kv/" + m[2] : ""));
+  })();
+</script>
+</head><body><a href="./">Osh City</a></body></html>

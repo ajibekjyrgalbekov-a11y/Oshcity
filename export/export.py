@@ -65,6 +65,77 @@ def log(msg):
         f.write(line + "\n")
 
 
+def site_config():
+    """Нужное из site/js/config.js: адрес сайта, цены, рассрочка, тип блоков, планировки."""
+    src = open(CONFIG_JS, encoding="utf-8").read()
+    cfg = {
+        "site": re.search(r'siteUrl:\s*"([^"]*)"', src).group(1),
+        "rules": [(int(a), int(b)) for a, b in re.findall(r"maxFloor:\s*(\d+),\s*price:\s*(\d+)", src)],
+        "down": int(re.search(r"downPayment:\s*(\d+)", src).group(1)),
+        "months": int(re.search(r"months:\s*(\d+)", src).group(1)),
+        "types": dict(re.findall(r'"([\d/]+)":\s*\{\s*lot:\s*"\d+",\s*type:\s*"(\w+)"', src)),
+        "layouts": {},
+    }
+    for t in ("k", "s", "l5"):
+        m = re.search(t + r":\s*\{([^}]*)\}", src.split("layouts:", 1)[1])
+        cfg["layouts"][t] = dict(re.findall(r'"?([\d.]+)"?:\s*"(\w+)"', m.group(1)))
+    return cfg
+
+
+def quote(a, cfg):
+    """Тот же расчёт, что в site/js/calc.js (целые сомы)."""
+    ppm = next((p for mx, p in cfg["rules"] if a["f"] <= mx), cfg["rules"][-1][1])
+    total = round(round(a["a"] * 100) * ppm / 100)
+    rest = max(total - cfg["down"], 0)
+    return total, rest // cfg["months"]
+
+
+def fmt(n):
+    return f"{n:,}".replace(",", " ")
+
+
+SHARE_TMPL = """<!doctype html><html lang="ky"><head><meta charset="utf-8">
+<title>{title}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Osh City · Ажибек">
+<meta property="og:title" content="{title}"><meta property="og:description" content="{desc}">
+<meta property="og:image" content="{img}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:url" content="{url}"><meta name="twitter:card" content="summary_large_image">
+<meta http-equiv="refresh" content="0; url={target}"><script>location.replace({target_js});</script>
+</head><body><a href="{target}">{title}</a></body></html>
+"""
+ROOMS_KG = {1: "1 бөлмөлүү", 2: "2 бөлмөлүү", 3: "3 бөлмөлүү", 4: "4 бөлмөлүү"}
+
+
+def write_share_pages(free_rows):
+    """site/kv/<id>.html — у каждой свободной квартиры своя ссылка с превью для WhatsApp/Telegram."""
+    cfg = site_config()
+    base = cfg["site"].rstrip("/") + "/"
+    kv = os.path.join(SITE_DATA, "..", "kv")
+    os.makedirs(kv, exist_ok=True)
+    keep = set()
+    for a in free_rows:
+        fid = f'{a["b"].replace("/", "_")}-{a["p"]}-{a["f"]}-{a["n"]}'
+        t = cfg["types"].get(a["b"], "k")
+        key = f'{a["a"]:.2f}' if t == "k" else str(a["n"])
+        lay = cfg["layouts"].get(t, {}).get(key)
+        total, monthly = quote(a, cfg)
+        area = f'{a["a"]:.2f}'.rstrip("0").rstrip(".").replace(".", ",")
+        title = f'{ROOMS_KG.get(a["r"], "")} батир {area} м² · {a["f"]}-кабат — {fmt(monthly)} сом/ай'
+        desc = f'Osh City, {a["b"]}-блок. Бөлүп төлөө пайызсыз, {cfg["months"]} айга, баштапкы төлөм {fmt(cfg["down"])} сомдон. Менеджер Ажибек.'
+        img = base + f"img/og/{lay or 'main'}.jpg"
+        target = base + f"#/kv/{fid}"
+        html = SHARE_TMPL.format(title=title, desc=desc, img=img, url=base + f"kv/{fid}.html", target=target, target_js=json.dumps(target))
+        fn = fid + ".html"; keep.add(fn)
+        path = os.path.join(kv, fn)
+        if not os.path.exists(path) or open(path, encoding="utf-8").read() != html:
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(html)
+    for fn in os.listdir(kv):          # проданные — убираем; 404.html отправит такую ссылку на сайт
+        if fn.endswith(".html") and fn not in keep:
+            os.remove(os.path.join(kv, fn))
+
+
 def write_site_data(rows, updated):
     """Публичные файлы сайта: по одному файлу на блок, только свободные квартиры."""
     blocks_dir = os.path.join(SITE_DATA, "blocks")
@@ -86,6 +157,7 @@ def write_site_data(rows, updated):
         order = sorted(by_block, key=lambda b: (int(re.match(r"\d+", b).group()), b))
         json.dump({"updated": updated, "blocks": {b: len(by_block[b]) for b in order}},
                   f, ensure_ascii=False, separators=(",", ":"))
+    write_share_pages([a for a in rows if a["s"] == "free"])
 
 
 def login():

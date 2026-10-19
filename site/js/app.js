@@ -13,7 +13,7 @@
   const state = {
     blocksFree: new Map(), loaded: new Map(), byId: new Map(), plans: new Map(), floors: new Map(),
     block: null, filter: { rooms: 0, budget: Infinity, floor: "", sort: "month" },
-    shown: PAGE, list: [], cmp: loadCmp(), updated: ""
+    shown: PAGE, list: [], cmp: loadCmp(), fav: loadList("oc_fav"), recent: loadList("oc_recent"), updated: ""
   };
 
   // ---------- данные ----------
@@ -86,7 +86,7 @@
 
   // ---------- WhatsApp ----------
   const siteBase = () => CFG.siteUrl || location.origin + location.pathname;
-  const flatLink = (a) => `${siteBase()}#/kv/${a.id}`;
+  const flatLink = (a) => `${siteBase()}kv/${a.id}.html`;   // страница с превью для WhatsApp, сразу открывает квартиру
   function waText(a) {
     if (!a) return "Здравствуйте! Интересуют квартиры в Osh City. Подскажите, пожалуйста, по наличию и рассрочке.";
     return `Здравствуйте! Интересует квартира в Osh City:\n` +
@@ -201,6 +201,8 @@
         ${a.layout ? `<img loading="lazy" decoding="async" src="${a.layout.img}" alt="Планировка ${fmtArea(a.a)} м²" width="${a.layout.w}" height="${a.layout.h}">` : `<span class="card-meta">Планировка по запросу</span>`}
         <span class="card-tag">${roomsLabel(a.r)}</span>
         ${cheapest ? `<span class="card-tag cheap">лучшая цена</span>` : a.new ? `<span class="card-tag cheap">новинка</span>` : ""}
+        <button class="fav-btn ${state.fav.includes(a.id) ? "on" : ""}" data-fav="${a.id}" aria-label="${state.fav.includes(a.id) ? "Убрать из избранного" : "В избранное"}" aria-pressed="${state.fav.includes(a.id)}">
+          <svg class="ico"><use href="#i-heart"/></svg></button>
         <button class="cmp-btn ${on ? "on" : ""}" data-cmp="${a.id}" aria-label="${on ? "Убрать из сравнения" : "Добавить к сравнению"}" aria-pressed="${on}">
           <svg class="ico"><use href="#${on ? "i-check" : "i-plus"}"/></svg></button>
       </div>
@@ -269,6 +271,8 @@
     $("#cards").addEventListener("click", (e) => {
       const cmp = e.target.closest("[data-cmp]");
       if (cmp) { e.stopPropagation(); toggleCmp(cmp.dataset.cmp); return; }
+      const fav = e.target.closest("[data-fav]");
+      if (fav) { e.stopPropagation(); toggleFav(fav.dataset.fav); return; }
       const card = e.target.closest(".card");
       if (card) location.hash = `#/kv/${card.dataset.id}`;
     });
@@ -276,6 +280,65 @@
       const card = e.target.closest(".card");
       if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); location.hash = `#/kv/${card.dataset.id}`; }
     });
+  }
+
+  // ---------- избранное и недавно просмотренные ----------
+  function loadList(key) {
+    try { return JSON.parse(localStorage.getItem(key) || "[]"); } catch (e) { return []; }
+  }
+  function saveList(key, list) {
+    try { localStorage.setItem(key, JSON.stringify(list)); } catch (e) { /* приватный режим */ }
+  }
+  function saveFav() {
+    saveList("oc_fav", state.fav);
+    const b = $("#favBadge");
+    b.textContent = state.fav.length; b.hidden = !state.fav.length;
+  }
+  function toggleFav(id) {
+    const i = state.fav.indexOf(id);
+    if (i >= 0) state.fav.splice(i, 1);
+    else {
+      state.fav.unshift(id);
+      if (state.fav.length > 12) state.fav.pop();
+      track("fav_add", { flat: id });
+      toast("Добавлено в избранное ❤ — отправьте подборку менеджеру");
+    }
+    saveFav();
+    $$(`[data-fav="${id}"]`).forEach((btn) => {
+      const on = state.fav.includes(id);
+      btn.classList.toggle("on", on); btn.setAttribute("aria-pressed", on);
+      if (btn.classList.contains("btn")) btn.innerHTML = `<svg class="ico"><use href="#i-heart"/></svg>${on ? "В избранном" : "В избранное"}`;
+    });
+    if (location.hash.startsWith("#/fav")) $("#sheetBody").innerHTML = renderFav();
+  }
+  function renderFav() {
+    const list = state.fav.map((id) => state.byId.get(id)).filter(Boolean);
+    if (!list.length) {
+      return `<div class="flat-head"><h3 id="sheetTitle">Избранное</h3><p>Нажимайте ♡ на карточках квартир — понравившиеся соберутся здесь, и вы отправите подборку менеджеру одним сообщением.</p></div>
+        <p><a class="btn btn-gold" href="#genplan" data-close-go>Выбрать квартиры</a></p>`;
+    }
+    const text = "Здравствуйте, Ажибек! Мне понравились эти квартиры в Osh City:\n" +
+      list.map((a, i) => `${i + 1}) ${roomsLabel(a.r)} ${fmtArea(a.a)} м², блок ${a.b}, ${a.f} этаж, кв. №${a.n} — ${fmt(a.q.monthly)} сом/мес\n${flatLink(a)}`).join("\n") +
+      "\nПодскажите, пожалуйста, по ним.";
+    return `<div class="flat-head"><h3 id="sheetTitle">Избранное · ${list.length}</h3><p>Отправьте подборку — Ажибек сразу увидит, что вам понравилось, и подготовит расчёт.</p></div>
+      <div class="actions" style="margin:14px 0"><a class="btn btn-wa" target="_blank" rel="noopener" href="${waHref(text)}" data-track="fav_send">
+        <svg class="ico"><use href="#i-wa"/></svg>Отправить подборку Ажибеку</a></div>
+      <div class="cards">${list.map(cardHtml).join("")}</div>`;
+  }
+  function pushRecent(id) {
+    state.recent = [id, ...state.recent.filter((x) => x !== id)].slice(0, 8);
+    saveList("oc_recent", state.recent);
+  }
+  async function renderRecent() {
+    const box = $("#recentBox");
+    if (!state.recent.length) { box.hidden = true; return; }
+    await loadBlocksFor(state.recent);
+    const list = state.recent.map((id) => state.byId.get(id)).filter(Boolean);
+    if (!list.length) { box.hidden = true; return; }
+    $("#recentList").innerHTML = list.map((a) => `<button class="mini" data-open="${a.id}">
+      ${a.layout ? `<img src="${a.layout.img}" alt="" loading="lazy">` : ""}
+      <b>${fmtArea(a.a)} м² · ${a.f} эт.</b><span>${fmt(a.q.monthly)} сом/мес</span></button>`).join("");
+    box.hidden = false;
   }
 
   // ---------- сравнение ----------
@@ -371,7 +434,7 @@
         <div style="margin-top:14px">
           ${fp ? `<div class="tabs" role="tablist"><button class="on" data-tab="plan" role="tab">Планировка</button><button data-tab="floor" role="tab">На этаже</button></div>` : ""}
           <div class="flat-plan" data-zoom="${lay ? lay.img : ""}">
-            ${lay ? `<img src="${lay.img}" alt="Планировка квартиры ${fmtArea(a.a)} м²" data-plan="${lay.img}" data-floor="${fp ? fp.img : ""}">` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
+            ${lay ? `<span class="fp-wrap"><img src="${lay.img}" alt="Планировка квартиры ${fmtArea(a.a)} м²" data-plan="${lay.img}" data-floor="${fp ? fp.img : ""}">${spotHtml(a)}</span>` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
             ${lay ? `<span class="zoom-ico">Увеличить</span>` : ""}
           </div>
         </div>
@@ -396,11 +459,22 @@
           <a class="btn btn-wa" id="flatWa" target="_blank" rel="noopener"><svg class="ico"><use href="#i-wa"/></svg>Написать в WhatsApp</a>
           <button class="btn btn-outline ${state.cmp.includes(a.id) ? "on" : ""}" data-cmp="${a.id}">${state.cmp.includes(a.id) ? "✓ В сравнении" : "+ Сравнить"}</button>
           <button class="btn btn-outline" data-share="${flatLink(a)}" data-share-title="${roomsLabel(a.r)} ${fmtArea(a.a)} м² — Osh City"><svg class="ico"><use href="#i-share"/></svg>Поделиться</button>
+          <button class="btn btn-outline ${state.fav.includes(a.id) ? "on" : ""}" data-fav="${a.id}"><svg class="ico"><use href="#i-heart"/></svg>${state.fav.includes(a.id) ? "В избранном" : "В избранное"}</button>
           <button class="btn btn-outline" id="flatPdf">PDF-расчёт</button>
           <button class="btn btn-outline" id="flatCall">Перезвоните</button>
         </div>
+        <p class="passport"><svg class="ico"><use href="#i-check"/></svg>Для оформления нужен только паспорт</p>
       </div>
     </div>`;
+  }
+
+  // подсветка квартиры на плане этажа (видна на вкладке «На этаже»)
+  function spotHtml(a) {
+    const blk = CFG.blocks[a.b];
+    const spot = blk && CFG.floorSpots && CFG.floorSpots[blk.type] && CFG.floorSpots[blk.type][a.n];
+    if (!spot) return "";
+    const [l, t, w, h] = spot;
+    return `<i class="fp-spot" hidden style="left:${l}%;top:${t}%;width:${w}%;height:${h}%"><em>Ваша квартира</em></i>`;
   }
 
   function scheduleHtml(q) {
@@ -435,6 +509,8 @@
       const img = $("[data-plan]", body);
       const src = t.dataset.tab === "floor" ? img.dataset.floor : img.dataset.plan;
       img.src = src; $(".flat-plan", body).dataset.zoom = src;
+      const spot = $(".fp-spot", body);
+      if (spot) spot.hidden = t.dataset.tab !== "floor";
     }));
     const plan = $(".flat-plan", body);
     if (plan.dataset.zoom) plan.addEventListener("click", () => openZoom(plan.dataset.zoom));
@@ -469,6 +545,7 @@
     document.documentElement.style.overflow = "";
     if (location.hash.startsWith("#/")) history.replaceState(null, "", location.pathname + location.search);
     lastFocus && lastFocus.focus && lastFocus.focus({ preventScroll: true });
+    renderRecent();
   }
 
   async function route() {
@@ -478,6 +555,7 @@
       await loadBlock(blockOf(id));
       const a = state.byId.get(id);
       openSheet(renderFlat(id), () => bindFlat(a));
+      if (a && a.s === "free") pushRecent(id);
       track(a && a.s === "free" ? "view_flat" : "view_sold", { flat: id, area: a ? a.a : "", monthly: a ? a.q.monthly : "" });
     } else if (h.startsWith("#/compare")) {
       const ids = h.length > 10 ? h.slice(10).split(",") : state.cmp;
@@ -485,8 +563,13 @@
       if (h.length > 10) { state.cmp = ids.filter((id) => state.byId.has(id)).slice(0, MAX_CMP); saveCmp(); }
       openSheet(renderCompare(state.cmp));
       track("view_compare", { flats: state.cmp.join(",") });
+    } else if (h.startsWith("#/fav")) {
+      await loadBlocksFor(state.fav);
+      openSheet(renderFav());
+      track("view_fav", { flats: state.fav.join(",") });
     } else {
       closeSheet();
+      renderRecent();
     }
   }
 
@@ -497,6 +580,8 @@
       if (go) { e.preventDefault(); closeSheet(); $("#flats").scrollIntoView({ behavior: "smooth" }); return; }
       const cmp = e.target.closest("[data-cmp]");
       if (cmp) { toggleCmp(cmp.dataset.cmp); return; }
+      const fav = e.target.closest("[data-fav]");
+      if (fav) { toggleFav(fav.dataset.fav); return; }
       const rm = e.target.closest("[data-cmp-remove]");
       if (rm) { toggleCmp(rm.dataset.cmpRemove); $("#sheetBody").innerHTML = renderCompare(state.cmp); return; }
       const sh = e.target.closest("[data-share]");
@@ -684,6 +769,31 @@
     return many;
   }
 
+  function bindExtras() {
+    const big = $("#bigFont");
+    let on = false;
+    try { on = localStorage.getItem("oc_big") === "1"; } catch (e) { /* ничего */ }
+    const apply = () => { document.documentElement.classList.toggle("big", on); big.setAttribute("aria-pressed", on); };
+    apply();
+    big.addEventListener("click", () => {
+      on = !on; apply();
+      try { localStorage.setItem("oc_big", on ? "1" : "0"); } catch (e) { /* ничего */ }
+      toast(on ? "Крупный шрифт включён" : "Обычный шрифт");
+      track("big_font", { budget: on ? 1 : 0 });
+    });
+    $("#recentList").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-open]");
+      if (b) location.hash = `#/kv/${b.dataset.open}`;
+    });
+    // на связи ли менеджер сейчас (время Бишкека, UTC+6)
+    const h = (new Date().getUTCHours() + 6) % 24;
+    const online = h >= CFG.hours.from && h < CFG.hours.to;
+    $$(".hours-status").forEach((el) => {
+      el.classList.toggle("off", !online);
+      el.textContent = online ? "На связи сейчас" : `Сейчас не на связи — отвечу с ${CFG.hours.from}:00`;
+    });
+  }
+
   function chrome() {
     const top = $("#topbar"), tab = $(".tabbar");
     const onScroll = () => {
@@ -741,6 +851,8 @@
     bindZoom();
     bindLead();
     bindClients();
+    bindExtras();
+    saveFav();
     chrome();
     saveCmp();
     animations();
