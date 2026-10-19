@@ -133,6 +133,63 @@ def realistic(a, m, inside, ppm, seed, clean=False):
     return np.clip(out, 0, 255).astype(np.uint8)
 
 
+def furniture(a, m, inside, ppm):
+    """Furniture is drawn as closed outlines: fill them and give each piece a height by its shape.
+    Returns [(mask, height_m, kind)]; kind: 0 soft (sofa/armchair), 1 wood (tables, chairs), 2 bed, 3 counter/wardrobe, 4 sanitary."""
+    fillc = dominant(a, m)
+    af = a.astype(float)
+    dark = (af.sum(-1) < fillc.sum() - 110) & ~ndi.binary_dilation(m, disk(5)) & inside
+    shapes = ndi.binary_fill_holes(dark) & ~dark
+    shapes = ndi.binary_opening(shapes, disk(2))
+    lab, n = ndi.label(shapes)
+    out = []
+    m2 = ppm * ppm
+    white = af.sum(-1) > 700
+    for i, sl in enumerate(ndi.find_objects(lab), 1):
+        comp = lab[sl] == i
+        area = comp.sum() / m2
+        if area < 0.12 or area > 4.2:
+            continue
+        hh, ww = comp.shape[0] / ppm, comp.shape[1] / ppm
+        if min(hh, ww) < 0.25:
+            continue
+        fillr = comp.sum() / comp.size
+        if fillr < 0.45:          # rings, letters, door arcs
+            continue
+        asp = max(hh, ww) / min(hh, ww)
+        wfrac = white[sl][comp].mean()
+        if wfrac > 0.6 and area < 1.6:   kind, h = 4, 0.5      # bath, toilet, sink (white on drawings)
+        elif area < 0.35:                 kind, h = 1, 0.45     # chair, stool
+        elif asp > 2.6 and min(hh, ww) < 0.75: kind, h = 3, 0.9  # kitchen counter, wardrobe
+        elif area > 2.3 and asp < 1.7:    kind, h = 2, 0.5      # bed
+        elif asp > 1.8:                   kind, h = 0, 0.5      # sofa / long table
+        else:                             kind, h = 1, 0.74     # table
+        full = np.zeros(a.shape[:2], bool); full[sl] = comp
+        out.append((full, h, kind))
+    return out
+
+
+def windows(a, m, inside):
+    """Window frames are drawn orange on the k drawings."""
+    r, g, b = (a[..., i].astype(int) for i in range(3))
+    org = (r > 190) & (g > 80) & (g < 190) & (b < 110) & (r - b > 110)
+    org = ndi.binary_closing(org, disk(6)) & ndi.binary_dilation(inside, disk(10))
+    org = ndi.binary_opening(org, disk(1))
+    lab, n = ndi.label(ndi.binary_dilation(org, disk(4)))
+    outside = ~ndi.binary_dilation(inside, disk(2))
+    outside[:6] = outside[-6:] = True; outside[:, :6] = outside[:, -6:] = True   # crop edge = outside too
+    res = []
+    for i, sl in enumerate(ndi.find_objects(lab), 1):
+        hgt, wid = sl[0].stop - sl[0].start, sl[1].stop - sl[1].start
+        if max(hgt, wid) < 30:
+            continue
+        y0, y1, x0, x1 = max(sl[0].start - 40, 0), sl[0].stop + 40, max(sl[1].start - 40, 0), sl[1].stop + 40
+        if not outside[y0:y1, x0:x1].any():   # orange inside the flat = door, not a window
+            continue
+        res.append([sl[1].start, sl[0].start, wid, hgt])
+    return res
+
+
 def boxes_from(mask):
     h, w = mask.shape
     gh, gw = h // CELL, w // CELL
@@ -210,12 +267,23 @@ def main():
         tex.save(os.path.join(OUT_IMG, f"{n}.webp"), quality=86, method=6)
         bx = [[int(x - x0), int(y - y0), int(w), int(h)] for x, y, w, h in boxes_from(m[:, :]) ]
         bx = [b for b in bx if b[0] + b[2] > 0 and b[1] + b[3] > 0 and b[0] < x1 - x0 and b[1] < y1 - y0]
-        data[n] = {"w": int(x1 - x0), "h": int(y1 - y0), "ppm": round(ppm, 2), "img": f"img/plans3d/{n}.webp", "boxes": bx}
+        furn = []
+        for fm, fh, kind in furniture(a, m, inside, ppm):
+            for x, y, w, h in boxes_from(fm):
+                furn.append([int(x - x0), int(y - y0), int(w), int(h), fh, kind])
+        win = [[int(x - x0), int(y - y0), int(w), int(h)] for x, y, w, h in windows(a, m, inside)]
+        data[n] = {"w": int(x1 - x0), "h": int(y1 - y0), "ppm": round(ppm, 2), "img": f"img/plans3d/{n}.webp", "boxes": bx,
+                   "furn": furn, "win": win}
+        print(n, "furniture boxes", len(furn), "windows", len(win))
         print(n, "boxes", len(bx), "ppm", round(ppm, 1), "size", (x1 - x0, y1 - y0))
         if preview:
             ov = a.copy()
             ov[~inside] = (ov[~inside] * 0.25 + 190).astype(np.uint8)
             ov[m] = [220, 30, 30]
+            for fm, fh, kind in furniture(a, m, inside, ppm):
+                ov[fm] = [[40, 160, 60], [140, 90, 40], [60, 90, 220], [200, 0, 200], [0, 200, 220]][kind]
+            for x, y, w, h in windows(a, m, inside):
+                ov[y:y + h, x:x + w] = [255, 200, 0]
             Image.fromarray(ov).resize((a.shape[1] // 2, a.shape[0] // 2)).save(os.path.join(preview, f"p_{n}.png"))
     old = json.load(open(OUT_JSON, encoding="utf-8")) if os.path.exists(OUT_JSON) else {}
     old.update(data)

@@ -118,41 +118,77 @@
   }
 
   // ---------- генплан ----------
-  // Картинка генплана (img/photos/genplan-crop.webp, 1984×722) — это часть полного плана CFG.genplanCrop.
-  // На телефоне показываем две обзорные части одну под другой, чтобы не листать вбок.
-  const GP = { w: 1984, h: 722, src: "img/photos/genplan-crop.webp" };
-  const GP_PARTS = {
-    wide: [{ box: [0, 0, 1984, 722] }],
-    phone: [{ title: "Лот 5 и Лот 6", box: [190, 150, 1080, 625] }, { title: "Лоты 7, 8, 14, 15, 16", box: [1090, 200, 1860, 610] }]
-  };
+  // Генплан целиком; при выборе блока — плавный «наезд» камеры на этот блок, потом квартиры.
+  const GP = { w: 1984, h: 722, src: "img/photos/genplan-crop.webp", phoneX: [190, 1870] };
   function renderGenplan() {
     const wrap = $("#genplanScroll");
-    const phone = window.matchMedia("(max-width: 899px)").matches;
+    // на телефоне срезаем пустые края слева и справа — план выше, блоки крупнее
+    const [vx0, vx1] = window.matchMedia("(max-width: 899px)").matches ? GP.phoneX : [0, GP.w];
+    const vw = vx1 - vx0;
     const [cx0, cy0, cx1, cy1] = CFG.genplanCrop;
-    wrap.innerHTML = GP_PARTS[phone ? "phone" : "wide"].map((part, i) => {
-      const [x0, y0, x1, y1] = part.box, w = x1 - x0, h = y1 - y0;
-      const pins = Object.entries(CFG.blocks).map(([b, blk]) => {
-        const n = state.blocksFree.get(b) || 0;
-        if (!n && /^(185|190)$/.test(b)) return "";
-        const x = ((blk.pos[0] - cx0) / (cx1 - cx0)) * GP.w, y = ((blk.pos[1] - cy0) / (cy1 - cy0)) * GP.h;
-        if (x < x0 || x > x1 || y < y0 || y > y1) return "";
-        const txt = n ? `свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "продано";
-        return `<button class="hot ${n ? "has" : "none"}${state.block === b ? " sel" : ""}" data-block="${b}" style="left:${((x - x0) / w) * 100}%;top:${((y - y0) / h) * 100}%"
-          aria-label="${blockName(b)}: ${txt}">${b}<span class="hot-tip">${txt}</span></button>`;
-      }).join("");
-      return `${part.title ? `<p class="gp-title">${part.title}</p>` : ""}
-        <div class="genplan" style="aspect-ratio:${w}/${h}">
-          <img src="${GP.src}" alt="${i ? "" : "Генеральный план Osh City"}" loading="lazy" width="${GP.w}" height="${GP.h}"
-            style="width:${(GP.w / w) * 100}%;left:${(-x0 / w) * 100}%;top:${(-y0 / h) * 100}%">${pins}</div>`;
+    const pins = Object.entries(CFG.blocks).map(([b, blk]) => {
+      const n = state.blocksFree.get(b) || 0;
+      if (!n && /^(185|190)$/.test(b)) return "";
+      const x = ((blk.pos[0] - cx0) / (cx1 - cx0)) * 100, y = ((blk.pos[1] - cy0) / (cy1 - cy0)) * 100;
+      const txt = n ? `свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "продано";
+      return `<button class="hot ${n ? "has" : "none"}" data-block="${b}" data-x="${x}" data-y="${y}" style="left:${x}%;top:${y}%"
+        aria-label="${blockName(b)}: ${txt}">${b}<span class="hot-tip">${txt}</span></button>`;
     }).join("");
-    if (!renderGenplan.bound) {
-      renderGenplan.bound = true;
-      wrap.addEventListener("click", (e) => {
-        const el = e.target.closest(".hot.has");
-        if (el) { selectBlock(el.dataset.block); track("genplan_block", { block: el.dataset.block }); }
-      });
-      window.matchMedia("(max-width: 899px)").addEventListener("change", renderGenplan);
-    }
+    const lots = {};
+    Object.entries(CFG.blocks).forEach(([b, blk]) => {
+      const n = state.blocksFree.get(b) || 0;
+      if (n) (lots[blk.lot] = lots[blk.lot] || []).push([b, n]);
+    });
+    const chips = Object.entries(lots).sort((x, y) => +x[0] - +y[0]).map(([lot, list]) =>
+      `<div class="gp-lot"><span>Лот ${lot}</span>${list.map(([b, n]) => `<button class="gp-chip" data-go="${b}">${b}<small>${n} кв.</small></button>`).join("")}</div>`).join("");
+    wrap.innerHTML = `<div class="genplan" style="aspect-ratio:${vw}/${GP.h}"><div class="gp-stage" style="width:${(GP.w / vw) * 100}%;left:${(-vx0 / vw) * 100}%">
+      <img src="${GP.src}" alt="Генеральный план Osh City" loading="lazy" width="${GP.w}" height="${GP.h}">${pins}</div>
+      <div class="gp-flash" aria-hidden="true"></div></div>
+      <div class="gp-lots">${chips}</div>`;
+    const map = $(".genplan", wrap);
+    $(".gp-lots", wrap).addEventListener("click", (e) => {
+      const c = e.target.closest("[data-go]");
+      if (!c) return;
+      map.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => flyToBlock($(`.hot[data-block="${c.dataset.go}"]`, map)), 450);
+    });
+    if (!renderGenplan.bound) { renderGenplan.bound = true; window.matchMedia("(max-width: 899px)").addEventListener("change", renderGenplan); }
+    // на телефоне номера мелкие — выбираем ближайший к пальцу блок
+    map.addEventListener("click", (e) => {
+      let el = e.target.closest(".hot.has");
+      if (!el) {
+        const r = map.getBoundingClientRect();
+        let best = 1e9;
+        $$(".hot.has", map).forEach((h) => {
+          const hr = h.getBoundingClientRect();
+          const d = Math.hypot(hr.left + hr.width / 2 - e.clientX, hr.top + hr.height / 2 - e.clientY);
+          if (d < best) { best = d; el = h; }
+        });
+        if (best > Math.max(28, r.width * 0.04)) el = null;
+      }
+      if (el) flyToBlock(el);
+    });
+  }
+
+  let flying = false;
+  function flyToBlock(el) {
+    if (flying) return;
+    const b = el.dataset.block, map = el.closest(".genplan"), stage = $(".gp-stage", map);
+    track("genplan_block", { block: b });
+    if (!window.gsap || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { selectBlock(b); return; }
+    flying = true;
+    $$(".hot", map).forEach((h) => h.classList.toggle("sel", h === el));
+    map.classList.add("flying");
+    const W = map.clientWidth, H = map.clientHeight, S = W < 700 ? 4 : 2.6;
+    const L = stage.offsetLeft, SW = stage.offsetWidth;               // stage может быть шире окна (телефон)
+    const px = (+el.dataset.x / 100) * SW, py = (+el.dataset.y / 100) * H;
+    const x = Math.min(-L, Math.max(W - L - SW * S, W / 2 - L - px * S)), y = Math.min(0, Math.max(H - H * S, H / 2 - py * S));
+    gsap.timeline({ onComplete: () => {
+      selectBlock(b);
+      setTimeout(() => { gsap.set(stage, { x: 0, y: 0, scale: 1 }); map.classList.remove("flying"); flying = false; }, 1200);
+    } })
+      .to(stage, { x, y, scale: S, duration: 1.5, ease: "power3.inOut" })
+      .fromTo($(".gp-flash", map), { opacity: 0 }, { opacity: 1, duration: .35, ease: "power1.in" }, "-=.35");
   }
 
   // ---------- выбранный блок и список ----------
@@ -526,7 +562,7 @@
       const is3d = t.dataset.tab === "3d";
       $(".flat-3d", body).hidden = !is3d;
       $(".flat-plan", body).hidden = is3d;
-      if (is3d) { View3D.open($(".flat-3d", body), a.layout.id); track("view_3d", { flat: a.id }); return; }
+      if (is3d) { View3D.open($(".flat-3d", body), a.layout.id, { north: (CFG.planNorth || {})[CFG.blocks[a.b].type] || 0 }); track("view_3d", { flat: a.id }); return; }
       View3D.dispose();
       const img = $("[data-plan]", body);
       const src = t.dataset.tab === "floor" ? img.dataset.floor : img.dataset.plan;
