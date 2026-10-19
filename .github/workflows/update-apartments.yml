@@ -1,0 +1,46 @@
+name: Обновить квартиры
+# Запуск с телефона: GitHub → Actions → «Обновить квартиры» → Run workflow.
+# Автоматически каждый день в 09:00 по Бишкеку (03:00 UTC).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *"
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: apartments-update
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Установить браузер
+        run: |
+          pip install playwright==1.64.0
+          python -m playwright install --with-deps chromium
+      - name: Выгрузить квартиры из базы
+        env:
+          BASE_EMAIL: ${{ secrets.BASE_EMAIL }}
+          BASE_PASSWORD: ${{ secrets.BASE_PASSWORD }}
+        run: python -X utf8 export/export.py --ci
+      - name: Сохранить изменения
+        run: |
+          git config user.name "oshcity-bot"
+          git config user.email "oshcity-bot@users.noreply.github.com"
+          git add -A site/data
+          if git diff --cached --quiet; then echo "Без изменений"; else git commit -m "Обновление квартир $(TZ=Asia/Bishkek date +%d.%m.%Y)" && git push; fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

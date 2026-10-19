@@ -4,13 +4,14 @@
 в котором вы один раз входите в базу с галочкой «Запомнить меня».
 
     python export/export.py --login   # один раз: откроется окно Chrome, войдите в базу и закройте окно
-    python export/export.py           # выгрузка (это и запускает планировщик в 9:00)
+    python export/export.py           # выгрузка на этом компьютере (профиль Chrome)
+    python export/export.py --ci      # выгрузка в облаке GitHub: вход по секретам BASE_EMAIL / BASE_PASSWORD
 
 На сайт попадают только свободные квартиры, разложенные по файлам блоков (site/data/blocks/*.json),
 и сколько свободных в каждом блоке (site/data/index.json) — без общего итога.
 ФИО покупателей и кураторов не выгружаются.
 """
-import json, os, re, sys, datetime
+import json, os, re, sys, glob, datetime
 from playwright.sync_api import sync_playwright
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -44,6 +45,13 @@ async (blocks) => {
 """
 
 
+BISHKEK = datetime.timezone(datetime.timedelta(hours=6))   # Кыргызстан, UTC+6 без перехода на летнее время
+
+
+def now_local():
+    return datetime.datetime.now(BISHKEK)
+
+
 def my_blocks():
     src = open(CONFIG_JS, encoding="utf-8").read()
     part = src.split("blocks:", 1)[1].split("layouts:", 1)[0]
@@ -51,7 +59,7 @@ def my_blocks():
 
 
 def log(msg):
-    line = f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S} {msg}"
+    line = f"{now_local():%Y-%m-%d %H:%M:%S} {msg}"
     print(line)
     with open(os.path.join(ROOT, "export", "log.txt"), "a", encoding="utf-8") as f:
         f.write(line + "\n")
@@ -93,15 +101,58 @@ def login():
         ctx.close()
 
 
-def export():
+def ci_login(page):
+    """Облачный вход: логин и пароль только из переменных окружения (секреты GitHub), никогда не из файлов."""
+    email, password = os.environ.get("BASE_EMAIL", ""), os.environ.get("BASE_PASSWORD", "")
+    if not email or not password:
+        log("ОШИБКА: не заданы секреты BASE_EMAIL / BASE_PASSWORD в настройках репозитория.")
+        return False
+    page.goto(BASE + "/login", wait_until="networkidle", timeout=60000)
+    page.fill('input[name="email"]', email)
+    page.fill('input[name="password"]', password)
+    box = page.locator('input[type="checkbox"]')
+    if box.count():
+        box.first.check()
+    page.click('button[type="submit"]')
+    try:
+        page.wait_for_url(lambda u: "/login" not in u, timeout=45000)
+    except Exception:
+        log("ОШИБКА: база не приняла логин/пароль из секретов (или страница входа изменилась).")
+        return False
+    return True
+
+
+def previous_rows():
+    """Прошлый список: полный файл на этом компьютере, а в облаке — свободные квартиры из файлов сайта."""
+    if os.path.exists(OUT):
+        return json.load(open(OUT, encoding="utf-8")).get("apartments", [])
+    rows = []
+    for fn in glob.glob(os.path.join(SITE_DATA, "blocks", "*.json")):
+        d = json.load(open(fn, encoding="utf-8"))
+        rows += [dict(a, b=d["b"], s="free") for a in d.get("apartments", [])]
+    return rows
+
+
+def export(ci=False):
     blocks = my_blocks()
+    if ci and not (os.environ.get("BASE_EMAIL") and os.environ.get("BASE_PASSWORD")):
+        log("ОШИБКА: не заданы секреты BASE_EMAIL / BASE_PASSWORD в настройках репозитория.")
+        return 2
     with sync_playwright() as p:
-        ctx = p.chromium.launch_persistent_context(PROFILE, channel="chrome", headless=True)
-        page = ctx.new_page()
+        if ci:
+            browser = p.chromium.launch(headless=True)
+            ctx = browser.new_context()
+            page = ctx.new_page()
+            if not ci_login(page):
+                browser.close()
+                return 2
+        else:
+            ctx = p.chromium.launch_persistent_context(PROFILE, channel="chrome", headless=True)
+            page = ctx.new_page()
         page.goto(OBJECT_PAGE, wait_until="domcontentloaded", timeout=60000)
         if "/login" in page.url:
             ctx.close()
-            log("ОШИБКА: вход в базу истёк. Запустите: python export/export.py --login")
+            log("ОШИБКА: вход в базу истёк." + ("" if ci else " Запустите: python export/export.py --login"))
             return 2
         rows = page.evaluate(SCRAPE_JS, blocks)
         ctx.close()
@@ -109,9 +160,7 @@ def export():
     rows.sort(key=lambda a: (int(re.match(r"\d+", a["b"]).group()), a["b"], a["p"], a["f"], a["n"]))
     free = sum(a["s"] == "free" for a in rows)
 
-    prev = []
-    if os.path.exists(OUT):
-        prev = json.load(open(OUT, encoding="utf-8")).get("apartments", [])
+    prev = previous_rows()
     prev_free = sum(a["s"] == "free" for a in prev)
     # защита от сбоя: если база вдруг вернула пусто или потеряла больше половины квартир — не перезаписываем
     if free == 0 or (prev_free and free < prev_free * 0.5):
@@ -125,7 +174,7 @@ def export():
             if a["s"] == "free" and key(a) not in old_free:
                 a["new"] = True
     sold = len(old_free - {key(a) for a in rows if a["s"] == "free"})
-    data = {"updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), "apartments": rows}
+    data = {"updated": now_local().strftime("%Y-%m-%d %H:%M"), "apartments": rows}
     tmp = OUT + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
@@ -139,4 +188,4 @@ if __name__ == "__main__":
     if "--login" in sys.argv:
         login()
     else:
-        sys.exit(export())
+        sys.exit(export(ci="--ci" in sys.argv))

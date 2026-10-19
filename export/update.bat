@@ -7,4 +7,5 @@ git add -A site/data
 git diff --cached --quiet
 if not errorlevel 1 (echo %date% %time% no changes>> export\log.txt & exit /b 0)
 git commit -m "Update apartments %date%" >nul
+git pull --rebase -q >> export\log.txt 2>&1
 git push >> export\log.txt 2>&1
