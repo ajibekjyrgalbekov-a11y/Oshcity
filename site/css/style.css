@@ -991,3 +991,6 @@ html.big .infra li span, html.big .infra li b { font-size: 18px; } html.big .inf
   .v3d-sunlbl { font-size: 11px; }
   .v3d-btns button { padding: 7px 10px; }
 }
+.flat .tabs { gap: 5px; }
+.flat .tabs button { padding: 8px 6px; font-size: 13px; white-space: nowrap; }
+.flat .tabs button[data-tab="3d"] { flex: 0 0 56px; }

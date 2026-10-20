@@ -1,19 +1,10 @@
-// 3D-планировка: пол — чертёж квартиры, стены, мебель и окна — объём (данные: data/plans3d.json, tools/build_3d.py).
-// Солнце считается по настоящему времени Оша (40,53° с. ш., 72,80° в. д., UTC+6).
+// 3D-планировка: пол и мебель — реалистичная планировка, стены, мебель и окна — объём (данные: data/plans3d.json, tools/render_plans.py).
 // Three.js подгружается только когда клиент открывает вкладку «3D».
 (function () {
   "use strict";
   const THREE_URL = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
   const WALL_H = 1.35;       // м: «срез» стен как на макете, чтобы комнаты было видно сверху
   const SILL = 0.8;          // м: подоконник
-  const OSH = { lat: 40.53, lon: 72.80, tz: 6 };
-  const FURN = [             // цвет и блеск мебели по типу (см. furniture() в tools/build_3d.py)
-    { c: 0x8e9d8b, r: 0.95 }, // мягкая мебель
-    { c: 0x8a6343, r: 0.6 },  // столы, стулья
-    { c: 0xefe9dd, r: 0.9 },  // кровать
-    { c: 0xd8d3c8, r: 0.5 },  // кухня, шкафы
-    { c: 0xf7f7f4, r: 0.25 }  // сантехника
-  ];
   let dataP = null, libP = null, current = null;
 
   const data = () => dataP || (dataP = fetch("data/plans3d.json").then((r) => r.json()).catch(() => ({})));
@@ -26,33 +17,13 @@
 
   async function has(id) { const d = await data(); return !!d[id]; }
 
-  // ---------- солнце ----------
-  // Положение солнца для Оша: азимут от севера по часовой и высота над горизонтом, в градусах.
-  function sunAt(minutes, date) {
-    const rad = Math.PI / 180;
-    const start = Date.UTC(date.getUTCFullYear(), 0, 0);
-    const N = Math.floor((date - start) / 864e5);
-    const decl = 23.44 * Math.sin(rad * (360 / 365) * (284 + N));
-    const B = rad * (360 / 364) * (N - 81);
-    const eot = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
-    const solar = minutes + 4 * (OSH.lon - 15 * OSH.tz) + eot;          // солнечное время, мин
-    const H = rad * (solar / 4 - 180), phi = rad * OSH.lat, d = rad * decl;
-    const el = Math.asin(Math.sin(phi) * Math.sin(d) + Math.cos(phi) * Math.cos(d) * Math.cos(H));
-    let az = Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(phi) - Math.tan(d) * Math.cos(phi)) / rad + 180;
-    return { az: (az + 360) % 360, el: el / rad };
-  }
-  const SIDES = ["севере", "северо-востоке", "востоке", "юго-востоке", "юге", "юго-западе", "западе", "северо-западе"];
-  const side = (az) => SIDES[Math.round(az / 45) % 8];
-  const oshNow = () => { const d = new Date(); return (d.getUTCHours() * 60 + d.getUTCMinutes() + OSH.tz * 60) % 1440; };
-  const hhmm = (m) => `${Math.floor(m / 60)}:${String(Math.round(m % 60)).padStart(2, "0")}`;
-
   // ---------- геометрия ----------
   // коробки одним мешем; top=true — отдельная группа для верхних граней (тёмный срез стен)
   function boxesGeometry(list, ppm, W, D, top) {
-    const pos = [], nor = [], idxSide = [], idxTop = [];
+    const pos = [], nor = [], uv = [], idxSide = [], idxTop = [];
     let v = 0;
     const quad = (pts, n, out) => {
-      pts.forEach((p) => { pos.push(...p); nor.push(...n); });
+      pts.forEach((p) => { pos.push(...p); nor.push(...n); uv.push((p[0] + W / 2) / W, 1 - (p[2] + D / 2) / D); });
       out.push(v, v + 1, v + 2, v, v + 2, v + 3); v += 4;
     };
     list.forEach(([x, y, w, h, y0, y1]) => {
@@ -66,6 +37,7 @@
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
     g.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3));
+    g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
     g.setIndex([...idxSide, ...idxTop]);
     g.addGroup(0, idxSide.length, 0);
     if (top) g.addGroup(idxSide.length, idxTop.length, 1);
@@ -93,7 +65,7 @@
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 300);
 
-    const hemi = new THREE.HemisphereLight(0xffffff, 0xcfc6b4, 0.6);
+    const hemi = new THREE.HemisphereLight(0xffffff, 0xcfc6b4, 0.62);
     scene.add(hemi);
     const sun = new THREE.DirectionalLight(0xfff1d6, 0.9);
     sun.castShadow = true;
@@ -119,11 +91,11 @@
       new THREE.MeshStandardMaterial({ color: 0xf6f3ec, roughness: 0.85 }),
       new THREE.MeshStandardMaterial({ color: 0x2b3a33, roughness: 0.6 })
     ]);
-    // мебель с чертежа
-    FURN.forEach((f, kind) => {
-      const list = (spec.furn || []).filter((b) => b[5] === kind).map(([x, y, w, h, hh]) => [x, y, w, h, 0, hh]);
-      if (list.length) add(boxesGeometry(list, spec.ppm, W, D), new THREE.MeshStandardMaterial({ color: f.c, roughness: f.r }));
-    });
+    // мебель: объёмные коробки, сверху — та же мебель с реалистичной планировки
+    if (spec.furn && spec.furn.length) {
+      add(boxesGeometry(spec.furn.map(([x, y, w, h, hh]) => [x, y, w, h, 0.01, Math.min(hh, WALL_H - 0.15)]), spec.ppm, W, D),
+        new THREE.MeshStandardMaterial({ map: tex, roughness: 0.8 }));
+    }
     // окна: подоконник + стекло
     if (spec.win && spec.win.length) {
       add(boxesGeometry(spec.win.map((b) => [...b, 0, SILL]), spec.ppm, W, D), new THREE.MeshStandardMaterial({ color: 0xf6f3ec, roughness: 0.85 }));
@@ -138,47 +110,20 @@
     const ui = document.createElement("div");
     ui.className = "v3d-ui";
     ui.innerHTML = `
-      <div class="v3d-compass" aria-hidden="true"><b data-s="0">С</b><b data-s="90">В</b><b data-s="180">Ю</b><b data-s="270">З</b><i class="v3d-sun">☀</i></div>
+      <div class="v3d-compass" aria-hidden="true"><b data-s="0">С</b><b data-s="90">В</b><b data-s="180">Ю</b><b data-s="270">З</b></div>
       <div class="v3d-top">
         <button type="button" data-v="full" class="v3d-full-btn" aria-label="На весь экран">⤢</button>
       </div>
       <div class="v3d-bottom">
-        <div class="v3d-time">
-          <span class="v3d-sunlbl"></span>
-          <input type="range" min="300" max="1260" step="10" aria-label="Время суток">
-          <button type="button" data-v="now">Сейчас</button>
-        </div>
         <div class="v3d-btns">
           <span class="v3d-hint">Проведите пальцем — модель повернётся</span>
           <button type="button" data-v="top">Сверху</button><button type="button" data-v="3d" class="on">3D</button>
         </div>
       </div>`;
     box.appendChild(ui);
-    const range = ui.querySelector("input"), lbl = ui.querySelector(".v3d-sunlbl"), sunIco = ui.querySelector(".v3d-sun");
     const marks = [...ui.querySelectorAll("[data-s]")];
-
-    let minutes = oshNow();
-    if (minutes < 360 || minutes > 1230) minutes = 780;      // ночью показываем полдень
-    range.value = minutes;
-    const today = new Date();
-    function applySun() {
-      const s = sunAt(minutes, today);
-      const az = s.az * Math.PI / 180 - north, el = Math.max(s.el, -5) * Math.PI / 180;
-      const dir = new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(Math.max(el, 0.05)), -Math.cos(az) * Math.cos(el));
-      sun.position.copy(dir.multiplyScalar(R0 * 2.5));
-      const day = Math.max(0, Math.min(1, s.el / 25));
-      sun.intensity = s.el > 0 ? 0.25 + 0.75 * day : 0;
-      sun.color.setHSL(0.09, 0.9, 0.62 + 0.3 * day);
-      hemi.intensity = 0.28 + 0.4 * Math.max(0, Math.min(1, (s.el + 6) / 20));
-      box.style.setProperty("--sky", s.el > 12 ? "#fbf6ea" : s.el > 0 ? "#f6dcc0" : "#2c3550");
-      box.classList.toggle("night", s.el <= 0);
-      lbl.textContent = s.el > 0
-        ? `${hhmm(minutes)} · солнце на ${side(s.az)}, ${Math.round(s.el)}° над горизонтом`
-        : `${hhmm(minutes)} · солнце за горизонтом`;
-      sunIco.dataset.az = s.az; sunIco.hidden = s.el <= 0;
-      dirty = true;
-    }
-    range.addEventListener("input", () => { minutes = +range.value; applySun(); });
+    // ровный дневной свет сверху-сбоку: мягкие тени от стен и мебели
+    sun.position.set(R0 * 1.1, R0 * 2.2, R0 * 0.9);
 
     // ---------- камера ----------
     // расстояние камеры, чтобы квартира целиком помещалась и в узком (телефон), и в широком окне
@@ -198,7 +143,6 @@
         return [(v3.x + 1) / 2 * w, (1 - v3.y) / 2 * h];
       };
       marks.forEach((m) => { const [x, y] = proj(+m.dataset.s); m.style.transform = `translate(${x}px, ${y}px)`; });
-      if (!sunIco.hidden) { const [x, y] = proj(+sunIco.dataset.az); sunIco.style.transform = `translate(${x}px, ${y}px)`; }
     };
     const size = () => {
       const full = box.classList.contains("v3d-full");
@@ -206,7 +150,7 @@
       renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); dirty = true;
       fitR = R0 * Math.max(1.6, Math.min(3, 2.05 / Math.min(1, camera.aspect)));
       // модель чуть выше центра: внизу окна лежат панели времени и кнопок
-      camera.setViewOffset(w, h, 0, Math.round(h * 0.13), w, h); camera.updateProjectionMatrix();
+      camera.setViewOffset(w, h, 0, Math.round(h * 0.07), w, h); camera.updateProjectionMatrix();
       if (goal && goal.r === null) goal.r = fitR;
     };
     const loop = () => {
@@ -269,7 +213,6 @@
       const b = e.target.closest("[data-v]"); if (!b) return;
       const v = b.dataset.v;
       if (v === "full") { toggleFull(!box.classList.contains("v3d-full")); return; }
-      if (v === "now") { minutes = oshNow(); range.value = minutes; applySun(); return; }
       ui.querySelectorAll("[data-v='top'],[data-v='3d']").forEach((x) => x.classList.toggle("on", x === b));
       auto = false;
       goal = v === "top" ? { th: 0, ph: 0.02, r: fitR } : { th: cam.th, ph: 0.72, r: fitR };
@@ -277,7 +220,7 @@
     document.addEventListener("keydown", onKey);
 
     const ro = new ResizeObserver(size); ro.observe(box);
-    applySun(); size(); loop();
+    size(); loop();
     current = {
       token, stop() {
         cancelAnimationFrame(raf); ro.disconnect(); document.removeEventListener("keydown", onKey);
@@ -290,5 +233,5 @@
 
   function dispose() { if (current && current.stop) current.stop(); current = null; }
 
-  window.View3D = { has, open, dispose, sunAt };
+  window.View3D = { has, open, dispose };
 })();

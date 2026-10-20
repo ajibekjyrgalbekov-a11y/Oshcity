@@ -153,8 +153,48 @@
       setTimeout(() => flyToBlock($(`.hot[data-block="${c.dataset.go}"]`, map)), 450);
     });
     if (!renderGenplan.bound) { renderGenplan.bound = true; window.matchMedia("(max-width: 899px)").addEventListener("change", renderGenplan); }
+    // своё приближение генплана двумя пальцами (а не всей страницы), перетаскивание одним пальцем
+    const stage = $(".gp-stage", map), z = { x: 0, y: 0, s: 1 }, pts = new Map();
+    let pinch = null, drag = null, moved = false;
+    map.style.touchAction = "pan-y";
+    const clampZ = () => {
+      const W = map.clientWidth, H = map.clientHeight, L = stage.offsetLeft, SW = stage.offsetWidth;
+      z.s = Math.max(1, Math.min(5, z.s));
+      z.x = Math.min(-L, Math.max(W - L - SW * z.s, z.x)); z.y = Math.min(0, Math.max(H - H * z.s, z.y));
+      if (window.gsap) gsap.set(stage, { x: z.x, y: z.y, scale: z.s });
+      map.style.touchAction = z.s > 1.01 ? "none" : "pan-y";
+      map.classList.toggle("zoomed", z.s > 1.01);
+    };
+    map.gpZoom = z; map.gpClamp = clampZ;
+    const rel = (e) => { const r = map.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+    map.addEventListener("pointerdown", (e) => {
+      pts.set(e.pointerId, rel(e)); moved = false;
+      if (pts.size === 2) {
+        const [a, b] = [...pts.values()];
+        pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), m: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], ...z };
+      } else drag = { p: rel(e), x: z.x, y: z.y };
+    });
+    map.addEventListener("pointermove", (e) => {
+      if (!pts.has(e.pointerId) || flying) return;
+      pts.set(e.pointerId, rel(e));
+      if (pts.size === 2 && pinch) {
+        const [a, b] = [...pts.values()], L = stage.offsetLeft;
+        const s2 = Math.max(1, Math.min(5, pinch.s * Math.hypot(a[0] - b[0], a[1] - b[1]) / pinch.d));
+        const sx = (pinch.m[0] - L - pinch.x) / pinch.s, sy = (pinch.m[1] - pinch.y) / pinch.s;
+        const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+        z.s = s2; z.x = m[0] - L - sx * s2; z.y = m[1] - sy * s2; moved = true; clampZ();
+      } else if (drag && z.s > 1.01) {
+        const p = rel(e), dx = p[0] - drag.p[0], dy = p[1] - drag.p[1];
+        if (Math.hypot(dx, dy) > 6) moved = true;
+        z.x = drag.x + dx; z.y = drag.y + dy; clampZ();
+      }
+    });
+    const end = (e) => { pts.delete(e.pointerId); if (pts.size < 2) pinch = null; if (!pts.size) drag = null; };
+    map.addEventListener("pointerup", end); map.addEventListener("pointercancel", end);
+    map.addEventListener("dblclick", () => { z.s = 1; z.x = z.y = 0; clampZ(); });
     // на телефоне номера мелкие — выбираем ближайший к пальцу блок
     map.addEventListener("click", (e) => {
+      if (moved) return;
       let el = e.target.closest(".hot.has");
       if (!el) {
         const r = map.getBoundingClientRect();
@@ -177,6 +217,13 @@
     track("genplan_block", { block: b });
     if (!window.gsap || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { selectBlock(b); return; }
     flying = true;
+    // если клиент увеличил всю страницу пальцами — возвращаем обычный масштаб, иначе планировки тоже будут увеличены
+    const vp = document.querySelector('meta[name="viewport"]');
+    if (vp && window.visualViewport && window.visualViewport.scale > 1.01) {
+      const orig = vp.content;
+      vp.content = orig + ", maximum-scale=1";
+      setTimeout(() => { vp.content = orig; }, 700);
+    }
     $$(".hot", map).forEach((h) => h.classList.toggle("sel", h === el));
     map.classList.add("flying");
     const W = map.clientWidth, H = map.clientHeight, S = W < 700 ? 4 : 2.6;
@@ -185,7 +232,10 @@
     const x = Math.min(-L, Math.max(W - L - SW * S, W / 2 - L - px * S)), y = Math.min(0, Math.max(H - H * S, H / 2 - py * S));
     gsap.timeline({ onComplete: () => {
       selectBlock(b);
-      setTimeout(() => { gsap.set(stage, { x: 0, y: 0, scale: 1 }); map.classList.remove("flying"); flying = false; }, 1200);
+      setTimeout(() => {
+        gsap.set(stage, { x: 0, y: 0, scale: 1 }); map.classList.remove("flying"); flying = false;
+        if (map.gpZoom) { Object.assign(map.gpZoom, { x: 0, y: 0, s: 1 }); map.gpClamp(); }
+      }, 1200);
     } })
       .to(stage, { x, y, scale: S, duration: 1.5, ease: "power3.inOut" })
       .fromTo($(".gp-flash", map), { opacity: 0 }, { opacity: 1, duration: .35, ease: "power1.in" }, "-=.35");
@@ -250,7 +300,7 @@
     const on = state.cmp.includes(a.id);
     return `<article class="card" data-id="${a.id}" tabindex="0" aria-label="${roomsLabel(a.r)} ${fmtArea(a.a)} м², ${fmt(a.q.monthly)} сом в месяц">
       <div class="card-plan">
-        ${a.layout ? `<img loading="lazy" decoding="async" src="${a.layout.thumb || a.layout.img}" alt="Планировка ${fmtArea(a.a)} м²" width="${a.layout.w}" height="${a.layout.h}">` : `<span class="card-meta">Планировка по запросу</span>`}
+        ${a.layout ? `<img loading="lazy" decoding="async" src="${a.layout.realThumb || a.layout.thumb || a.layout.img}" alt="Планировка ${fmtArea(a.a)} м²" width="${a.layout.rw || a.layout.w}" height="${a.layout.rh || a.layout.h}">` : `<span class="card-meta">Планировка по запросу</span>`}
         <span class="card-tag">${roomsLabel(a.r)}</span>
         ${cheapest ? `<span class="card-tag cheap">лучшая цена</span>` : a.new ? `<span class="card-tag cheap">новинка</span>` : ""}
         <button class="fav-btn ${state.fav.includes(a.id) ? "on" : ""}" data-fav="${a.id}" aria-label="${state.fav.includes(a.id) ? "Убрать из избранного" : "В избранное"}" aria-pressed="${state.fav.includes(a.id)}">
@@ -388,7 +438,7 @@
     const list = state.recent.map((id) => state.byId.get(id)).filter(Boolean);
     if (!list.length) { box.hidden = true; return; }
     $("#recentList").innerHTML = list.map((a) => `<button class="mini" data-open="${a.id}">
-      ${a.layout ? `<img src="${a.layout.thumb || a.layout.img}" alt="" loading="lazy">` : ""}
+      ${a.layout ? `<img src="${a.layout.realThumb || a.layout.thumb || a.layout.img}" alt="" loading="lazy">` : ""}
       <b>${fmtArea(a.a)} м² · ${a.f} эт.</b><span>${fmt(a.q.monthly)} сом/мес</span></button>`).join("");
     box.hidden = false;
   }
@@ -432,7 +482,7 @@
     };
     const bMonth = best((a) => a.q.monthly), bArea = best((a) => a.a, false), bTotal = best((a) => a.q.total), bPpm = best((a) => a.q.ppm);
     const cols = list.map((a) => `<div class="cmp-col">
-      <div class="card-plan">${a.layout ? `<img src="${a.layout.thumb || a.layout.img}" alt="Планировка ${fmtArea(a.a)} м²">` : ""}</div>
+      <div class="card-plan">${a.layout ? `<img src="${a.layout.realThumb || a.layout.thumb || a.layout.img}" alt="Планировка ${fmtArea(a.a)} м²">` : ""}</div>
       <div class="cmp-rows">
         <div><span>Комнат</span><b>${a.r}</b></div>
         <div><span>Площадь</span><b class="${bArea(a)}">${fmtArea(a.a)} м²</b></div>
@@ -484,10 +534,10 @@
           <p>${a.f} этаж · подъезд ${a.p} · квартира №${a.n}</p>
         </div>
         <div style="margin-top:14px">
-          ${lay ? `<div class="tabs" role="tablist"><button class="on" data-tab="plan" role="tab">Планировка</button>${fp ? `<button data-tab="floor" role="tab">На этаже</button>` : ""}</div>` : ""}
+          ${lay ? `<div class="tabs" role="tablist"><button class="on" data-tab="plan" role="tab">Планировка</button><button data-tab="draw" role="tab">Чертёж</button>${fp ? `<button data-tab="floor" role="tab">На этаже</button>` : ""}</div>` : ""}
           <div class="flat-3d" hidden></div>
-          <div class="flat-plan" data-zoom="${lay ? lay.img : ""}">
-            ${lay ? `<span class="fp-wrap"><img src="${lay.img}" alt="Планировка квартиры ${fmtArea(a.a)} м²" data-plan="${lay.img}" data-floor="${fp ? fp.img : ""}">${spotHtml(a)}</span>` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
+          <div class="flat-plan" data-zoom="${lay ? lay.real || lay.img : ""}">
+            ${lay ? `<span class="fp-wrap"><img src="${lay.real || lay.img}" alt="Планировка квартиры ${fmtArea(a.a)} м² с мебелью" data-plan="${lay.real || lay.img}" data-draw="${lay.img}" data-floor="${fp ? fp.img : ""}">${spotHtml(a)}</span>` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
             ${lay ? `<span class="zoom-ico">Увеличить</span>` : ""}
           </div>
         </div>
@@ -565,7 +615,7 @@
       if (is3d) { View3D.open($(".flat-3d", body), a.layout.id, { north: (CFG.planNorth || {})[CFG.blocks[a.b].type] || 0 }); track("view_3d", { flat: a.id }); return; }
       View3D.dispose();
       const img = $("[data-plan]", body);
-      const src = t.dataset.tab === "floor" ? img.dataset.floor : img.dataset.plan;
+      const src = t.dataset.tab === "floor" ? img.dataset.floor : t.dataset.tab === "draw" ? img.dataset.draw : img.dataset.plan;
       img.src = src; $(".flat-plan", body).dataset.zoom = src;
       const spot = $(".fp-spot", body);
       if (spot) spot.hidden = t.dataset.tab !== "floor";

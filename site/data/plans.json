@@ -7,7 +7,11 @@
    "img": "img/plans/k40_19.webp",
    "thumb": "img/plans/thumb/k40_19.webp",
    "w": 1214,
-   "h": 1040
+   "h": 1040,
+   "real": "img/plans/real/k40_19.webp",
+   "realThumb": "img/plans/real/thumb/k40_19.webp",
+   "rw": 1214,
+   "rh": 1033
   },
   {
    "id": "k56_79",
@@ -16,7 +20,11 @@
    "img": "img/plans/k56_79.webp",
    "thumb": "img/plans/thumb/k56_79.webp",
    "w": 1400,
-   "h": 1130
+   "h": 1130,
+   "real": "img/plans/real/k56_79.webp",
+   "realThumb": "img/plans/real/thumb/k56_79.webp",
+   "rw": 1400,
+   "rh": 1130
   },
   {
    "id": "k76_95",
@@ -25,7 +33,11 @@
    "img": "img/plans/k76_95.webp",
    "thumb": "img/plans/thumb/k76_95.webp",
    "w": 1400,
-   "h": 1152
+   "h": 1152,
+   "real": "img/plans/real/k76_95.webp",
+   "realThumb": "img/plans/real/thumb/k76_95.webp",
+   "rw": 1400,
+   "rh": 1152
   },
   {
    "id": "s1_40_99",
@@ -34,7 +46,11 @@
    "img": "img/plans/s1_40_99.webp",
    "thumb": "img/plans/thumb/s1_40_99.webp",
    "w": 1185,
-   "h": 1344
+   "h": 1344,
+   "real": "img/plans/real/s1_40_99.webp",
+   "realThumb": "img/plans/real/thumb/s1_40_99.webp",
+   "rw": 1147,
+   "rh": 1214
   },
   {
    "id": "s2_56_75",
@@ -43,7 +59,11 @@
    "img": "img/plans/s2_56_75.webp",
    "thumb": "img/plans/thumb/s2_56_75.webp",
    "w": 1080,
-   "h": 1400
+   "h": 1400,
+   "real": "img/plans/real/s2_56_75.webp",
+   "realThumb": "img/plans/real/thumb/s2_56_75.webp",
+   "rw": 948,
+   "rh": 1183
   },
   {
    "id": "s3_72_66",
@@ -52,7 +72,11 @@
    "img": "img/plans/s3_72_66.webp",
    "thumb": "img/plans/thumb/s3_72_66.webp",
    "w": 1400,
-   "h": 953
+   "h": 953,
+   "real": "img/plans/real/s3_72_66.webp",
+   "realThumb": "img/plans/real/thumb/s3_72_66.webp",
+   "rw": 1235,
+   "rh": 915
   },
   {
    "id": "s4_47_16",
@@ -61,7 +85,11 @@
    "img": "img/plans/s4_47_16.webp",
    "thumb": "img/plans/thumb/s4_47_16.webp",
    "w": 1155,
-   "h": 1357
+   "h": 1357,
+   "real": "img/plans/real/s4_47_16.webp",
+   "realThumb": "img/plans/real/thumb/s4_47_16.webp",
+   "rw": 1126,
+   "rh": 1221
   },
   {
    "id": "s5_40_99",
@@ -70,7 +98,11 @@
    "img": "img/plans/s5_40_99.webp",
    "thumb": "img/plans/thumb/s5_40_99.webp",
    "w": 1170,
-   "h": 1357
+   "h": 1357,
+   "real": "img/plans/real/s5_40_99.webp",
+   "realThumb": "img/plans/real/thumb/s5_40_99.webp",
+   "rw": 1146,
+   "rh": 1296
   },
   {
    "id": "s6_57_14",
@@ -79,7 +111,11 @@
    "img": "img/plans/s6_57_14.webp",
    "thumb": "img/plans/thumb/s6_57_14.webp",
    "w": 1171,
-   "h": 1400
+   "h": 1400,
+   "real": "img/plans/real/s6_57_14.webp",
+   "realThumb": "img/plans/real/thumb/s6_57_14.webp",
+   "rw": 996,
+   "rh": 1283
   },
   {
    "id": "s7_72_66",
@@ -88,7 +124,11 @@
    "img": "img/plans/s7_72_66.webp",
    "thumb": "img/plans/thumb/s7_72_66.webp",
    "w": 1400,
-   "h": 1114
+   "h": 1114,
+   "real": "img/plans/real/s7_72_66.webp",
+   "realThumb": "img/plans/real/thumb/s7_72_66.webp",
+   "rw": 1319,
+   "rh": 974
   },
   {
    "id": "l5_62_39",
@@ -97,7 +137,11 @@
    "img": "img/plans/l5_62_39.webp",
    "thumb": "img/plans/thumb/l5_62_39.webp",
    "w": 1000,
-   "h": 1200
+   "h": 1200,
+   "real": "img/plans/real/l5_62_39.webp",
+   "realThumb": "img/plans/real/thumb/l5_62_39.webp",
+   "rw": 1000,
+   "rh": 1177
   },
   {
    "id": "l5_57_31v",
@@ -106,7 +150,11 @@
    "img": "img/plans/l5_57_31v.webp",
    "thumb": "img/plans/thumb/l5_57_31v.webp",
    "w": 1252,
-   "h": 960
+   "h": 960,
+   "real": "img/plans/real/l5_57_31v.webp",
+   "realThumb": "img/plans/real/thumb/l5_57_31v.webp",
+   "rw": 1252,
+   "rh": 935
   },
   {
    "id": "l5_57_31g",
@@ -115,7 +163,11 @@
    "img": "img/plans/l5_57_31g.webp",
    "thumb": "img/plans/thumb/l5_57_31g.webp",
    "w": 1300,
-   "h": 960
+   "h": 960,
+   "real": "img/plans/real/l5_57_31g.webp",
+   "realThumb": "img/plans/real/thumb/l5_57_31g.webp",
+   "rw": 1262,
+   "rh": 935
   },
   {
    "id": "l5_62_3",
@@ -124,7 +176,11 @@
    "img": "img/plans/l5_62_3.webp",
    "thumb": "img/plans/thumb/l5_62_3.webp",
    "w": 940,
-   "h": 1220
+   "h": 1220,
+   "real": "img/plans/real/l5_62_3.webp",
+   "realThumb": "img/plans/real/thumb/l5_62_3.webp",
+   "rw": 938,
+   "rh": 1197
   },
   {
    "id": "l5_48_53",
@@ -133,7 +189,11 @@
    "img": "img/plans/l5_48_53.webp",
    "thumb": "img/plans/thumb/l5_48_53.webp",
    "w": 1280,
-   "h": 840
+   "h": 840,
+   "real": "img/plans/real/l5_48_53.webp",
+   "realThumb": "img/plans/real/thumb/l5_48_53.webp",
+   "rw": 1261,
+   "rh": 812
   },
   {
    "id": "l5_84_45",
@@ -142,7 +202,11 @@
    "img": "img/plans/l5_84_45.webp",
    "thumb": "img/plans/thumb/l5_84_45.webp",
    "w": 1400,
-   "h": 1124
+   "h": 1124,
+   "real": "img/plans/real/l5_84_45.webp",
+   "realThumb": "img/plans/real/thumb/l5_84_45.webp",
+   "rw": 1395,
+   "rh": 1124
   },
   {
    "id": "l5_38_84",
@@ -151,7 +215,11 @@
    "img": "img/plans/l5_38_84.webp",
    "thumb": "img/plans/thumb/l5_38_84.webp",
    "w": 860,
-   "h": 920
+   "h": 920,
+   "real": "img/plans/real/l5_38_84.webp",
+   "realThumb": "img/plans/real/thumb/l5_38_84.webp",
+   "rw": 824,
+   "rh": 920
   },
   {
    "id": "l5_38_85",
@@ -160,7 +228,11 @@
    "img": "img/plans/l5_38_85.webp",
    "thumb": "img/plans/thumb/l5_38_85.webp",
    "w": 868,
-   "h": 920
+   "h": 920,
+   "real": "img/plans/real/l5_38_85.webp",
+   "realThumb": "img/plans/real/thumb/l5_38_85.webp",
+   "rw": 868,
+   "rh": 920
   },
   {
    "id": "l5_84_28",
@@ -169,7 +241,11 @@
    "img": "img/plans/l5_84_28.webp",
    "thumb": "img/plans/thumb/l5_84_28.webp",
    "w": 1400,
-   "h": 1130
+   "h": 1130,
+   "real": "img/plans/real/l5_84_28.webp",
+   "realThumb": "img/plans/real/thumb/l5_84_28.webp",
+   "rw": 1371,
+   "rh": 1130
   }
  ],
  "floors": [
