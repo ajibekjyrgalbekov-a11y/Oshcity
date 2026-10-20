@@ -994,3 +994,5 @@ html.big .infra li span, html.big .infra li b { font-size: 18px; } html.big .inf
 .flat .tabs { gap: 5px; }
 .flat .tabs button { padding: 8px 6px; font-size: 13px; white-space: nowrap; }
 .flat .tabs button[data-tab="3d"] { flex: 0 0 56px; }
+/* картинка планировки всегда целиком внутри карточки (Safari не ограничивает max-height в блоке с aspect-ratio) */
+.card-plan img { position: absolute; inset: 10px; width: calc(100% - 20px); height: calc(100% - 20px); max-height: none; object-fit: contain; }
