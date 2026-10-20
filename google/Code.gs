@@ -5,6 +5,10 @@
  */
 
 const NOTIFY_EMAIL = ""; // пусто = письма приходят на ваш Gmail (владельца таблицы)
+// Обезличенная статистика: без имён и телефонов — устройство, откуда пришёл, страна по часовому поясу телефона
+const EV_HEADER = ["Время", "Действие", "Квартира", "Площадь", "В месяц", "Блок", "Бюджет", "Устройство", "Откуда пришёл",
+  "Система", "Браузер", "Источник", "Первый источник", "Кампания", "Страна", "Посетитель"];
+const LEAD_HEADER = ["Время", "Имя", "Телефон", "Квартира", "Ссылка", "Статус", "Откуда пришёл", "Устройство", "Страна"];
 const WA_HEADER = ["Обновлено", "Имя", "WhatsApp", "Доп. телефон", "Комнат", "Взнос", "Бюджет", "В месяц до", "Список", "Квартиры", "Встреча", "Заметки", "Чат"];
 
 function setup() {
@@ -18,8 +22,10 @@ function setup() {
     }
     return sh;
   };
-  sheet("События", ["Время", "Действие", "Квартира", "Площадь", "В месяц", "Блок", "Бюджет", "Устройство", "Откуда пришёл"]);
-  sheet("Заявки", ["Время", "Имя", "Телефон", "Квартира", "Ссылка", "Статус"]);
+  sheet("События", EV_HEADER);
+  sheet("Заявки", LEAD_HEADER);
+  header(ss.getSheetByName("События"), EV_HEADER);
+  header(ss.getSheetByName("Заявки"), LEAD_HEADER);
   sheet("WhatsApp", WA_HEADER);
 
   const sum = ss.getSheetByName("Сводка") || ss.insertSheet("Сводка", 0);
@@ -37,7 +43,26 @@ function setup() {
   sum.getRange("M4").setFormula('=COUNTIFS(События!B:B,"visit",События!A:A,">="&(TODAY()-7))');
   sum.getRange("M6").setValue("Заявок всего").setFontWeight("bold");
   sum.getRange("M7").setFormula('=MAX(0,COUNTA(Заявки!A:A)-1)');
-  sum.setColumnWidths(1, 14, 130);
+  const q = function (cell, title, query) {
+    sum.getRange(cell).offset(-1, 0).setValue(title).setFontWeight("bold");
+    sum.getRange(cell).setFormula('=IFERROR(QUERY(События!A:P,"' + query + '",1),"пока нет данных")');
+  };
+  q("A22", "Откуда приходят (заходы)", "select L, count(B) where B = 'visit' group by L order by count(B) desc limit 15 label L 'Источник', count(B) 'Заходов'");
+  q("D22", "Откуда пишут в WhatsApp", "select M, count(B) where B starts with 'whatsapp' group by M order by count(B) desc limit 15 label M 'Первый источник', count(B) 'Нажатий'");
+  q("G22", "Устройства", "select J, count(B) where B = 'visit' group by J order by count(B) desc limit 15 label J 'Система', count(B) 'Заходов'");
+  q("J22", "Браузер / приложение", "select K, count(B) where B = 'visit' group by K order by count(B) desc limit 15 label K 'Браузер', count(B) 'Заходов'");
+  q("M22", "Страна (по часовому поясу)", "select O, count(B) where B = 'visit' group by O order by count(B) desc limit 15 label O 'Страна', count(B) 'Заходов'");
+  q("P22", "Рекламные кампании", "select N, count(B) where N <> '' and B = 'visit' group by N order by count(B) desc limit 15 label N 'Кампания', count(B) 'Заходов'");
+  sum.setColumnWidths(1, 18, 130);
+}
+
+// дописывает новые столбцы в заголовок, если таблица создана старой версией скрипта
+function header(sh, cols) {
+  if (!sh) return;
+  const have = sh.getLastRow() ? sh.getRange(1, 1, 1, cols.length).getValues()[0] : [];
+  if (have.join("|") !== cols.join("|")) {
+    sh.getRange(1, 1, 1, cols.length).setValues([cols]).setFontWeight("bold").setBackground("#0d3326").setFontColor("#ffffff");
+  }
 }
 
 function doPost(e) {
@@ -62,16 +87,20 @@ function doPost(e) {
       else sh.appendRow(row);
     } else if (d.type === "lead") {
       const link = d.flat ? (d.site || "") + "#/kv/" + d.flat : "";
-      ss.getSheetByName("Заявки").appendRow([when, clean(d.name), clean(d.phone), clean(d.flat), clean(link), "новая"]);
+      ss.getSheetByName("Заявки").appendRow([when, clean(d.name), clean(d.phone), clean(d.flat), clean(link), "новая",
+        clean(d.src), clean(d.device), clean(d.region)]);
       const to = NOTIFY_EMAIL || Session.getEffectiveUser().getEmail();
       MailApp.sendEmail(to, "Новая заявка с сайта Osh City: " + clean(d.phone),
         "Имя: " + clean(d.name) + "\nТелефон: " + clean(d.phone) + (d.flat ? "\nКвартира: " + clean(d.flat) : "") +
         "\n\nПозвонить: tel:" + String(d.phone).replace(/[^\d+]/g, "") +
-        "\nWhatsApp: https://wa.me/" + String(d.phone).replace(/\D/g, "").replace(/^0/, "996"));
+        "\nWhatsApp: https://wa.me/" + String(d.phone).replace(/\D/g, "").replace(/^0/, "996") +
+        (d.src ? "\n\nОткуда пришёл: " + clean(d.src) : "") + (d.device ? "\nУстройство: " + clean(d.device) : "") +
+        (d.region ? "\nСтрана: " + clean(d.region) : ""));
     } else {
       const flat = clean(d.flat);
       ss.getSheetByName("События").appendRow([when, clean(d.action), flat, clean(d.area), clean(d.monthly),
-        flat ? flat.split("-")[0].replace("_", "/") : clean(d.block), clean(d.budget), clean(d.device), clean(d.ref)]);
+        flat ? flat.split("-")[0].replace("_", "/") : clean(d.block), clean(d.budget), clean(d.device), clean(d.ref),
+        clean(d.os), clean(d.browser), clean(d.src), clean(d.src1), clean(d.campaign), clean(d.region), clean(d.vid)]);
     }
   } finally {
     lock.releaseLock();
@@ -112,7 +141,16 @@ function weeklyReport() {
   const views = count(function (r) { return r[1] === "view_flat"; });
   const wa = count(function (r) { return String(r[1]).indexOf("whatsapp") === 0; });
   const favs = count(function (r) { return r[1] === "fav_send"; });
-  const phones = count(function (r) { return r[3] === "телефон" || r[7] === "телефон"; });
+  const people = {};
+  rows.forEach(function (r) { if (r[15]) people[r[15]] = 1; });
+  const uniq = Object.keys(people).length;
+  const by = function (col, pred, n) {               // распределение по столбцу среди событий pred
+    const m = {};
+    rows.forEach(function (r) { if (pred(r)) { const k = r[col] || "не указано"; m[k] = (m[k] || 0) + 1; } });
+    return Object.keys(m).map(function (k) { return [k, m[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, n || 8);
+  };
+  const isVisit = function (r) { return r[1] === "visit"; };
+  const isWa = function (r) { return String(r[1]).indexOf("whatsapp") === 0; };
   const site = "https://ajibekoshcity.com/#/kv/";
   const li = function (list, link) {
     return list.length ? "<ol>" + list.map(function (x) {
@@ -121,13 +159,18 @@ function weeklyReport() {
   };
   const html =
     "<h2>Osh City — неделя на сайте</h2>" +
-    "<p><b>" + visits + "</b> заходов · <b>" + views + "</b> просмотров квартир · <b>" + wa + "</b> нажатий WhatsApp · <b>" +
+    "<p><b>" + visits + "</b> заходов" + (uniq ? " (<b>" + uniq + "</b> разных людей)" : "") + " · <b>" + views + "</b> просмотров квартир · <b>" + wa + "</b> нажатий WhatsApp · <b>" +
     favs + "</b> отправленных подборок · <b>" + leads.length + "</b> заявок «Перезвоните»</p>" +
+    "<h3>Откуда приходят</h3>" + li(by(11, isVisit), false) +
+    "<h3>Откуда пишут в WhatsApp</h3>" + li(by(12, isWa), false) +
+    "<h3>Устройства</h3>" + li(by(9, isVisit), false) +
+    "<h3>Где находятся (по часовому поясу телефона)</h3>" + li(by(14, isVisit), false) +
     "<h3>Самые просматриваемые квартиры</h3>" + li(top(2, "view_flat", 10), true) +
     "<h3>Популярные блоки</h3>" + li(top(5, "view_flat", 8), false) +
     "<h3>Чаще выбирали на генплане</h3>" + li(top(5, "genplan_block", 8), false) +
     "<h3>Заявки за неделю</h3>" + (leads.length ? "<ul>" + leads.map(function (r) {
-      return "<li>" + Utilities.formatDate(r[0], "Asia/Bishkek", "dd.MM HH:mm") + " — " + r[1] + ", " + r[2] + (r[3] ? " (кв. " + r[3] + ")" : "") + "</li>";
+      return "<li>" + Utilities.formatDate(r[0], "Asia/Bishkek", "dd.MM HH:mm") + " — " + r[1] + ", " + r[2] + (r[3] ? " (кв. " + r[3] + ")" : "") +
+        (r[6] ? " · " + r[6] : "") + (r[7] ? " · " + r[7] : "") + "</li>";
     }).join("") + "</ul>" : "<p>нет</p>") +
     '<p style="color:#888">Подробно — в таблице: ' + ss.getUrl() + "</p>";
   const to = NOTIFY_EMAIL || Session.getEffectiveUser().getEmail();

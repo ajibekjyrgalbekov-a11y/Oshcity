@@ -70,12 +70,17 @@
   const loadBlocksFor = (ids) => Promise.all([...new Set(ids.map(blockOf))].map(loadBlock));
 
   // ---------- аналитика (Google Таблица) ----------
+  // обезличенный профиль: устройство, источник, страна по часовому поясу (js/visitor.js)
+  let VIS = {};
+  try { VIS = window.Visitor ? Visitor.profile() : {}; } catch (e) { VIS = {}; }
   function track(action, extra) {
     if (!CFG.sheetUrl) return;
+    let ref = "";
+    try { ref = document.referrer ? new URL(document.referrer).hostname : ""; } catch (e) { /* нет */ }
     const payload = JSON.stringify(Object.assign({
       type: "event", action, ts: new Date().toISOString(),
-      device: matchMedia("(max-width: 900px)").matches ? "телефон" : "компьютер",
-      ref: document.referrer ? new URL(document.referrer).hostname : ""
+      device: VIS.device || (matchMedia("(max-width: 900px)").matches ? "телефон" : "компьютер"), ref,
+      os: VIS.os, browser: VIS.browser, src: VIS.src, src1: VIS.src1, campaign: VIS.campaign, region: VIS.region, vid: VIS.vid
     }, extra || {}));
     try {
       if (!navigator.sendBeacon(CFG.sheetUrl, new Blob([payload], { type: "text/plain" }))) throw 0;
@@ -860,7 +865,8 @@
     const f = $("#leadForm");
     f.addEventListener("submit", (e) => {
       e.preventDefault();
-      const data = { type: "lead", name: f.elements.name.value.trim(), phone: f.elements.phone.value.trim(), flat: f.elements.flat.value, site: siteBase(), ts: new Date().toISOString() };
+      const data = { type: "lead", name: f.elements.name.value.trim(), phone: f.elements.phone.value.trim(), flat: f.elements.flat.value, site: siteBase(), ts: new Date().toISOString(),
+        src: VIS.src1 || VIS.src, device: [VIS.device, VIS.os].filter(Boolean).join(", "), region: VIS.region };
       if (data.phone.replace(/\D/g, "").length < 9) { toast("Проверьте номер телефона"); return; }
       if (CFG.sheetUrl) fetch(CFG.sheetUrl, { method: "POST", mode: "no-cors", body: JSON.stringify(data) }).catch(() => {});
       else {
@@ -996,6 +1002,6 @@
     saveCmp();
     animations();
     route();
-    track("visit", { path: location.hash });
+    track("visit", { path: location.hash, visitN: VIS.visitN });
   });
 })();
