@@ -534,10 +534,10 @@
           <p>${a.f} этаж · подъезд ${a.p} · квартира №${a.n}</p>
         </div>
         <div style="margin-top:14px">
-          ${lay ? `<div class="tabs" role="tablist"><button class="on" data-tab="plan" role="tab">Планировка</button><button data-tab="draw" role="tab">Чертёж</button>${fp ? `<button data-tab="floor" role="tab">На этаже</button>` : ""}</div>` : ""}
+          ${lay ? `<div class="tabs" role="tablist"><button class="on" data-tab="draw" role="tab">Чертёж</button>${fp ? `<button data-tab="floor" role="tab">На этаже</button>` : ""}<button data-tab="plan" role="tab">Планировка</button></div>` : ""}
           <div class="flat-3d" hidden></div>
-          <div class="flat-plan" data-zoom="${lay ? lay.real || lay.img : ""}">
-            ${lay ? `<span class="fp-wrap"><img src="${lay.real || lay.img}" alt="Планировка квартиры ${fmtArea(a.a)} м² с мебелью" data-plan="${lay.real || lay.img}" data-draw="${lay.img}" data-floor="${fp ? fp.img : ""}">${spotHtml(a)}</span>` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
+          <div class="flat-plan" data-zoom="${lay ? lay.img : ""}">
+            ${lay ? `<span class="fp-wrap"><img src="${lay.img}" alt="Планировка квартиры ${fmtArea(a.a)} м² с мебелью" data-plan="${lay.real || lay.img}" data-draw="${lay.img}" data-floor="${fp ? fp.img : ""}">${spotHtml(a)}</span>` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
             ${lay ? `<span class="zoom-ico">Увеличить</span>` : ""}
           </div>
         </div>
@@ -621,12 +621,11 @@
       if (spot) spot.hidden = t.dataset.tab !== "floor";
     };
     $(".tabs", body) && $(".tabs", body).addEventListener("click", (e) => { const t = e.target.closest("[data-tab]"); if (t) showTab(t); });
-    // 3D-вкладка первой: сначала эмоция, потом чертёж
+    // порядок вкладок: Чертёж, На этаже, Планировка, 3D (последней)
     if (a.layout && window.View3D) View3D.has(a.layout.id).then((ok) => {
       const tabs = $(".tabs", body);
       if (!ok || !tabs || !tabs.isConnected) return;
-      tabs.insertAdjacentHTML("afterbegin", `<button data-tab="3d" role="tab">3D</button>`);
-      showTab($("[data-tab='3d']", tabs));
+      tabs.insertAdjacentHTML("beforeend", `<button data-tab="3d" role="tab">3D</button>`);
     });
     const plan = $(".flat-plan", body);
     if (plan.dataset.zoom) plan.addEventListener("click", () => openZoom(plan.dataset.zoom));
