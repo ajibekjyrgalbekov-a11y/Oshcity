@@ -866,7 +866,8 @@
     f.addEventListener("submit", (e) => {
       e.preventDefault();
       const data = { type: "lead", name: f.elements.name.value.trim(), phone: f.elements.phone.value.trim(), flat: f.elements.flat.value, site: siteBase(), ts: new Date().toISOString(),
-        src: VIS.src1 || VIS.src, device: [VIS.device, VIS.os].filter(Boolean).join(", "), region: VIS.region };
+        src: VIS.src1 || VIS.src, device: [VIS.device, VIS.os].filter(Boolean).join(", "), region: VIS.region,
+        consent: f.elements.consent && f.elements.consent.checked ? "да, " + new Date().toLocaleString("ru-RU") : "" };
       if (data.phone.replace(/\D/g, "").length < 9) { toast("Проверьте номер телефона"); return; }
       if (CFG.sheetUrl) fetch(CFG.sheetUrl, { method: "POST", mode: "no-cors", body: JSON.stringify(data) }).catch(() => {});
       else {
@@ -913,7 +914,50 @@
     }, 6000);
   }
 
+  // ---------- маршрут от клиента до офиса: только после явного согласия ----------
+  const OFFICE = { lat: 40.5135, lon: 72.81461 };
+  function kmBetween(a, b) {
+    const R = 6371, rad = Math.PI / 180;
+    const dLat = (b.lat - a.lat) * rad, dLon = (b.lon - a.lon) * rad;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  function bindRoute() {
+    const btn = $("#geoRoute"), dlg = $("#geoConsent"), box = $("#geoBox");
+    if (!btn) return;
+    const office2gis = "https://2gis.kg/bishkek/geo/70030076431908732/72.814610,40.513500";
+    const officeLink = `<div class="geo-links"><a class="btn btn-gold" href="${office2gis}" target="_blank" rel="noopener">Офис в 2ГИС</a></div>`;
+    btn.addEventListener("click", () => {
+      if (!navigator.geolocation) { box.hidden = false; box.innerHTML = "Ваш браузер не умеет определять местоположение." + officeLink; return; }
+      dlg.hidden = false;
+      track("geo_ask");
+    });
+    $("#geoNo").addEventListener("click", () => { dlg.hidden = true; track("geo_decline"); });
+    $("#geoYes").addEventListener("click", () => {
+      dlg.hidden = true;
+      box.hidden = false;
+      box.textContent = "Определяем ваше местоположение…";
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const me = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+        const km = kmBetween(me, OFFICE);
+        const from = `${me.lat.toFixed(5)},${me.lon.toFixed(5)}`, to = `${OFFICE.lat},${OFFICE.lon}`;
+        const dist = km < 1 ? Math.round(km * 1000) + " м" : km.toFixed(1).replace(".", ",") + " км";
+        box.innerHTML = `До офиса <b>${dist}</b>${km < 40 ? ` · примерно ${Math.max(3, Math.round(km * 2.2 + 3))} мин на машине` : ""}
+          <div class="geo-links">
+            <a class="btn btn-gold" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&origin=${from}&destination=${to}&travelmode=driving">Маршрут в Google Картах</a>
+            <a class="btn btn-ghost" target="_blank" rel="noopener" href="https://yandex.ru/maps/?rtext=${from}~${to}&rtt=auto">Маршрут в Яндекс Картах</a>
+            <a class="btn btn-ghost" target="_blank" rel="noopener" href="${office2gis}">Офис в 2ГИС</a>
+          </div>`;
+        track("geo_route", { geo: `${me.lat.toFixed(4)},${me.lon.toFixed(4)}`, km: Math.round(km * 10) / 10, consent: "да (маршрут)" });
+      }, (err) => {
+        box.innerHTML = (err.code === 1 ? "Доступ к местоположению не разрешён — ничего не сохранено." : "Не удалось определить местоположение.") + officeLink;
+        track("geo_denied");
+      }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+    });
+  }
+
   function bindExtras() {
+    bindRoute();
     heroSlides();
     const big = $("#bigFont");
     let on = false;

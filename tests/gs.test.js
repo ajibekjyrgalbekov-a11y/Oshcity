@@ -14,11 +14,13 @@ eval(fs.readFileSync("google/Code.gs", "utf8") + ";global.setup=setup;global.doP
 setup();
 doPost({ postData: { contents: JSON.stringify({ type: "event", action: "view_flat", flat: "156_1-1-6-1", area: 40.99, monthly: 49000, device: "телефон",
   os: "Android · Samsung", browser: "Chrome", src: "Instagram", src1: "Instagram (реклама)", campaign: "okt", region: "Россия", vid: "abc123" }) } });
-assert.strictEqual(sheets["События"].rows[0].length, 16);
-assert.deepStrictEqual(sheets["События"].rows[1].slice(9), ["Android · Samsung", "Chrome", "Instagram", "Instagram (реклама)", "okt", "Россия", "abc123"]);
+assert.strictEqual(sheets["События"].rows[0].length, 19);
+doPost({ postData: { contents: JSON.stringify({ type: "event", action: "geo_route", geo: "40.5300,72.8000", km: 2.1, consent: "да (маршрут)" }) } });
+assert.deepStrictEqual(sheets["События"].rows[2].slice(16), ["40.5300,72.8000", "2.1", "да (маршрут)"]);
+assert.deepStrictEqual(sheets["События"].rows[1].slice(9, 16), ["Android · Samsung", "Chrome", "Instagram", "Instagram (реклама)", "okt", "Россия", "abc123"]);
 doPost({ postData: { contents: JSON.stringify({ type: "lead", name: "=HYPERLINK(\"x\")", phone: "0555 12 34 56", flat: "160-1-17-5", site: "https://x.github.io/oshcity/",
-  src: "Google поиск", device: "телефон, iPhone", region: "Кыргызстан" }) } });
-assert.deepStrictEqual(sheets["Заявки"].rows[1].slice(6), ["Google поиск", "телефон, iPhone", "Кыргызстан"]);
+  src: "Google поиск", device: "телефон, iPhone", region: "Кыргызстан", consent: "да, 20.10.2026" }) } });
+assert.deepStrictEqual(sheets["Заявки"].rows[1].slice(6), ["Google поиск", "телефон, iPhone", "Кыргызстан", "да, 20.10.2026"]);
 assert.strictEqual(sheets["События"].rows[1][5], "156/1");
 assert.strictEqual(sheets["Заявки"].rows[1][1][0], "'");              // защита от формул
 assert.strictEqual(sheets["Заявки"].rows[1][4], "https://x.github.io/oshcity/#/kv/160-1-17-5");

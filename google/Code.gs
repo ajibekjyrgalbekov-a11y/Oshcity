@@ -7,8 +7,9 @@
 const NOTIFY_EMAIL = ""; // пусто = письма приходят на ваш Gmail (владельца таблицы)
 // Обезличенная статистика: без имён и телефонов — устройство, откуда пришёл, страна по часовому поясу телефона
 const EV_HEADER = ["Время", "Действие", "Квартира", "Площадь", "В месяц", "Блок", "Бюджет", "Устройство", "Откуда пришёл",
-  "Система", "Браузер", "Источник", "Первый источник", "Кампания", "Страна", "Посетитель"];
-const LEAD_HEADER = ["Время", "Имя", "Телефон", "Квартира", "Ссылка", "Статус", "Откуда пришёл", "Устройство", "Страна"];
+  "Система", "Браузер", "Источник", "Первый источник", "Кампания", "Страна", "Посетитель",
+  "Координаты (с согласия)", "До офиса, км", "Согласие"];
+const LEAD_HEADER = ["Время", "Имя", "Телефон", "Квартира", "Ссылка", "Статус", "Откуда пришёл", "Устройство", "Страна", "Согласие на обработку ПД"];
 const WA_HEADER = ["Обновлено", "Имя", "WhatsApp", "Доп. телефон", "Комнат", "Взнос", "Бюджет", "В месяц до", "Список", "Квартиры", "Встреча", "Заметки", "Чат"];
 
 function setup() {
@@ -88,7 +89,7 @@ function doPost(e) {
     } else if (d.type === "lead") {
       const link = d.flat ? (d.site || "") + "#/kv/" + d.flat : "";
       ss.getSheetByName("Заявки").appendRow([when, clean(d.name), clean(d.phone), clean(d.flat), clean(link), "новая",
-        clean(d.src), clean(d.device), clean(d.region)]);
+        clean(d.src), clean(d.device), clean(d.region), clean(d.consent)]);
       const to = NOTIFY_EMAIL || Session.getEffectiveUser().getEmail();
       MailApp.sendEmail(to, "Новая заявка с сайта Osh City: " + clean(d.phone),
         "Имя: " + clean(d.name) + "\nТелефон: " + clean(d.phone) + (d.flat ? "\nКвартира: " + clean(d.flat) : "") +
@@ -100,7 +101,8 @@ function doPost(e) {
       const flat = clean(d.flat);
       ss.getSheetByName("События").appendRow([when, clean(d.action), flat, clean(d.area), clean(d.monthly),
         flat ? flat.split("-")[0].replace("_", "/") : clean(d.block), clean(d.budget), clean(d.device), clean(d.ref),
-        clean(d.os), clean(d.browser), clean(d.src), clean(d.src1), clean(d.campaign), clean(d.region), clean(d.vid)]);
+        clean(d.os), clean(d.browser), clean(d.src), clean(d.src1), clean(d.campaign), clean(d.region), clean(d.vid),
+        clean(d.geo), clean(d.km), clean(d.consent)]);
     }
   } finally {
     lock.releaseLock();
@@ -141,6 +143,7 @@ function weeklyReport() {
   const views = count(function (r) { return r[1] === "view_flat"; });
   const wa = count(function (r) { return String(r[1]).indexOf("whatsapp") === 0; });
   const favs = count(function (r) { return r[1] === "fav_send"; });
+  const routes = rows.filter(function (r) { return r[1] === "geo_route"; });
   const people = {};
   rows.forEach(function (r) { if (r[15]) people[r[15]] = 1; });
   const uniq = Object.keys(people).length;
@@ -161,6 +164,9 @@ function weeklyReport() {
     "<h2>Osh City — неделя на сайте</h2>" +
     "<p><b>" + visits + "</b> заходов" + (uniq ? " (<b>" + uniq + "</b> разных людей)" : "") + " · <b>" + views + "</b> просмотров квартир · <b>" + wa + "</b> нажатий WhatsApp · <b>" +
     favs + "</b> отправленных подборок · <b>" + leads.length + "</b> заявок «Перезвоните»</p>" +
+    (routes.length ? "<p>Маршрут до офиса строили <b>" + routes.length + "</b> раз(а): " + routes.map(function (r) {
+      return '<a href="https://www.google.com/maps?q=' + r[16] + '">' + r[17] + " км</a>";
+    }).join(", ") + "</p>" : "") +
     "<h3>Откуда приходят</h3>" + li(by(11, isVisit), false) +
     "<h3>Откуда пишут в WhatsApp</h3>" + li(by(12, isWa), false) +
     "<h3>Устройства</h3>" + li(by(9, isVisit), false) +
