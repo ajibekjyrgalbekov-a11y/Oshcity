@@ -246,6 +246,1122 @@
    "realThumb": "img/plans/real/thumb/l5_84_28.webp",
    "rw": 1371,
    "rh": 1130
+  },
+  {
+   "id": "n02_275_265",
+   "rooms": 1,
+   "area": 50.8,
+   "img": "img/plans/new/n02_275_265.webp",
+   "thumb": "img/plans/new/thumb/n02_275_265.webp",
+   "w": 159,
+   "h": 130
+  },
+  {
+   "id": "n02_346_258",
+   "rooms": 1,
+   "area": 50.81,
+   "img": "img/plans/new/n02_346_258.webp",
+   "thumb": "img/plans/new/thumb/n02_346_258.webp",
+   "w": 135,
+   "h": 167
+  },
+  {
+   "id": "n02_346_242",
+   "rooms": 1,
+   "area": 54.17,
+   "img": "img/plans/new/n02_346_242.webp",
+   "thumb": "img/plans/new/thumb/n02_346_242.webp",
+   "w": 159,
+   "h": 130
+  },
+  {
+   "id": "n08_219_166",
+   "rooms": 3,
+   "area": 105.87,
+   "img": "img/plans/new/n08_219_166.webp",
+   "thumb": "img/plans/new/thumb/n08_219_166.webp",
+   "w": 342,
+   "h": 446
+  },
+  {
+   "id": "n08_278_372",
+   "rooms": 1,
+   "area": 47.2,
+   "img": "img/plans/new/n08_278_372.webp",
+   "thumb": "img/plans/new/thumb/n08_278_372.webp",
+   "w": 253,
+   "h": 266
+  },
+  {
+   "id": "n08_89_346",
+   "rooms": 2,
+   "area": 73.59,
+   "img": "img/plans/new/n08_89_346.webp",
+   "thumb": "img/plans/new/thumb/n08_89_346.webp",
+   "w": 294,
+   "h": 322
+  },
+  {
+   "id": "n08_89_418",
+   "rooms": 2,
+   "area": 67.3,
+   "img": "img/plans/new/n08_89_418.webp",
+   "thumb": "img/plans/new/thumb/n08_89_418.webp",
+   "w": 367,
+   "h": 325
+  },
+  {
+   "id": "n08_144_166",
+   "rooms": 2,
+   "area": 68.16,
+   "img": "img/plans/new/n08_144_166.webp",
+   "thumb": "img/plans/new/thumb/n08_144_166.webp",
+   "w": 327,
+   "h": 351
+  },
+  {
+   "id": "n08_269_420",
+   "rooms": 2,
+   "area": 68.38,
+   "img": "img/plans/new/n08_269_420.webp",
+   "thumb": "img/plans/new/thumb/n08_269_420.webp",
+   "w": 330,
+   "h": 302
+  },
+  {
+   "id": "n08_463_166",
+   "rooms": 3,
+   "area": 109.77,
+   "img": "img/plans/new/n08_463_166.webp",
+   "thumb": "img/plans/new/thumb/n08_463_166.webp",
+   "w": 251,
+   "h": 519
+  },
+  {
+   "id": "n08_438_350",
+   "rooms": 1,
+   "area": 50.44,
+   "img": "img/plans/new/n08_438_350.webp",
+   "thumb": "img/plans/new/thumb/n08_438_350.webp",
+   "w": 312,
+   "h": 298
+  },
+  {
+   "id": "n08_629_350",
+   "rooms": 1,
+   "area": 45.32,
+   "img": "img/plans/new/n08_629_350.webp",
+   "thumb": "img/plans/new/thumb/n08_629_350.webp",
+   "w": 247,
+   "h": 289
+  },
+  {
+   "id": "n08_676_350",
+   "rooms": 2,
+   "area": 68.85,
+   "img": "img/plans/new/n08_676_350.webp",
+   "thumb": "img/plans/new/thumb/n08_676_350.webp",
+   "w": 335,
+   "h": 320
+  },
+  {
+   "id": "n08_677_164",
+   "rooms": 2,
+   "area": 69.51,
+   "img": "img/plans/new/n08_677_164.webp",
+   "thumb": "img/plans/new/thumb/n08_677_164.webp",
+   "w": 333,
+   "h": 320
+  },
+  {
+   "id": "n08_929_350",
+   "rooms": 1,
+   "area": 50.44,
+   "img": "img/plans/new/n08_929_350.webp",
+   "thumb": "img/plans/new/thumb/n08_929_350.webp",
+   "w": 311,
+   "h": 296
+  },
+  {
+   "id": "n08_954_166",
+   "rooms": 3,
+   "area": 109.77,
+   "img": "img/plans/new/n08_954_166.webp",
+   "thumb": "img/plans/new/thumb/n08_954_166.webp",
+   "w": 251,
+   "h": 519
+  },
+  {
+   "id": "n08_1035_787",
+   "rooms": 3,
+   "area": 105.87,
+   "img": "img/plans/new/n08_1035_787.webp",
+   "thumb": "img/plans/new/thumb/n08_1035_787.webp",
+   "w": 343,
+   "h": 446
+  },
+  {
+   "id": "n08_987_532",
+   "rooms": 2,
+   "area": 68.38,
+   "img": "img/plans/new/n08_987_532.webp",
+   "thumb": "img/plans/new/thumb/n08_987_532.webp",
+   "w": 331,
+   "h": 302
+  },
+  {
+   "id": "n08_533_602",
+   "rooms": 2,
+   "area": 68.8,
+   "img": "img/plans/new/n08_533_602.webp",
+   "thumb": "img/plans/new/thumb/n08_533_602.webp",
+   "w": 333,
+   "h": 321
+  },
+  {
+   "id": "n08_676_602",
+   "rooms": 2,
+   "area": 68.85,
+   "img": "img/plans/new/n08_676_602.webp",
+   "thumb": "img/plans/new/thumb/n08_676_602.webp",
+   "w": 338,
+   "h": 321
+  },
+  {
+   "id": "n08_293_602",
+   "rooms": 3,
+   "area": 109.77,
+   "img": "img/plans/new/n08_293_602.webp",
+   "thumb": "img/plans/new/thumb/n08_293_602.webp",
+   "w": 250,
+   "h": 520
+  },
+  {
+   "id": "n08_337_602",
+   "rooms": 1,
+   "area": 50.44,
+   "img": "img/plans/new/n08_337_602.webp",
+   "thumb": "img/plans/new/thumb/n08_337_602.webp",
+   "w": 326,
+   "h": 293
+  },
+  {
+   "id": "n08_219_787",
+   "rooms": 3,
+   "area": 105.87,
+   "img": "img/plans/new/n08_219_787.webp",
+   "thumb": "img/plans/new/thumb/n08_219_787.webp",
+   "w": 348,
+   "h": 448
+  },
+  {
+   "id": "n08_144_787",
+   "rooms": 2,
+   "area": 68.16,
+   "img": "img/plans/new/n08_144_787.webp",
+   "thumb": "img/plans/new/thumb/n08_144_787.webp",
+   "w": 327,
+   "h": 351
+  },
+  {
+   "id": "n08_90_680",
+   "rooms": 2,
+   "area": 72.77,
+   "img": "img/plans/new/n08_90_680.webp",
+   "thumb": "img/plans/new/thumb/n08_90_680.webp",
+   "w": 290,
+   "h": 369
+  },
+  {
+   "id": "n08_89_607",
+   "rooms": 2,
+   "area": 73.59,
+   "img": "img/plans/new/n08_89_607.webp",
+   "thumb": "img/plans/new/thumb/n08_89_607.webp",
+   "w": 295,
+   "h": 315
+  },
+  {
+   "id": "n08_269_532",
+   "rooms": 2,
+   "area": 68.38,
+   "img": "img/plans/new/n08_269_532.webp",
+   "thumb": "img/plans/new/thumb/n08_269_532.webp",
+   "w": 330,
+   "h": 303
+  },
+  {
+   "id": "n12_62_240",
+   "rooms": 2,
+   "area": 72.77,
+   "img": "img/plans/new/n12_62_240.webp",
+   "thumb": "img/plans/new/thumb/n12_62_240.webp",
+   "w": 295,
+   "h": 421
+  },
+  {
+   "id": "n12_380_130",
+   "rooms": 2,
+   "area": 77.24,
+   "img": "img/plans/new/n12_380_130.webp",
+   "thumb": "img/plans/new/thumb/n12_380_130.webp",
+   "w": 327,
+   "h": 283
+  },
+  {
+   "id": "n12_570_129",
+   "rooms": 1,
+   "area": 53.3,
+   "img": "img/plans/new/n12_570_129.webp",
+   "thumb": "img/plans/new/thumb/n12_570_129.webp",
+   "w": 344,
+   "h": 289
+  },
+  {
+   "id": "n12_520_320",
+   "rooms": 2,
+   "area": 68.8,
+   "img": "img/plans/new/n12_520_320.webp",
+   "thumb": "img/plans/new/thumb/n12_520_320.webp",
+   "w": 341,
+   "h": 328
+  },
+  {
+   "id": "n12_521_129",
+   "rooms": 2,
+   "area": 70.36,
+   "img": "img/plans/new/n12_521_129.webp",
+   "thumb": "img/plans/new/thumb/n12_521_129.webp",
+   "w": 341,
+   "h": 328
+  },
+  {
+   "id": "n12_854_130",
+   "rooms": 2,
+   "area": 77.24,
+   "img": "img/plans/new/n12_854_130.webp",
+   "thumb": "img/plans/new/thumb/n12_854_130.webp",
+   "w": 327,
+   "h": 288
+  },
+  {
+   "id": "n12_1036_131",
+   "rooms": 3,
+   "area": 105.87,
+   "img": "img/plans/new/n12_1036_131.webp",
+   "thumb": "img/plans/new/thumb/n12_1036_131.webp",
+   "w": 392,
+   "h": 457
+  },
+  {
+   "id": "n12_1171_509",
+   "rooms": 2,
+   "area": 67.3,
+   "img": "img/plans/new/n12_1171_509.webp",
+   "thumb": "img/plans/new/thumb/n12_1171_509.webp",
+   "w": 375,
+   "h": 328
+  },
+  {
+   "id": "n12_953_768",
+   "rooms": 3,
+   "area": 109.77,
+   "img": "img/plans/new/n12_953_768.webp",
+   "thumb": "img/plans/new/thumb/n12_953_768.webp",
+   "w": 256,
+   "h": 528
+  },
+  {
+   "id": "n12_854_768",
+   "rooms": 2,
+   "area": 77.24,
+   "img": "img/plans/new/n12_854_768.webp",
+   "thumb": "img/plans/new/thumb/n12_854_768.webp",
+   "w": 320,
+   "h": 289
+  },
+  {
+   "id": "n12_570_769",
+   "rooms": 1,
+   "area": 53.3,
+   "img": "img/plans/new/n12_570_769.webp",
+   "thumb": "img/plans/new/thumb/n12_570_769.webp",
+   "w": 344,
+   "h": 289
+  },
+  {
+   "id": "n12_669_769",
+   "rooms": 2,
+   "area": 69.51,
+   "img": "img/plans/new/n12_669_769.webp",
+   "thumb": "img/plans/new/thumb/n12_669_769.webp",
+   "w": 342,
+   "h": 328
+  },
+  {
+   "id": "n12_616_770",
+   "rooms": 1,
+   "area": 47.15,
+   "img": "img/plans/new/n12_616_770.webp",
+   "thumb": "img/plans/new/thumb/n12_616_770.webp",
+   "w": 336,
+   "h": 311
+  },
+  {
+   "id": "n12_521_769",
+   "rooms": 2,
+   "area": 70.36,
+   "img": "img/plans/new/n12_521_769.webp",
+   "thumb": "img/plans/new/thumb/n12_521_769.webp",
+   "w": 342,
+   "h": 328
+  },
+  {
+   "id": "n12_380_768",
+   "rooms": 2,
+   "area": 77.24,
+   "img": "img/plans/new/n12_380_768.webp",
+   "thumb": "img/plans/new/thumb/n12_380_768.webp",
+   "w": 325,
+   "h": 286
+  },
+  {
+   "id": "n12_63_509",
+   "rooms": 2,
+   "area": 67.3,
+   "img": "img/plans/new/n12_63_509.webp",
+   "thumb": "img/plans/new/thumb/n12_63_509.webp",
+   "w": 376,
+   "h": 332
+  },
+  {
+   "id": "n20_330_322",
+   "rooms": 1,
+   "area": 47.2,
+   "img": "img/plans/new/n20_330_322.webp",
+   "thumb": "img/plans/new/thumb/n20_330_322.webp",
+   "w": 305,
+   "h": 258
+  },
+  {
+   "id": "n20_476_65",
+   "rooms": 2,
+   "area": 77.24,
+   "img": "img/plans/new/n20_476_65.webp",
+   "thumb": "img/plans/new/thumb/n20_476_65.webp",
+   "w": 383,
+   "h": 342
+  },
+  {
+   "id": "n20_964_66",
+   "rooms": 3,
+   "area": 105.87,
+   "img": "img/plans/new/n20_964_66.webp",
+   "thumb": "img/plans/new/thumb/n20_964_66.webp",
+   "w": 415,
+   "h": 525
+  },
+  {
+   "id": "n20_257_835",
+   "rooms": 3,
+   "area": 105.87,
+   "img": "img/plans/new/n20_257_835.webp",
+   "thumb": "img/plans/new/thumb/n20_257_835.webp",
+   "w": 427,
+   "h": 538
+  },
+  {
+   "id": "n20_96_523",
+   "rooms": 2,
+   "area": 67.3,
+   "img": "img/plans/new/n20_96_523.webp",
+   "thumb": "img/plans/new/thumb/n20_96_523.webp",
+   "w": 446,
+   "h": 366
+  },
+  {
+   "id": "n20_680_606",
+   "rooms": 2,
+   "area": 68.8,
+   "img": "img/plans/new/n20_680_606.webp",
+   "thumb": "img/plans/new/thumb/n20_680_606.webp",
+   "w": 404,
+   "h": 388
+  },
+  {
+   "id": "n20_96_612",
+   "rooms": 2,
+   "area": 73.59,
+   "img": "img/plans/new/n20_96_612.webp",
+   "thumb": "img/plans/new/thumb/n20_96_612.webp",
+   "w": 361,
+   "h": 398
+  },
+  {
+   "id": "n22_272_400",
+   "rooms": 2,
+   "area": 74.02,
+   "img": "img/plans/new/n22_272_400.webp",
+   "thumb": "img/plans/new/thumb/n22_272_400.webp",
+   "w": 327,
+   "h": 316
+  },
+  {
+   "id": "n22_93_398",
+   "rooms": 2,
+   "area": 72.98,
+   "img": "img/plans/new/n22_93_398.webp",
+   "thumb": "img/plans/new/thumb/n22_93_398.webp",
+   "w": 364,
+   "h": 341
+  },
+  {
+   "id": "n22_77_326",
+   "rooms": 2,
+   "area": 77.75,
+   "img": "img/plans/new/n22_77_326.webp",
+   "thumb": "img/plans/new/thumb/n22_77_326.webp",
+   "w": 299,
+   "h": 412
+  },
+  {
+   "id": "n22_223_148",
+   "rooms": 3,
+   "area": 100.45,
+   "img": "img/plans/new/n22_223_148.webp",
+   "thumb": "img/plans/new/thumb/n22_223_148.webp",
+   "w": 341,
+   "h": 408
+  },
+  {
+   "id": "n22_281_349",
+   "rooms": 1,
+   "area": 52.5,
+   "img": "img/plans/new/n22_281_349.webp",
+   "thumb": "img/plans/new/thumb/n22_281_349.webp",
+   "w": 244,
+   "h": 283
+  },
+  {
+   "id": "n22_471_331",
+   "rooms": 3,
+   "area": 112.25,
+   "img": "img/plans/new/n22_471_331.webp",
+   "thumb": "img/plans/new/thumb/n22_471_331.webp",
+   "w": 255,
+   "h": 519
+  },
+  {
+   "id": "n22_541_331",
+   "rooms": 3,
+   "area": 112.25,
+   "img": "img/plans/new/n22_541_331.webp",
+   "thumb": "img/plans/new/thumb/n22_541_331.webp",
+   "w": 255,
+   "h": 519
+  },
+  {
+   "id": "n22_614_147",
+   "rooms": 2,
+   "area": 78,
+   "img": "img/plans/new/n22_614_147.webp",
+   "thumb": "img/plans/new/thumb/n22_614_147.webp",
+   "w": 316,
+   "h": 278
+  },
+  {
+   "id": "n22_710_148",
+   "rooms": 3,
+   "area": 111.97,
+   "img": "img/plans/new/n22_710_148.webp",
+   "thumb": "img/plans/new/thumb/n22_710_148.webp",
+   "w": 255,
+   "h": 519
+  },
+  {
+   "id": "n22_928_331",
+   "rooms": 1,
+   "area": 51.06,
+   "img": "img/plans/new/n22_928_331.webp",
+   "thumb": "img/plans/new/thumb/n22_928_331.webp",
+   "w": 320,
+   "h": 294
+  },
+  {
+   "id": "n24_370_365",
+   "rooms": 2,
+   "area": 85.37,
+   "img": "img/plans/new/n24_370_365.webp",
+   "thumb": "img/plans/new/thumb/n24_370_365.webp",
+   "w": 285,
+   "h": 392
+  },
+  {
+   "id": "n24_124_397",
+   "rooms": 2,
+   "area": 85.93,
+   "img": "img/plans/new/n24_124_397.webp",
+   "thumb": "img/plans/new/thumb/n24_124_397.webp",
+   "w": 463,
+   "h": 277
+  },
+  {
+   "id": "n24_124_362",
+   "rooms": 1,
+   "area": 56.55,
+   "img": "img/plans/new/n24_124_362.webp",
+   "thumb": "img/plans/new/thumb/n24_124_362.webp",
+   "w": 367,
+   "h": 312
+  },
+  {
+   "id": "n24_124_285",
+   "rooms": 1,
+   "area": 55.35,
+   "img": "img/plans/new/n24_124_285.webp",
+   "thumb": "img/plans/new/thumb/n24_124_285.webp",
+   "w": 357,
+   "h": 268
+  },
+  {
+   "id": "n24_1127_167",
+   "rooms": 3,
+   "area": 101.24,
+   "img": "img/plans/new/n24_1127_167.webp",
+   "thumb": "img/plans/new/thumb/n24_1127_167.webp",
+   "w": 507,
+   "h": 674
+  },
+  {
+   "id": "n24_203_111",
+   "rooms": 3,
+   "area": 131.91,
+   "img": "img/plans/new/n24_203_111.webp",
+   "thumb": "img/plans/new/thumb/n24_203_111.webp",
+   "w": 609,
+   "h": 527
+  },
+  {
+   "id": "n24_388_91",
+   "rooms": 2,
+   "area": 81.05,
+   "img": "img/plans/new/n24_388_91.webp",
+   "thumb": "img/plans/new/thumb/n24_388_91.webp",
+   "w": 348,
+   "h": 346
+  },
+  {
+   "id": "n24_438_90",
+   "rooms": 2,
+   "area": 85.55,
+   "img": "img/plans/new/n24_438_90.webp",
+   "thumb": "img/plans/new/thumb/n24_438_90.webp",
+   "w": 320,
+   "h": 560
+  },
+  {
+   "id": "n24_410_330",
+   "rooms": 2,
+   "area": 85.18,
+   "img": "img/plans/new/n24_410_330.webp",
+   "thumb": "img/plans/new/thumb/n24_410_330.webp",
+   "w": 448,
+   "h": 293
+  },
+  {
+   "id": "n24_732_102",
+   "rooms": 2,
+   "area": 61.32,
+   "img": "img/plans/new/n24_732_102.webp",
+   "thumb": "img/plans/new/thumb/n24_732_102.webp",
+   "w": 379,
+   "h": 321
+  },
+  {
+   "id": "n24_530_319",
+   "rooms": 2,
+   "area": 63.52,
+   "img": "img/plans/new/n24_530_319.webp",
+   "thumb": "img/plans/new/thumb/n24_530_319.webp",
+   "w": 378,
+   "h": 330
+  },
+  {
+   "id": "n24_876_330",
+   "rooms": 2,
+   "area": 85.18,
+   "img": "img/plans/new/n24_876_330.webp",
+   "thumb": "img/plans/new/thumb/n24_876_330.webp",
+   "w": 450,
+   "h": 294
+  },
+  {
+   "id": "n24_897_91",
+   "rooms": 2,
+   "area": 81.05,
+   "img": "img/plans/new/n24_897_91.webp",
+   "thumb": "img/plans/new/thumb/n24_897_91.webp",
+   "w": 349,
+   "h": 346
+  },
+  {
+   "id": "n24_1069_115",
+   "rooms": 3,
+   "area": 131.91,
+   "img": "img/plans/new/n24_1069_115.webp",
+   "thumb": "img/plans/new/thumb/n24_1069_115.webp",
+   "w": 619,
+   "h": 569
+  },
+  {
+   "id": "n24_1146_285",
+   "rooms": 1,
+   "area": 55.35,
+   "img": "img/plans/new/n24_1146_285.webp",
+   "thumb": "img/plans/new/thumb/n24_1146_285.webp",
+   "w": 357,
+   "h": 268
+  },
+  {
+   "id": "n24_900_365",
+   "rooms": 2,
+   "area": 85.37,
+   "img": "img/plans/new/n24_900_365.webp",
+   "thumb": "img/plans/new/thumb/n24_900_365.webp",
+   "w": 284,
+   "h": 392
+  },
+  {
+   "id": "n24_1146_362",
+   "rooms": 1,
+   "area": 56.55,
+   "img": "img/plans/new/n24_1146_362.webp",
+   "thumb": "img/plans/new/thumb/n24_1146_362.webp",
+   "w": 357,
+   "h": 314
+  },
+  {
+   "id": "n24_919_535",
+   "rooms": 2,
+   "area": 74.02,
+   "img": "img/plans/new/n24_919_535.webp",
+   "thumb": "img/plans/new/thumb/n24_919_535.webp",
+   "w": 385,
+   "h": 372
+  },
+  {
+   "id": "n24_974_836",
+   "rooms": 3,
+   "area": 100.45,
+   "img": "img/plans/new/n24_974_836.webp",
+   "thumb": "img/plans/new/thumb/n24_974_836.webp",
+   "w": 403,
+   "h": 487
+  },
+  {
+   "id": "n24_287_836",
+   "rooms": 3,
+   "area": 100.45,
+   "img": "img/plans/new/n24_287_836.webp",
+   "thumb": "img/plans/new/thumb/n24_287_836.webp",
+   "w": 398,
+   "h": 472
+  },
+  {
+   "id": "n24_112_719",
+   "rooms": 2,
+   "area": 71.86,
+   "img": "img/plans/new/n24_112_719.webp",
+   "thumb": "img/plans/new/thumb/n24_112_719.webp",
+   "w": 334,
+   "h": 425
+  },
+  {
+   "id": "n24_112_624",
+   "rooms": 2,
+   "area": 77.75,
+   "img": "img/plans/new/n24_112_624.webp",
+   "thumb": "img/plans/new/thumb/n24_112_624.webp",
+   "w": 347,
+   "h": 387
+  },
+  {
+   "id": "n24_131_537",
+   "rooms": 2,
+   "area": 72.98,
+   "img": "img/plans/new/n24_131_537.webp",
+   "thumb": "img/plans/new/thumb/n24_131_537.webp",
+   "w": 427,
+   "h": 376
+  },
+  {
+   "id": "n24_345_535",
+   "rooms": 2,
+   "area": 74.02,
+   "img": "img/plans/new/n24_345_535.webp",
+   "thumb": "img/plans/new/thumb/n24_345_535.webp",
+   "w": 386,
+   "h": 372
+  },
+  {
+   "id": "n26_288_385",
+   "rooms": 2,
+   "area": 85.37,
+   "img": "img/plans/new/n26_288_385.webp",
+   "thumb": "img/plans/new/thumb/n26_288_385.webp",
+   "w": 252,
+   "h": 344
+  },
+  {
+   "id": "n26_75_412",
+   "rooms": 2,
+   "area": 85.93,
+   "img": "img/plans/new/n26_75_412.webp",
+   "thumb": "img/plans/new/thumb/n26_75_412.webp",
+   "w": 540,
+   "h": 328
+  },
+  {
+   "id": "n26_75_381",
+   "rooms": 1,
+   "area": 56.55,
+   "img": "img/plans/new/n26_75_381.webp",
+   "thumb": "img/plans/new/thumb/n26_75_381.webp",
+   "w": 319,
+   "h": 272
+  },
+  {
+   "id": "n26_1180_213",
+   "rooms": 3,
+   "area": 101.24,
+   "img": "img/plans/new/n26_1180_213.webp",
+   "thumb": "img/plans/new/thumb/n26_1180_213.webp",
+   "w": 441,
+   "h": 466
+  },
+  {
+   "id": "n26_144_163",
+   "rooms": 3,
+   "area": 131.91,
+   "img": "img/plans/new/n26_144_163.webp",
+   "thumb": "img/plans/new/thumb/n26_144_163.webp",
+   "w": 454,
+   "h": 531
+  },
+  {
+   "id": "n26_304_146",
+   "rooms": 2,
+   "area": 81.05,
+   "img": "img/plans/new/n26_304_146.webp",
+   "thumb": "img/plans/new/thumb/n26_304_146.webp",
+   "w": 308,
+   "h": 305
+  },
+  {
+   "id": "n26_348_146",
+   "rooms": 2,
+   "area": 85.55,
+   "img": "img/plans/new/n26_348_146.webp",
+   "thumb": "img/plans/new/thumb/n26_348_146.webp",
+   "w": 268,
+   "h": 578
+  },
+  {
+   "id": "n26_323_354",
+   "rooms": 2,
+   "area": 85.18,
+   "img": "img/plans/new/n26_323_354.webp",
+   "thumb": "img/plans/new/thumb/n26_323_354.webp",
+   "w": 430,
+   "h": 260
+  },
+  {
+   "id": "n26_75_314",
+   "rooms": 1,
+   "area": 55.35,
+   "img": "img/plans/new/n26_75_314.webp",
+   "thumb": "img/plans/new/thumb/n26_75_314.webp",
+   "w": 315,
+   "h": 238
+  },
+  {
+   "id": "n26_419_154",
+   "rooms": 3,
+   "area": 111.97,
+   "img": "img/plans/new/n26_419_154.webp",
+   "thumb": "img/plans/new/thumb/n26_419_154.webp",
+   "w": 264,
+   "h": 538
+  },
+  {
+   "id": "n26_594_345",
+   "rooms": 3,
+   "area": 112.25,
+   "img": "img/plans/new/n26_594_345.webp",
+   "thumb": "img/plans/new/thumb/n26_594_345.webp",
+   "w": 264,
+   "h": 532
+  },
+  {
+   "id": "n26_519_153",
+   "rooms": 2,
+   "area": 78,
+   "img": "img/plans/new/n26_519_153.webp",
+   "thumb": "img/plans/new/thumb/n26_519_153.webp",
+   "w": 331,
+   "h": 289
+  },
+  {
+   "id": "n26_714_345",
+   "rooms": 1,
+   "area": 51.17,
+   "img": "img/plans/new/n26_714_345.webp",
+   "thumb": "img/plans/new/thumb/n26_714_345.webp",
+   "w": 359,
+   "h": 299
+  },
+  {
+   "id": "n26_668_345",
+   "rooms": 3,
+   "area": 112.25,
+   "img": "img/plans/new/n26_668_345.webp",
+   "thumb": "img/plans/new/thumb/n26_668_345.webp",
+   "w": 265,
+   "h": 532
+  },
+  {
+   "id": "n26_744_153",
+   "rooms": 2,
+   "area": 78,
+   "img": "img/plans/new/n26_744_153.webp",
+   "thumb": "img/plans/new/thumb/n26_744_153.webp",
+   "w": 326,
+   "h": 289
+  },
+  {
+   "id": "n26_845_154",
+   "rooms": 3,
+   "area": 111.97,
+   "img": "img/plans/new/n26_845_154.webp",
+   "thumb": "img/plans/new/thumb/n26_845_154.webp",
+   "w": 264,
+   "h": 538
+  },
+  {
+   "id": "n26_962_354",
+   "rooms": 2,
+   "area": 85.18,
+   "img": "img/plans/new/n26_962_354.webp",
+   "thumb": "img/plans/new/thumb/n26_962_354.webp",
+   "w": 429,
+   "h": 253
+  },
+  {
+   "id": "n26_937_146",
+   "rooms": 2,
+   "area": 85.55,
+   "img": "img/plans/new/n26_937_146.webp",
+   "thumb": "img/plans/new/thumb/n26_937_146.webp",
+   "w": 313,
+   "h": 553
+  },
+  {
+   "id": "n26_981_146",
+   "rooms": 2,
+   "area": 81.05,
+   "img": "img/plans/new/n26_981_146.webp",
+   "thumb": "img/plans/new/thumb/n26_981_146.webp",
+   "w": 308,
+   "h": 305
+  },
+  {
+   "id": "n26_1130_167",
+   "rooms": 3,
+   "area": 131.91,
+   "img": "img/plans/new/n26_1130_167.webp",
+   "thumb": "img/plans/new/thumb/n26_1130_167.webp",
+   "w": 460,
+   "h": 525
+  },
+  {
+   "id": "n26_983_385",
+   "rooms": 2,
+   "area": 85.37,
+   "img": "img/plans/new/n26_983_385.webp",
+   "thumb": "img/plans/new/thumb/n26_983_385.webp",
+   "w": 253,
+   "h": 344
+  },
+  {
+   "id": "n26_1197_314",
+   "rooms": 1,
+   "area": 55.35,
+   "img": "img/plans/new/n26_1197_314.webp",
+   "thumb": "img/plans/new/thumb/n26_1197_314.webp",
+   "w": 315,
+   "h": 238
+  },
+  {
+   "id": "n26_1197_381",
+   "rooms": 1,
+   "area": 56.55,
+   "img": "img/plans/new/n26_1197_381.webp",
+   "thumb": "img/plans/new/thumb/n26_1197_381.webp",
+   "w": 315,
+   "h": 277
+  },
+  {
+   "id": "n29_362_376",
+   "rooms": 2,
+   "area": 85.37,
+   "img": "img/plans/new/n29_362_376.webp",
+   "thumb": "img/plans/new/thumb/n29_362_376.webp",
+   "w": 279,
+   "h": 383
+  },
+  {
+   "id": "n29_122_407",
+   "rooms": 2,
+   "area": 85.93,
+   "img": "img/plans/new/n29_122_407.webp",
+   "thumb": "img/plans/new/thumb/n29_122_407.webp",
+   "w": 494,
+   "h": 349
+  },
+  {
+   "id": "n29_122_373",
+   "rooms": 1,
+   "area": 56.55,
+   "img": "img/plans/new/n29_122_373.webp",
+   "thumb": "img/plans/new/thumb/n29_122_373.webp",
+   "w": 350,
+   "h": 308
+  },
+  {
+   "id": "n29_1102_183",
+   "rooms": 3,
+   "area": 101.24,
+   "img": "img/plans/new/n29_1102_183.webp",
+   "thumb": "img/plans/new/thumb/n29_1102_183.webp",
+   "w": 448,
+   "h": 466
+  },
+  {
+   "id": "n29_200_128",
+   "rooms": 3,
+   "area": 131.91,
+   "img": "img/plans/new/n29_200_128.webp",
+   "thumb": "img/plans/new/thumb/n29_200_128.webp",
+   "w": 606,
+   "h": 560
+  },
+  {
+   "id": "n29_380_108",
+   "rooms": 2,
+   "area": 81.05,
+   "img": "img/plans/new/n29_380_108.webp",
+   "thumb": "img/plans/new/thumb/n29_380_108.webp",
+   "w": 341,
+   "h": 339
+  },
+  {
+   "id": "n29_401_342",
+   "rooms": 2,
+   "area": 85.18,
+   "img": "img/plans/new/n29_401_342.webp",
+   "thumb": "img/plans/new/thumb/n29_401_342.webp",
+   "w": 479,
+   "h": 286
+  },
+  {
+   "id": "n29_122_297",
+   "rooms": 1,
+   "area": 55.35,
+   "img": "img/plans/new/n29_122_297.webp",
+   "thumb": "img/plans/new/thumb/n29_122_297.webp",
+   "w": 349,
+   "h": 263
+  },
+  {
+   "id": "n29_429_108",
+   "rooms": 2,
+   "area": 85.55,
+   "img": "img/plans/new/n29_429_108.webp",
+   "thumb": "img/plans/new/thumb/n29_429_108.webp",
+   "w": 255,
+   "h": 532
+  },
+  {
+   "id": "n29_716_119",
+   "rooms": 2,
+   "area": 61.32,
+   "img": "img/plans/new/n29_716_119.webp",
+   "thumb": "img/plans/new/thumb/n29_716_119.webp",
+   "w": 370,
+   "h": 314
+  },
+  {
+   "id": "n29_521_118",
+   "rooms": 2,
+   "area": 61.64,
+   "img": "img/plans/new/n29_521_118.webp",
+   "thumb": "img/plans/new/thumb/n29_521_118.webp",
+   "w": 370,
+   "h": 314
+  },
+  {
+   "id": "n29_519_331",
+   "rooms": 2,
+   "area": 63.52,
+   "img": "img/plans/new/n29_519_331.webp",
+   "thumb": "img/plans/new/thumb/n29_519_331.webp",
+   "w": 370,
+   "h": 326
+  },
+  {
+   "id": "n29_716_332",
+   "rooms": 2,
+   "area": 63.58,
+   "img": "img/plans/new/n29_716_332.webp",
+   "thumb": "img/plans/new/thumb/n29_716_332.webp",
+   "w": 370,
+   "h": 313
+  },
+  {
+   "id": "n29_591_334",
+   "rooms": 1,
+   "area": 45.05,
+   "img": "img/plans/new/n29_591_334.webp",
+   "thumb": "img/plans/new/thumb/n29_591_334.webp",
+   "w": 247,
+   "h": 295
+  },
+  {
+   "id": "n29_857_342",
+   "rooms": 2,
+   "area": 85.18,
+   "img": "img/plans/new/n29_857_342.webp",
+   "thumb": "img/plans/new/thumb/n29_857_342.webp",
+   "w": 476,
+   "h": 288
+  },
+  {
+   "id": "n29_829_108",
+   "rooms": 2,
+   "area": 85.55,
+   "img": "img/plans/new/n29_829_108.webp",
+   "thumb": "img/plans/new/thumb/n29_829_108.webp",
+   "w": 278,
+   "h": 555
+  },
+  {
+   "id": "n29_1121_373",
+   "rooms": 1,
+   "area": 56.55,
+   "img": "img/plans/new/n29_1121_373.webp",
+   "thumb": "img/plans/new/thumb/n29_1121_373.webp",
+   "w": 354,
+   "h": 305
   }
  ],
  "floors": [
@@ -269,6 +1385,1890 @@
    "img": "img/plans/floor_l5.webp",
    "w": 2400,
    "h": 1703
+  },
+  {
+   "id": "nf02_14",
+   "img": "img/plans/new/nf02_14.webp"
+  },
+  {
+   "id": "nf08_43",
+   "img": "img/plans/new/nf08_43.webp"
+  },
+  {
+   "id": "nf08_45",
+   "img": "img/plans/new/nf08_45.webp"
+  },
+  {
+   "id": "nf12_45",
+   "img": "img/plans/new/nf12_45.webp"
+  },
+  {
+   "id": "nf12_50",
+   "img": "img/plans/new/nf12_50.webp"
+  },
+  {
+   "id": "nf08_52",
+   "img": "img/plans/new/nf08_52.webp"
+  },
+  {
+   "id": "nf20_134",
+   "img": "img/plans/new/nf20_134.webp"
+  },
+  {
+   "id": "nf22_63",
+   "img": "img/plans/new/nf22_63.webp"
+  },
+  {
+   "id": "nf22_65",
+   "img": "img/plans/new/nf22_65.webp"
+  },
+  {
+   "id": "nf24_88",
+   "img": "img/plans/new/nf24_88.webp"
+  },
+  {
+   "id": "nf24_90",
+   "img": "img/plans/new/nf24_90.webp"
+  },
+  {
+   "id": "nf24_94",
+   "img": "img/plans/new/nf24_94.webp"
+  },
+  {
+   "id": "nf26_104",
+   "img": "img/plans/new/nf26_104.webp"
+  },
+  {
+   "id": "nf26_105",
+   "img": "img/plans/new/nf26_105.webp"
+  },
+  {
+   "id": "nf26_106",
+   "img": "img/plans/new/nf26_106.webp"
+  },
+  {
+   "id": "nf26_107",
+   "img": "img/plans/new/nf26_107.webp"
+  },
+  {
+   "id": "nf29_120",
+   "img": "img/plans/new/nf29_120.webp"
+  },
+  {
+   "id": "nf29_121",
+   "img": "img/plans/new/nf29_121.webp"
+  },
+  {
+   "id": "nf29_122",
+   "img": "img/plans/new/nf29_122.webp"
   }
- ]
+ ],
+ "byBlock": {
+  "14": {
+   "50.80": {
+    "plan": "n02_275_265",
+    "floor": "nf02_14",
+    "spot": [
+     17.8,
+     16.2,
+     54.7,
+     38.1
+    ]
+   },
+   "50.81": {
+    "plan": "n02_346_258",
+    "floor": "nf02_14",
+    "spot": [
+     38.2,
+     30.8,
+     44.0,
+     53.0
+    ]
+   },
+   "54.17": {
+    "plan": "n02_346_242",
+    "floor": "nf02_14",
+    "spot": [
+     17.8,
+     16.2,
+     54.7,
+     38.1
+    ]
+   }
+  },
+  "43": {
+   "105.87": {
+    "plan": "n08_219_166",
+    "floor": "nf08_43",
+    "spot": [
+     49.3,
+     3.6,
+     44.8,
+     36.9
+    ]
+   },
+   "47.20": {
+    "plan": "n08_278_372",
+    "floor": "nf08_43",
+    "spot": [
+     56.1,
+     58.6,
+     31.8,
+     20.7
+    ]
+   },
+   "73.59": {
+    "plan": "n08_89_346",
+    "floor": "nf08_43",
+    "spot": [
+     5.9,
+     49.2,
+     37.8,
+     25.8
+    ]
+   },
+   "67.30": {
+    "plan": "n08_89_418",
+    "floor": "nf08_43",
+    "spot": [
+     6.4,
+     70.4,
+     48.5,
+     26.0
+    ]
+   },
+   "68.16": {
+    "plan": "n08_144_166",
+    "floor": "nf08_43",
+    "spot": [
+     6.4,
+     4.0,
+     42.6,
+     28.4
+    ]
+   },
+   "68.38": {
+    "plan": "n08_269_420",
+    "floor": "nf08_43",
+    "spot": [
+     50.2,
+     72.1,
+     43.0,
+     24.0
+    ]
+   },
+   "72.77": {
+    "plan": "n12_62_240"
+   }
+  },
+  "44": {
+   "109.77": {
+    "plan": "n08_463_166"
+   },
+   "50.44": {
+    "plan": "n08_438_350"
+   },
+   "77.24": {
+    "plan": "n12_380_130"
+   }
+  },
+  "45": {
+   "45.32": {
+    "plan": "n08_629_350",
+    "floor": "nf08_45",
+    "spot": [
+     7.8,
+     55.8,
+     41.2,
+     38.2
+    ]
+   },
+   "68.85": {
+    "plan": "n08_676_350",
+    "floor": "nf08_45",
+    "spot": [
+     33.8,
+     50.1,
+     58.4,
+     42.8
+    ]
+   },
+   "69.51": {
+    "plan": "n08_677_164",
+    "floor": "nf08_45",
+    "spot": [
+     34.2,
+     6.0,
+     58.0,
+     42.8
+    ]
+   },
+   "53.30": {
+    "plan": "n12_570_129",
+    "floor": "nf12_45",
+    "spot": [
+     40.0,
+     6.3,
+     53.1,
+     37.7
+    ]
+   },
+   "68.80": {
+    "plan": "n12_520_320",
+    "floor": "nf12_45",
+    "spot": [
+     6.9,
+     50.5,
+     52.6,
+     43.5
+    ]
+   },
+   "70.36": {
+    "plan": "n12_521_129",
+    "floor": "nf12_45",
+    "spot": [
+     6.9,
+     6.0,
+     52.6,
+     43.5
+    ]
+   }
+  },
+  "46": {
+   "50.44": {
+    "plan": "n08_929_350"
+   },
+   "109.77": {
+    "plan": "n08_954_166"
+   },
+   "77.24": {
+    "plan": "n12_854_130"
+   }
+  },
+  "48": {
+   "105.87": {
+    "plan": "n08_1035_787"
+   },
+   "68.38": {
+    "plan": "n08_987_532"
+   },
+   "67.30": {
+    "plan": "n12_1171_509"
+   }
+  },
+  "50": {
+   "68.80": {
+    "plan": "n08_533_602"
+   },
+   "68.85": {
+    "plan": "n08_676_602"
+   },
+   "53.30": {
+    "plan": "n12_570_769",
+    "floor": "nf12_50",
+    "spot": [
+     24.2,
+     20.7,
+     32.2,
+     68.0
+    ]
+   },
+   "69.51": {
+    "plan": "n12_669_769",
+    "floor": "nf12_50",
+    "spot": [
+     63.9,
+     10.8,
+     31.9,
+     78.5
+    ]
+   },
+   "47.15": {
+    "plan": "n12_616_770",
+    "floor": "nf12_50",
+    "spot": [
+     44.9,
+     15.1,
+     31.3,
+     73.9
+    ]
+   },
+   "70.36": {
+    "plan": "n12_521_769",
+    "floor": "nf12_50",
+    "spot": [
+     4.2,
+     10.8,
+     31.9,
+     78.5
+    ]
+   }
+  },
+  "51": {
+   "109.77": {
+    "plan": "n08_293_602"
+   },
+   "50.44": {
+    "plan": "n08_337_602"
+   },
+   "77.24": {
+    "plan": "n12_380_768"
+   }
+  },
+  "52": {
+   "105.87": {
+    "plan": "n08_219_787",
+    "floor": "nf08_52",
+    "spot": [
+     48.5,
+     59.2,
+     45.6,
+     37.2
+    ]
+   },
+   "68.16": {
+    "plan": "n08_144_787",
+    "floor": "nf08_52",
+    "spot": [
+     6.6,
+     67.4,
+     42.5,
+     28.4
+    ]
+   },
+   "72.77": {
+    "plan": "n08_90_680",
+    "floor": "nf08_52",
+    "spot": [
+     6.6,
+     49.0,
+     37.1,
+     30.1
+    ]
+   },
+   "73.59": {
+    "plan": "n08_89_607",
+    "floor": "nf08_52",
+    "spot": [
+     5.8,
+     24.7,
+     37.9,
+     25.2
+    ]
+   },
+   "68.38": {
+    "plan": "n08_269_532",
+    "floor": "nf08_52",
+    "spot": [
+     50.3,
+     3.6,
+     43.0,
+     24.1
+    ]
+   },
+   "67.30": {
+    "plan": "n12_63_509"
+   },
+   "104.95": {
+    "plan": "n12_1036_131",
+    "approx": true
+   }
+  },
+  "47": {
+   "105.87": {
+    "plan": "n12_1036_131"
+   },
+   "104.95": {
+    "plan": "n12_1036_131"
+   }
+  },
+  "49": {
+   "109.77": {
+    "plan": "n12_953_768"
+   },
+   "77.24": {
+    "plan": "n12_854_768"
+   }
+  },
+  "127": {
+   "47.20": {
+    "plan": "n20_330_322"
+   },
+   "105.72": {
+    "plan": "n08_219_166",
+    "approx": true
+   },
+   "67.81": {
+    "plan": "n20_680_606",
+    "approx": true
+   },
+   "68.47": {
+    "plan": "n12_669_769",
+    "approx": true
+   }
+  },
+  "128": {
+   "77.24": {
+    "plan": "n20_476_65"
+   },
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "110.49": {
+    "plan": "n08_463_166",
+    "approx": true
+   }
+  },
+  "130": {
+   "105.87": {
+    "plan": "n20_964_66"
+   },
+   "105.72": {
+    "plan": "n20_964_66"
+   },
+   "67.81": {
+    "plan": "n08_144_166",
+    "approx": true
+   }
+  },
+  "134": {
+   "105.87": {
+    "plan": "n20_257_835",
+    "floor": "nf20_134",
+    "spot": [
+     15.7,
+     59.9,
+     15.3,
+     37.1
+    ]
+   },
+   "67.30": {
+    "plan": "n20_96_523",
+    "floor": "nf20_134",
+    "spot": [
+     2.0,
+     3.0,
+     16.1,
+     24.4
+    ]
+   },
+   "68.80": {
+    "plan": "n20_680_606",
+    "floor": "nf20_134",
+    "spot": [
+     84.0,
+     44.2,
+     14.4,
+     26.0
+    ]
+   },
+   "73.59": {
+    "plan": "n20_96_612",
+    "floor": "nf20_134",
+    "spot": [
+     1.6,
+     24.3,
+     12.7,
+     26.8
+    ]
+   },
+   "67.81": {
+    "plan": "n08_144_166",
+    "approx": true
+   },
+   "72.40": {
+    "plan": "n08_90_680",
+    "approx": true
+   },
+   "105.22": {
+    "plan": "n20_964_66",
+    "approx": true
+   }
+  },
+  "63": {
+   "74.02": {
+    "plan": "n22_272_400",
+    "floor": "nf22_63",
+    "spot": [
+     50.1,
+     70.8,
+     42.8,
+     25.5
+    ]
+   },
+   "72.98": {
+    "plan": "n22_93_398",
+    "floor": "nf22_63",
+    "spot": [
+     6.6,
+     68.6,
+     48.2,
+     27.8
+    ]
+   },
+   "77.75": {
+    "plan": "n22_77_326",
+    "floor": "nf22_63",
+    "spot": [
+     5.9,
+     38.9,
+     38.7,
+     34.3
+    ]
+   },
+   "100.45": {
+    "plan": "n22_223_148",
+    "floor": "nf22_63",
+    "spot": [
+     49.3,
+     3.6,
+     44.9,
+     33.9
+    ]
+   },
+   "52.50": {
+    "plan": "n22_281_349",
+    "floor": "nf22_63",
+    "spot": [
+     56.5,
+     55.7,
+     30.6,
+     22.5
+    ]
+   },
+   "131.99": {
+    "plan": "n26_144_163",
+    "approx": true
+   }
+  },
+  "64": {
+   "112.25": {
+    "plan": "n22_471_331"
+   }
+  },
+  "65": {
+   "112.25": {
+    "plan": "n22_541_331",
+    "floor": "nf22_65",
+    "spot": [
+     4.0,
+     13.7,
+     21.9,
+     79.7
+    ]
+   },
+   "78.00": {
+    "plan": "n22_614_147",
+    "floor": "nf22_65",
+    "spot": [
+     49.8,
+     6.6,
+     27.9,
+     39.9
+    ]
+   },
+   "111.97": {
+    "plan": "n22_710_148",
+    "floor": "nf22_65",
+    "spot": [
+     74.2,
+     13.7,
+     21.9,
+     79.7
+    ]
+   }
+  },
+  "66": {
+   "51.06": {
+    "plan": "n22_928_331"
+   }
+  },
+  "88": {
+   "85.37": {
+    "plan": "n24_370_365",
+    "floor": "nf24_88",
+    "spot": [
+     12.6,
+     67.4,
+     6.4,
+     29.3
+    ]
+   },
+   "85.93": {
+    "plan": "n24_124_397",
+    "floor": "nf24_88",
+    "spot": [
+     1.1,
+     42.0,
+     11.1,
+     19.8
+    ]
+   },
+   "56.55": {
+    "plan": "n24_124_362",
+    "floor": "nf24_88",
+    "spot": [
+     1.0,
+     65.5,
+     8.6,
+     22.7
+    ]
+   },
+   "55.35": {
+    "plan": "n24_124_285",
+    "floor": "nf24_88",
+    "spot": [
+     1.2,
+     50.6,
+     8.3,
+     19.1
+    ]
+   },
+   "101.24": {
+    "plan": "n24_1127_167",
+    "floor": "nf24_88",
+    "spot": [
+     86.8,
+     17.2,
+     12.2,
+     52.5
+    ]
+   },
+   "131.91": {
+    "plan": "n24_203_111",
+    "floor": "nf24_88",
+    "spot": [
+     6.9,
+     3.8,
+     14.8,
+     40.4
+    ]
+   },
+   "81.05": {
+    "plan": "n24_388_91",
+    "floor": "nf24_88",
+    "spot": [
+     19.5,
+     3.8,
+     8.1,
+     25.5
+    ]
+   },
+   "85.55": {
+    "plan": "n24_438_90",
+    "floor": "nf24_88",
+    "spot": [
+     26.0,
+     3.3,
+     7.4,
+     43.1
+    ]
+   },
+   "85.18": {
+    "plan": "n24_410_330",
+    "floor": "nf24_88",
+    "spot": [
+     19.8,
+     39.8,
+     10.7,
+     21.2
+    ]
+   }
+  },
+  "89": {
+   "61.32": {
+    "plan": "n24_732_102"
+   },
+   "63.52": {
+    "plan": "n24_530_319"
+   },
+   "111.44": {
+    "plan": "n26_419_154",
+    "approx": true
+   },
+   "111.11": {
+    "plan": "n26_419_154",
+    "approx": true
+   }
+  },
+  "90": {
+   "85.18": {
+    "plan": "n24_876_330",
+    "floor": "nf24_90",
+    "spot": [
+     3.3,
+     39.5,
+     34.1,
+     21.3
+    ]
+   },
+   "81.05": {
+    "plan": "n24_897_91",
+    "floor": "nf24_90",
+    "spot": [
+     12.6,
+     3.3,
+     25.8,
+     25.6
+    ]
+   },
+   "131.91": {
+    "plan": "n24_1069_115",
+    "floor": "nf24_90",
+    "spot": [
+     30.7,
+     3.3,
+     48.0,
+     44.1
+    ]
+   },
+   "101.24": {
+    "plan": "n24_1127_167",
+    "floor": "nf24_90",
+    "spot": [
+     56.2,
+     16.8,
+     38.8,
+     52.8
+    ]
+   },
+   "55.35": {
+    "plan": "n24_1146_285",
+    "floor": "nf24_90",
+    "spot": [
+     70.3,
+     50.4,
+     26.4,
+     19.2
+    ]
+   },
+   "85.37": {
+    "plan": "n24_900_365",
+    "floor": "nf24_90",
+    "spot": [
+     39.8,
+     67.2,
+     20.4,
+     29.4
+    ]
+   },
+   "56.55": {
+    "plan": "n24_1146_362",
+    "floor": "nf24_90",
+    "spot": [
+     70.3,
+     65.3,
+     26.4,
+     23.0
+    ]
+   },
+   "86.93": {
+    "plan": "n24_438_90",
+    "approx": true
+   }
+  },
+  "91": {
+   "74.02": {
+    "plan": "n24_919_535"
+   },
+   "100.45": {
+    "plan": "n24_974_836"
+   },
+   "131.99": {
+    "plan": "n26_144_163",
+    "approx": true
+   }
+  },
+  "94": {
+   "100.45": {
+    "plan": "n24_287_836",
+    "floor": "nf24_94",
+    "spot": [
+     49.6,
+     63.5,
+     45.4,
+     33.5
+    ]
+   },
+   "71.86": {
+    "plan": "n24_112_719",
+    "floor": "nf24_94",
+    "spot": [
+     5.9,
+     48.0,
+     37.4,
+     29.9
+    ]
+   },
+   "77.75": {
+    "plan": "n24_112_624",
+    "floor": "nf24_94",
+    "spot": [
+     5.0,
+     26.7,
+     39.0,
+     26.9
+    ]
+   },
+   "72.98": {
+    "plan": "n24_131_537",
+    "floor": "nf24_94",
+    "spot": [
+     5.5,
+     3.1,
+     49.1,
+     26.1
+    ]
+   },
+   "74.02": {
+    "plan": "n24_345_535",
+    "floor": "nf24_94",
+    "spot": [
+     50.3,
+     3.4,
+     43.9,
+     25.8
+    ]
+   },
+   "131.99": {
+    "plan": "n24_1069_115",
+    "approx": true
+   }
+  },
+  "104": {
+   "85.37": {
+    "plan": "n26_288_385",
+    "floor": "nf26_104",
+    "spot": [
+     10.0,
+     61.6,
+     5.0,
+     26.3
+    ]
+   },
+   "85.93": {
+    "plan": "n26_75_412",
+    "floor": "nf26_104",
+    "spot": [
+     0.9,
+     71.7,
+     11.7,
+     24.9
+    ]
+   },
+   "56.55": {
+    "plan": "n26_75_381",
+    "floor": "nf26_104",
+    "spot": [
+     1.0,
+     59.8,
+     6.6,
+     20.1
+    ]
+   },
+   "101.24": {
+    "plan": "n26_1180_213",
+    "floor": "nf26_104",
+    "spot": [
+     89.7,
+     16.8,
+     9.4,
+     36.7
+    ]
+   },
+   "131.91": {
+    "plan": "n26_144_163",
+    "floor": "nf26_104",
+    "spot": [
+     5.5,
+     3.8,
+     9.7,
+     42.2
+    ]
+   },
+   "81.05": {
+    "plan": "n26_304_146",
+    "floor": "nf26_104",
+    "spot": [
+     15.4,
+     4.3,
+     6.3,
+     22.9
+    ]
+   },
+   "85.55": {
+    "plan": "n26_348_146",
+    "floor": "nf26_104",
+    "spot": [
+     20.8,
+     3.4,
+     5.4,
+     46.2
+    ]
+   },
+   "85.18": {
+    "plan": "n26_323_354",
+    "floor": "nf26_104",
+    "spot": [
+     14.8,
+     36.7,
+     9.2,
+     19.1
+    ]
+   },
+   "55.35": {
+    "plan": "n26_75_314",
+    "floor": "nf26_104",
+    "spot": [
+     1.1,
+     46.4,
+     6.5,
+     17.2
+    ]
+   }
+  },
+  "105": {
+   "111.97": {
+    "plan": "n26_419_154",
+    "floor": "nf26_105",
+    "spot": [
+     3.8,
+     13.7,
+     21.9,
+     79.9
+    ]
+   },
+   "112.25": {
+    "plan": "n26_594_345",
+    "floor": "nf26_105",
+    "spot": [
+     74.2,
+     14.6,
+     21.9,
+     79.0
+    ]
+   },
+   "78.00": {
+    "plan": "n26_519_153",
+    "floor": "nf26_105",
+    "spot": [
+     21.8,
+     6.4,
+     28.4,
+     40.3
+    ]
+   },
+   "78.88": {
+    "plan": "n26_744_153",
+    "approx": true
+   }
+  },
+  "106": {
+   "51.17": {
+    "plan": "n26_714_345",
+    "floor": "nf26_106",
+    "spot": [
+     11.9,
+     55.3,
+     31.0,
+     38.8
+    ]
+   },
+   "112.25": {
+    "plan": "n26_668_345",
+    "floor": "nf26_106",
+    "spot": [
+     3.8,
+     13.6,
+     22.0,
+     73.2
+    ]
+   },
+   "78.00": {
+    "plan": "n26_744_153",
+    "floor": "nf26_106",
+    "spot": [
+     50.4,
+     5.9,
+     27.9,
+     37.3
+    ]
+   },
+   "111.97": {
+    "plan": "n26_845_154",
+    "floor": "nf26_106",
+    "spot": [
+     74.3,
+     12.7,
+     21.9,
+     74.0
+    ]
+   }
+  },
+  "107": {
+   "85.18": {
+    "plan": "n26_962_354",
+    "floor": "nf26_107",
+    "spot": [
+     10.9,
+     40.0,
+     34.2,
+     20.5
+    ]
+   },
+   "85.55": {
+    "plan": "n26_937_146",
+    "floor": "nf26_107",
+    "spot": [
+     3.5,
+     5.2,
+     24.1,
+     48.8
+    ]
+   },
+   "81.05": {
+    "plan": "n26_981_146",
+    "floor": "nf26_107",
+    "spot": [
+     19.2,
+     3.8,
+     23.7,
+     25.4
+    ]
+   },
+   "131.91": {
+    "plan": "n26_1130_167",
+    "floor": "nf26_107",
+    "spot": [
+     43.1,
+     3.8,
+     36.9,
+     46.1
+    ]
+   },
+   "101.24": {
+    "plan": "n26_1180_213",
+    "floor": "nf26_107",
+    "spot": [
+     59.7,
+     17.6,
+     35.2,
+     40.6
+    ]
+   },
+   "85.37": {
+    "plan": "n26_983_385",
+    "floor": "nf26_107",
+    "spot": [
+     44.2,
+     67.2,
+     18.9,
+     29.1
+    ]
+   },
+   "55.35": {
+    "plan": "n26_1197_314",
+    "floor": "nf26_107",
+    "spot": [
+     72.2,
+     50.4,
+     24.3,
+     19.1
+    ]
+   },
+   "56.55": {
+    "plan": "n26_1197_381",
+    "floor": "nf26_107",
+    "spot": [
+     72.2,
+     65.2,
+     24.3,
+     22.7
+    ]
+   },
+   "86.93": {
+    "plan": "n26_348_146",
+    "approx": true
+   }
+  },
+  "120": {
+   "85.37": {
+    "plan": "n29_362_376",
+    "floor": "nf29_120",
+    "spot": [
+     12.5,
+     62.3,
+     6.4,
+     27.0
+    ]
+   },
+   "85.93": {
+    "plan": "n29_122_407",
+    "floor": "nf29_120",
+    "spot": [
+     1.7,
+     72.6,
+     12.1,
+     24.3
+    ]
+   },
+   "56.55": {
+    "plan": "n29_122_373",
+    "floor": "nf29_120",
+    "spot": [
+     1.1,
+     60.4,
+     8.3,
+     21.2
+    ]
+   },
+   "101.24": {
+    "plan": "n29_1102_183",
+    "floor": "nf29_120",
+    "spot": [
+     88.0,
+     19.4,
+     10.9,
+     33.4
+    ]
+   },
+   "131.91": {
+    "plan": "n29_200_128",
+    "floor": "nf29_120",
+    "spot": [
+     6.7,
+     3.1,
+     15.1,
+     40.7
+    ]
+   },
+   "81.05": {
+    "plan": "n29_380_108",
+    "floor": "nf29_120",
+    "spot": [
+     19.4,
+     3.5,
+     8.1,
+     23.6
+    ]
+   },
+   "85.18": {
+    "plan": "n29_401_342",
+    "floor": "nf29_120",
+    "spot": [
+     18.7,
+     36.9,
+     11.7,
+     19.4
+    ]
+   },
+   "55.35": {
+    "plan": "n29_122_297",
+    "floor": "nf29_120",
+    "spot": [
+     1.1,
+     46.7,
+     8.3,
+     17.7
+    ]
+   },
+   "85.55": {
+    "plan": "n29_429_108",
+    "floor": "nf29_120",
+    "spot": [
+     27.3,
+     5.4,
+     5.8,
+     38.6
+    ]
+   }
+  },
+  "121": {
+   "61.32": {
+    "plan": "n29_716_119",
+    "floor": "nf29_121",
+    "spot": [
+     70.9,
+     5.8,
+     26.0,
+     40.1
+    ]
+   },
+   "61.64": {
+    "plan": "n29_521_118",
+    "floor": "nf29_121",
+    "spot": [
+     3.1,
+     5.8,
+     26.0,
+     40.1
+    ]
+   },
+   "63.52": {
+    "plan": "n29_519_331",
+    "floor": "nf29_121",
+    "spot": [
+     3.1,
+     47.1,
+     26.0,
+     41.8
+    ]
+   },
+   "63.58": {
+    "plan": "n29_716_332",
+    "floor": "nf29_121",
+    "spot": [
+     70.9,
+     47.1,
+     26.0,
+     39.9
+    ]
+   },
+   "45.05": {
+    "plan": "n29_591_334",
+    "floor": "nf29_121",
+    "spot": [
+     24.9,
+     56.9,
+     16.4,
+     37.3
+    ]
+   },
+   "111.44": {
+    "plan": "n26_419_154",
+    "approx": true
+   },
+   "111.11": {
+    "plan": "n26_419_154",
+    "approx": true
+   }
+  },
+  "122": {
+   "85.18": {
+    "plan": "n29_857_342",
+    "floor": "nf29_122",
+    "spot": [
+     11.4,
+     43.2,
+     33.9,
+     23.3
+    ]
+   },
+   "85.55": {
+    "plan": "n29_829_108",
+    "floor": "nf29_122",
+    "spot": [
+     3.1,
+     3.7,
+     18.6,
+     48.1
+    ]
+   },
+   "56.55": {
+    "plan": "n29_1121_373",
+    "floor": "nf29_122",
+    "spot": [
+     72.4,
+     71.4,
+     24.5,
+     24.9
+    ]
+   }
+  },
+  "11": {
+   "47.16": {
+    "plan": "n12_616_770",
+    "approx": true
+   }
+  },
+  "25": {
+   "47.16": {
+    "plan": "n12_616_770",
+    "approx": true
+   }
+  },
+  "28": {
+   "76.30": {
+    "plan": "n12_380_130",
+    "approx": true
+   },
+   "110.49": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "50.32": {
+    "plan": "n08_438_350",
+    "approx": true
+   },
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "78.34": {
+    "plan": "n26_519_153",
+    "approx": true
+   },
+   "49.66": {
+    "plan": "n08_337_602",
+    "approx": true
+   }
+  },
+  "53": {
+   "105.72": {
+    "plan": "n08_219_166",
+    "approx": true
+   },
+   "67.65": {
+    "plan": "n08_144_166",
+    "approx": true
+   },
+   "68.47": {
+    "plan": "n12_669_769",
+    "approx": true
+   },
+   "67.81": {
+    "plan": "n08_144_787",
+    "approx": true
+   },
+   "74.30": {
+    "plan": "n22_93_398",
+    "approx": true
+   }
+  },
+  "54": {
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "110.49": {
+    "plan": "n08_463_166",
+    "approx": true
+   }
+  },
+  "55": {
+   "68.76": {
+    "plan": "n12_520_320",
+    "approx": true
+   },
+   "70.10": {
+    "plan": "n12_521_129",
+    "approx": true
+   },
+   "69.41": {
+    "plan": "n08_677_164",
+    "approx": true
+   },
+   "68.93": {
+    "plan": "n08_676_350",
+    "approx": true
+   },
+   "100.79": {
+    "plan": "n22_223_148",
+    "approx": true
+   }
+  },
+  "56": {
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "50.44": {
+    "plan": "n08_438_350",
+    "approx": true
+   },
+   "110.49": {
+    "plan": "n08_463_166",
+    "approx": true
+   }
+  },
+  "57": {
+   "105.72": {
+    "plan": "n20_964_66",
+    "approx": true
+   },
+   "67.81": {
+    "plan": "n08_144_166",
+    "approx": true
+   },
+   "72.40": {
+    "plan": "n08_90_680",
+    "approx": true
+   }
+  },
+  "58": {
+   "105.72": {
+    "plan": "n08_219_166",
+    "approx": true
+   },
+   "72.77": {
+    "plan": "n12_62_240",
+    "approx": true
+   },
+   "73.59": {
+    "plan": "n20_96_612",
+    "approx": true
+   },
+   "67.81": {
+    "plan": "n08_144_787",
+    "approx": true
+   },
+   "68.80": {
+    "plan": "n08_676_350",
+    "approx": true
+   }
+  },
+  "59": {
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "76.30": {
+    "plan": "n12_380_130",
+    "approx": true
+   },
+   "110.49": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "78.34": {
+    "plan": "n26_519_153",
+    "approx": true
+   }
+  },
+  "60": {
+   "68.76": {
+    "plan": "n08_533_602",
+    "approx": true
+   },
+   "70.10": {
+    "plan": "n12_521_769",
+    "approx": true
+   },
+   "68.93": {
+    "plan": "n08_676_602",
+    "approx": true
+   }
+  },
+  "61": {
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "110.49": {
+    "plan": "n08_463_166",
+    "approx": true
+   }
+  },
+  "62": {
+   "105.87": {
+    "plan": "n20_964_66",
+    "approx": true
+   },
+   "67.30": {
+    "plan": "n20_96_523",
+    "approx": true
+   },
+   "67.81": {
+    "plan": "n08_144_166",
+    "approx": true
+   },
+   "68.80": {
+    "plan": "n20_680_606",
+    "approx": true
+   },
+   "72.40": {
+    "plan": "n08_90_680",
+    "approx": true
+   },
+   "73.59": {
+    "plan": "n20_96_612",
+    "approx": true
+   },
+   "105.22": {
+    "plan": "n20_964_66",
+    "approx": true
+   }
+  },
+  "67": {
+   "131.99": {
+    "plan": "n26_1130_167",
+    "approx": true
+   }
+  },
+  "81": {
+   "105.72": {
+    "plan": "n08_219_166",
+    "approx": true
+   },
+   "75.06": {
+    "plan": "n20_96_612",
+    "approx": true
+   },
+   "67.81": {
+    "plan": "n08_144_787",
+    "approx": true
+   },
+   "68.47": {
+    "plan": "n12_669_769",
+    "approx": true
+   }
+  },
+  "82": {
+   "50.32": {
+    "plan": "n08_337_602",
+    "approx": true
+   },
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "49.66": {
+    "plan": "n08_438_350",
+    "approx": true
+   }
+  },
+  "83": {
+   "50.32": {
+    "plan": "n08_438_350",
+    "approx": true
+   },
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "110.49": {
+    "plan": "n08_463_166",
+    "approx": true
+   }
+  },
+  "84": {
+   "105.72": {
+    "plan": "n20_964_66",
+    "approx": true
+   },
+   "105.87": {
+    "plan": "n20_964_66",
+    "approx": true
+   },
+   "73.94": {
+    "plan": "n22_93_398",
+    "approx": true
+   },
+   "75.06": {
+    "plan": "n20_96_612",
+    "approx": true
+   },
+   "68.47": {
+    "plan": "n08_677_164",
+    "approx": true
+   },
+   "67.81": {
+    "plan": "n08_144_166",
+    "approx": true
+   }
+  },
+  "85": {
+   "131.21": {
+    "plan": "n26_144_163",
+    "approx": true
+   },
+   "106.05": {
+    "plan": "n20_964_66",
+    "approx": true
+   },
+   "49.75": {
+    "plan": "n02_346_258",
+    "approx": true
+   },
+   "84.84": {
+    "plan": "n26_937_146",
+    "approx": true
+   }
+  },
+  "87": {
+   "131.21": {
+    "plan": "n26_1130_167",
+    "approx": true
+   },
+   "79.20": {
+    "plan": "n26_519_153",
+    "approx": true
+   },
+   "106.05": {
+    "plan": "n20_964_66",
+    "approx": true
+   },
+   "84.84": {
+    "plan": "n26_348_146",
+    "approx": true
+   }
+  },
+  "95": {
+   "67.81": {
+    "plan": "n08_144_787",
+    "approx": true
+   },
+   "68.47": {
+    "plan": "n12_669_769",
+    "approx": true
+   },
+   "75.06": {
+    "plan": "n20_96_612",
+    "approx": true
+   },
+   "105.72": {
+    "plan": "n08_219_166",
+    "approx": true
+   }
+  },
+  "99": {
+   "67.81": {
+    "plan": "n08_144_166",
+    "approx": true
+   },
+   "105.72": {
+    "plan": "n20_964_66",
+    "approx": true
+   }
+  },
+  "100": {
+   "131.21": {
+    "plan": "n26_144_163",
+    "approx": true
+   },
+   "106.05": {
+    "plan": "n20_964_66",
+    "approx": true
+   },
+   "84.84": {
+    "plan": "n26_937_146",
+    "approx": true
+   },
+   "131.44": {
+    "plan": "n26_144_163",
+    "approx": true
+   },
+   "135.98": {
+    "plan": "n26_144_163",
+    "approx": true
+   }
+  },
+  "101": {
+   "45.06": {
+    "plan": "n29_591_334",
+    "approx": true
+   }
+  },
+  "102": {
+   "77.60": {
+    "plan": "n22_77_326",
+    "approx": true
+   },
+   "110.49": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   }
+  },
+  "103": {
+   "131.21": {
+    "plan": "n26_1130_167",
+    "approx": true
+   },
+   "84.84": {
+    "plan": "n26_348_146",
+    "approx": true
+   },
+   "49.75": {
+    "plan": "n08_337_602",
+    "approx": true
+   },
+   "79.20": {
+    "plan": "n26_519_153",
+    "approx": true
+   },
+   "106.05": {
+    "plan": "n20_964_66",
+    "approx": true
+   },
+   "55.53": {
+    "plan": "n26_1197_314",
+    "approx": true
+   },
+   "131.44": {
+    "plan": "n26_144_163",
+    "approx": true
+   }
+  },
+  "113": {
+   "68.47": {
+    "plan": "n12_669_769",
+    "approx": true
+   },
+   "75.06": {
+    "plan": "n20_96_612",
+    "approx": true
+   },
+   "67.81": {
+    "plan": "n08_144_787",
+    "approx": true
+   },
+   "105.72": {
+    "plan": "n08_219_166",
+    "approx": true
+   }
+  },
+  "114": {
+   "110.49": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   }
+  },
+  "115": {
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "110.49": {
+    "plan": "n08_463_166",
+    "approx": true
+   }
+  },
+  "116": {
+   "105.72": {
+    "plan": "n20_964_66",
+    "approx": true
+   },
+   "67.81": {
+    "plan": "n08_144_166",
+    "approx": true
+   }
+  },
+  "117": {
+   "131.21": {
+    "plan": "n26_144_163",
+    "approx": true
+   },
+   "84.84": {
+    "plan": "n26_937_146",
+    "approx": true
+   },
+   "106.05": {
+    "plan": "n20_964_66",
+    "approx": true
+   },
+   "79.20": {
+    "plan": "n26_304_146",
+    "approx": true
+   },
+   "106.50": {
+    "plan": "n20_964_66",
+    "approx": true
+   },
+   "131.44": {
+    "plan": "n26_144_163",
+    "approx": true
+   },
+   "135.98": {
+    "plan": "n26_144_163",
+    "approx": true
+   }
+  },
+  "118": {
+   "68.76": {
+    "plan": "n08_533_602",
+    "approx": true
+   }
+  },
+  "119": {
+   "131.21": {
+    "plan": "n26_1130_167",
+    "approx": true
+   },
+   "49.75": {
+    "plan": "n08_337_602",
+    "approx": true
+   },
+   "56.74": {
+    "plan": "n26_1197_381",
+    "approx": true
+   },
+   "106.05": {
+    "plan": "n20_964_66",
+    "approx": true
+   },
+   "84.84": {
+    "plan": "n26_348_146",
+    "approx": true
+   },
+   "80.04": {
+    "plan": "n26_981_146",
+    "approx": true
+   },
+   "131.44": {
+    "plan": "n26_144_163",
+    "approx": true
+   }
+  },
+  "129": {
+   "110.49": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "78.34": {
+    "plan": "n26_744_153",
+    "approx": true
+   },
+   "76.30": {
+    "plan": "n20_476_65",
+    "approx": true
+   }
+  },
+  "131": {
+   "72.40": {
+    "plan": "n12_62_240",
+    "approx": true
+   },
+   "105.72": {
+    "plan": "n08_219_166",
+    "approx": true
+   }
+  },
+  "132": {
+   "68.93": {
+    "plan": "n20_680_606",
+    "approx": true
+   },
+   "53.19": {
+    "plan": "n12_570_769",
+    "approx": true
+   },
+   "68.76": {
+    "plan": "n08_533_602",
+    "approx": true
+   }
+  },
+  "133": {
+   "108.69": {
+    "plan": "n08_463_166",
+    "approx": true
+   },
+   "110.49": {
+    "plan": "n08_463_166",
+    "approx": true
+   }
+  }
+ }
 }

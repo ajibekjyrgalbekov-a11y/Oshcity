@@ -11,7 +11,7 @@
   const MAX_CMP = 3;
 
   const state = {
-    blocksFree: new Map(), loaded: new Map(), byId: new Map(), plans: new Map(), floors: new Map(),
+    blocksFree: new Map(), loaded: new Map(), byId: new Map(), plans: new Map(), floors: new Map(), byBlock: {},
     block: null, filter: { rooms: 0, budget: Infinity, floor: "", sort: "month" },
     shown: PAGE, list: [], cmp: loadCmp(), fav: loadList("oc_fav"), recent: loadList("oc_recent"), updated: ""
   };
@@ -24,25 +24,33 @@
   // короткая цена для списков и сообщений
   const priceShort = (a) => (a.q.cash ? `${fmt(a.q.total)} сом наличными` : `${fmt(a.q.monthly)} сом/мес`);
   const handoverOf = (b) => { const t = CFG.blocks[b] && CFG.blocks[b].terms; return t && CFG.terms[t] ? CFG.terms[t].handover : ""; };
+  // новые лоты: планировка по блоку и площади (вырезана из PDF, см. tools/new_layouts.py)
+  function newLayout(a) {
+    const e = (state.byBlock[a.b] || {})[Number(a.a).toFixed(2)];
+    return e && state.plans.has(e.plan) ? e : null;
+  }
   function layoutFor(a) {
     const blk = CFG.blocks[a.b];
-    if (!blk || !CFG.layouts[blk.type]) return null;      // у новых лотов планировки пока не нарисованы
+    if (blk && !CFG.layouts[blk.type]) { const e = newLayout(a); return e ? state.plans.get(e.plan) : null; }
+    if (!blk) return null;
     const map = CFG.layouts[blk.type];
     const key = blk.type === "k" ? a.a.toFixed(2) : a.n;
     return state.plans.get(map[key]) || null;
   }
   function floorPlanFor(a) {
     const blk = CFG.blocks[a.b];
+    if (blk && !CFG.layouts[blk.type]) { const e = newLayout(a); return e && e.floor ? state.floors.get(e.floor) || null : null; }
     return blk && CFG.floorPlans[blk.type] ? state.floors.get(CFG.floorPlans[blk.type]) : null;
   }
 
   // Клиенту не показываем общее количество: квартиры грузятся по одному блоку, когда его выбрали на генплане
   async function load() {
-    const [iRes, pRes] = await Promise.all([fetch("data/index.json", { cache: "no-cache" }), fetch("data/plans.json")]);
+    const [iRes, pRes] = await Promise.all([fetch("data/index.json", { cache: "no-cache" }), fetch("data/plans.json", { cache: "no-cache" })]);
     const index = await iRes.json();
     const plans = await pRes.json();
     plans.plans.forEach((p) => state.plans.set(p.id, p));
     plans.floors.forEach((p) => state.floors.set(p.id, p));
+    state.byBlock = plans.byBlock || {};
     state.updated = index.updated;
     // блок → сколько свободных (старый формат — просто список блоков)
     if (Array.isArray(index.blocks)) index.blocks.forEach((b) => state.blocksFree.set(b, 0));
@@ -616,7 +624,7 @@
           <p>${a.f} этаж · подъезд ${a.p} · квартира №${a.n}</p>
         </div>
         <div style="margin-top:14px">
-          ${lay ? `<div class="tabs" role="tablist"><button class="on" data-tab="draw" role="tab">Чертёж</button>${fp ? `<button data-tab="floor" role="tab">На этаже</button>` : ""}<button data-tab="plan" role="tab">Планировка</button></div>` : ""}
+          ${lay ? `<div class="tabs" role="tablist"><button class="on" data-tab="draw" role="tab">Чертёж</button>${fp ? `<button data-tab="floor" role="tab">На этаже</button>` : ""}${lay.real ? `<button data-tab="plan" role="tab">Планировка</button>` : ""}</div>` : ""}
           <div class="flat-3d" hidden></div>
           <div class="flat-plan" data-zoom="${lay ? lay.img : ""}">
             ${lay ? `<span class="fp-wrap"><img src="${lay.img}" alt="Планировка квартиры ${fmtArea(a.a)} м² с мебелью" data-plan="${lay.real || lay.img}" data-draw="${lay.img}" data-floor="${fp ? fp.img : ""}">${spotHtml(a)}</span>` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
@@ -670,7 +678,8 @@
   // подсветка квартиры на плане этажа (видна на вкладке «На этаже»)
   function spotHtml(a) {
     const blk = CFG.blocks[a.b];
-    const spot = blk && CFG.floorSpots && CFG.floorSpots[blk.type] && CFG.floorSpots[blk.type][a.n];
+    const ne = blk && !CFG.layouts[blk.type] ? newLayout(a) : null;
+    const spot = ne ? ne.spot : blk && CFG.floorSpots && CFG.floorSpots[blk.type] && CFG.floorSpots[blk.type][a.n];
     if (!spot) return "";
     const [l, t, w, h] = spot;
     return `<i class="fp-spot" hidden style="left:${l}%;top:${t}%;width:${w}%;height:${h}%"><em>Ваша квартира</em></i>`;
