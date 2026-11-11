@@ -630,6 +630,7 @@
             ${lay ? `<span class="fp-wrap"><img src="${lay.img}" alt="Планировка квартиры ${fmtArea(a.a)} м² с мебелью" data-plan="${lay.real || lay.img}" data-draw="${lay.img}" data-floor="${fp ? fp.img : ""}">${spotHtml(a)}</span>` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
             ${lay ? `<span class="zoom-ico">Увеличить</span>` : ""}
           </div>
+          ${lay && lay.area && Math.abs(lay.area - a.a) >= 0.02 ? `<p class="card-meta" style="margin:8px 2px 0">Планировка этого типа из проекта (${fmtArea(lay.area)} м²). Точная площадь квартиры по базе — ${fmtArea(a.a)} м².</p>` : ""}
         </div>
       </div>
       <div style="display:grid;gap:14px">
