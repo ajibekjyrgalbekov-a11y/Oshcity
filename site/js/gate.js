@@ -1,10 +1,10 @@
 // Пароль на вход в сайт. В коде хранится только хеш пароля (SHA-256), сам пароль восстановить из него нельзя.
 // Это «дверь с кодом», а не сервер с замком: файлы сайта на GitHub Pages остаются доступны по прямым ссылкам.
-// Сменить пароль: новый хеш = SHA-256(SALT + пароль) — попросите Claude или посчитайте командой из README.
+// Сменить пароль: новый хеш = SHA-256(SALT + пароль маленькими буквами) — попросите Claude. Регистр и пробелы по краям не важны.
 (function () {
   "use strict";
-  var HASH = "adab50abdbe4135cea6ccb8119d4f8cd59a343a2c559dbe24459f75e2cfdaeef";
-  var SALT = "oshcity-gate-1";
+  var HASH = "ca7313d22901dc5d1d54478eb69b62c5b4ec482559c9168fb1a2233e61f03a0d";
+  var SALT = "oshcity-gate-2";
   var KEY = "oc_gate", DAYS = 30;
 
   function remembered() {
@@ -59,7 +59,7 @@
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       if (!window.crypto || !crypto.subtle) { err.textContent = "Браузер слишком старый. Откройте сайт в Chrome или Safari."; return; }
-      sha256(SALT + input.value).then(function (h) {
+      sha256(SALT + input.value.trim().toLowerCase()).then(function (h) {
         if (h !== HASH) { err.textContent = "Неверный пароль"; input.select(); return; }
         try {
           if (form.elements.remember.checked) localStorage.setItem(KEY, JSON.stringify({ h: HASH, until: Date.now() + DAYS * 864e5 }));
