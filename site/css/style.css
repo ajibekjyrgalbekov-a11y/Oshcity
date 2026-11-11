@@ -1034,3 +1034,12 @@ html.big .infra li span, html.big .infra li b { font-size: 18px; } html.big .inf
 .calc-groups button { flex: 1 1 auto; }
 .calc [hidden] { display: none !important; }
 .qa-list { margin: 0 0 10px; padding-left: 18px; display: grid; gap: 8px; }
+
+/* поиск по всем блокам */
+.find { display: grid; gap: 14px; padding: 18px; margin: 18px 0; }
+.find .pay-modes { margin-top: 6px; }
+.find .chips { margin-top: 6px; }
+.find-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.find select { width: 100%; }
+.find-count { margin: 0; font-weight: 800; }
+@media (min-width: 900px) { .find { grid-template-columns: 1fr 1fr; align-items: end; } .find-count { grid-column: 1 / -1; } }

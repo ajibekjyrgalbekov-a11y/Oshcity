@@ -20,9 +20,12 @@
   const aptId = (a) => `${a.b.replace("/", "_")}-${a.p}-${a.f}-${a.n}`;
   const blockName = (b) => `Блок ${b}`;
   const usd = (n) => "$" + fmt(n);
+  // доллары — главная валюта, сомы — вторая. Платёж в месяц в $ — пересчёт по курсу (≈)
+  const toUsd = (som) => Math.round(som / CFG.usdRate);
+  const usdOf = (q) => q.totalUsd || toUsd(q.total);
   const mKey = (a) => Calc.monthlyKey(a.q);                  // «сначала дешевле»: квартиры за наличные — после рассрочки
   // короткая цена для списков и сообщений
-  const priceShort = (a) => (a.q.cash ? `${fmt(a.q.total)} сом наличными` : `${fmt(a.q.monthly)} сом/мес`);
+  const priceShort = (a) => (a.q.cash ? `${usd(usdOf(a.q))} наличными` : `≈${usd(toUsd(a.q.monthly))}/мес`);
   const handoverOf = (b) => { const t = CFG.blocks[b] && CFG.blocks[b].terms; return t && CFG.terms[t] ? CFG.terms[t].handover : ""; };
   // новые лоты: планировка по блоку и площади (вырезана из PDF, см. tools/new_layouts.py)
   function newLayout(a) {
@@ -110,8 +113,8 @@
     return `Здравствуйте! Интересует квартира в Osh City:\n` +
       `${roomsLabel(a.r)} ${fmtArea(a.a)} м², ${blockName(a.b)}, ${a.f} этаж, кв. №${a.n}\n` +
       (a.q.cash
-        ? `Цена ${fmt(a.q.total)} сом (${usd(a.q.totalUsd)}), оплата наличными${a.q.handover ? ", сдача " + a.q.handover : ""}.\n`
-        : `Цена ${fmt(a.q.total)} сом${a.q.usd ? ` (${usd(a.q.usd)}/м²)` : ""}, взнос ${fmt(a.q.down)}, ${fmt(a.q.monthly)} сом/мес × ${a.q.months} мес.${a.q.handover ? " Сдача " + a.q.handover + "." : ""}\n`) +
+        ? `Цена ${usd(usdOf(a.q))} (${fmt(a.q.total)} сом), оплата наличными${a.q.handover ? ", сдача " + a.q.handover : ""}.\n`
+        : `Цена ${a.q.totalUsd ? "" : "≈"}${usd(usdOf(a.q))} (${fmt(a.q.total)} сом), взнос ${fmt(a.q.down)} сом, ${fmt(a.q.monthly)} сом/мес × ${a.q.months} мес.${a.q.handover ? " Сдача " + a.q.handover + "." : ""}\n`) +
       flatLink(a);
   }
   const waHref = (text) => `https://wa.me/${CFG.whatsapp}?text=${encodeURIComponent(text)}`;
@@ -399,10 +402,10 @@
         <div class="card-title">${fmtArea(a.a)} м² · ${a.f} этаж</div>
         <div class="card-meta">${blockName(a.b)} · лот ${CFG.blocks[a.b].lot} · кв. №${a.n}${a.q.handover ? ` · сдача ${a.q.handover}` : ""}</div>
         ${a.q.cash
-          ? `<div class="card-month"><b>${fmt(a.q.total)}</b><span>сом · наличными</span></div>
-        <div class="card-total">${usd(a.q.totalUsd)} · ${usd(a.q.usd)} за м²</div>`
-          : `<div class="card-month"><b>${fmt(a.q.monthly)}</b><span>сом / мес</span></div>
-        <div class="card-total">Цена ${fmt(a.q.total)} сом${a.q.totalUsd ? ` (${usd(a.q.totalUsd)})` : ""} · взнос ${fmt(a.q.down)}</div>`}
+          ? `<div class="card-month"><b>${usd(usdOf(a.q))}</b><span>наличными</span></div>
+        <div class="card-total">${fmt(a.q.total)} сом · ${usd(a.q.usd || toUsd(a.q.ppm))} за м²</div>`
+          : `<div class="card-month"><b>≈${usd(toUsd(a.q.monthly))}</b><span>/ мес · ${fmt(a.q.monthly)} сом</span></div>
+        <div class="card-total">Цена ${a.q.totalUsd ? "" : "≈"}${usd(usdOf(a.q))} · ${fmt(a.q.total)} сом · взнос ${fmt(a.q.down)} сом</div>`}
       </div>
     </article>`;
   }
@@ -578,9 +581,9 @@
         <div><span>Площадь</span><b class="${bArea(a)}">${fmtArea(a.a)} м²</b></div>
         <div><span>Этаж</span><b>${a.f}</b></div>
         <div><span>Блок / кв.</span><b>${a.b} / №${a.n}</b></div>
-        <div><span>Цена за м²</span><b class="${bPpm(a)}">${fmt(a.q.ppm)}</b></div>
-        <div><span>Цена</span><b class="${bTotal(a)}">${fmt(a.q.total)}</b></div>
-        <div><span>В месяц</span><b class="${bMonth(a)}">${a.q.cash ? "наличные" : fmt(a.q.monthly)}</b></div>
+        <div><span>Цена за м²</span><b class="${bPpm(a)}">${a.q.usd ? usd(a.q.usd) : "≈" + usd(toUsd(a.q.ppm))}<small> ${fmt(a.q.ppm)} сом</small></b></div>
+        <div><span>Цена</span><b class="${bTotal(a)}">${a.q.totalUsd ? "" : "≈"}${usd(usdOf(a.q))}<small> ${fmt(a.q.total)} сом</small></b></div>
+        <div><span>В месяц</span><b class="${bMonth(a)}">${a.q.cash ? "наличные" : `≈${usd(toUsd(a.q.monthly))}<small> ${fmt(a.q.monthly)} сом</small>`}</b></div>
       </div>
       <a class="btn btn-dark" href="#/kv/${a.id}">Подробнее</a>
       <button class="btn btn-outline" data-cmp-remove="${a.id}">Убрать</button>
@@ -658,9 +661,9 @@
   function payHtml(q) {
     const hand = q.handover ? `<div class="pay-row"><span>Сдача дома</span><b>${q.handover}</b></div>` : "";
     if (q.cash && !q.canInstall) {
-      return `${hand}<div class="pay-row"><span>Цена за м²</span><b>${fmt(q.ppm)} сом · ${usd(q.usd)}</b></div>
-        <div class="pay-month"><span>Стоимость квартиры, сом</span><b>${fmt(q.total)}</b></div>
-        <p class="note" style="margin:0">${usd(q.totalUsd)} по курсу ${CFG.usdRate} сом за $1. Оплата только наличными.</p>`;
+      return `${hand}<div class="pay-row"><span>Цена за м²</span><b>${usd(q.usd)} · ${fmt(q.ppm)} сом</b></div>
+        <div class="pay-month"><span>Стоимость квартиры</span><b>${usd(q.totalUsd)}</b></div>
+        <p class="note" style="margin:0">${fmt(q.total)} сом по курсу ${CFG.usdRate} сом за $1. Оплата только наличными.</p>`;
     }
     const max = Math.max(q.minDown, Math.floor(q.total * 0.7 / 50000) * 50000);
     return `${hand}${q.terms ? `<div class="pay-modes" role="tablist"><button type="button" class="on" data-mode="inst">Рассрочка</button><button type="button" data-mode="cash">Наличными</button></div>` : ""}
@@ -707,15 +710,15 @@
     const refresh = () => {
       const fx = (id) => $("#" + id, body);
       if (fx("fPpm")) {
-        fx("fPpm").textContent = `${fmt(q.ppm)} сом` + (q.usd ? ` · ${usd(q.usd)}` : "");
-        fx("fTotal").textContent = `${fmt(q.total)} сом` + (q.totalUsd ? ` · ${usd(q.totalUsd)}` : "");
+        fx("fPpm").textContent = (q.usd ? usd(q.usd) : "≈" + usd(toUsd(q.ppm))) + ` · ${fmt(q.ppm)} сом`;
+        fx("fTotal").textContent = (q.totalUsd ? usd(q.totalUsd) : "≈" + usd(toUsd(q.total))) + ` · ${fmt(q.total)} сом`;
         fx("fInst").hidden = q.cash;
         fx("fCashNote").hidden = !q.cash;
         fx("fCashNote").textContent = `Оплата наличными по ${usd(q.usd || 0)} за м². Курс ${CFG.usdRate} сом за $1.`;
         if (!q.cash) {
           fx("fDownOut").textContent = fmt(q.down);
           fx("fRest").textContent = fmt(q.rest) + " сом";
-          fx("fMonthly").textContent = fmt(q.monthly);
+          fx("fMonthly").textContent = `≈${usd(toUsd(q.monthly))} · ${fmt(q.monthly)} сом`;
           fx("fMonths").textContent = q.months;
           fx("fLast").textContent = tiers + (q.last !== q.monthly ? `Последний платёж — ${fmt(q.last)} сом, чтобы сумма сошлась до сома. ` : "") + "Без процентов.";
           $("#schedBox").innerHTML = scheduleHtml(q);
@@ -942,11 +945,11 @@
       $("#cDownF").hidden = q.cash;
       if (q.cash) {
         const t = CFG.terms[g.id];
-        $("#cTotalL").textContent = "Цена в долларах";
-        $("#cTotal").textContent = usd(q.totalUsd);
+        $("#cTotalL").textContent = "В сомах";
+        $("#cTotal").textContent = fmt(q.total) + " сом";
         $("#cPpm").textContent = `${usd(q.usd)} · ${fmt(q.ppm)} сом`;
-        $("#cMonthlyL").textContent = "Наличными";
-        $("#cMonthly").textContent = fmt(q.total) + " сом";
+        $("#cMonthlyL").textContent = "Цена наличными";
+        $("#cMonthly").textContent = usd(q.totalUsd);
         $("#cNote").textContent = t.plans
           ? `${t.cashOnly.maxRooms > 1 ? "1–" + t.cashOnly.maxRooms : 1}-комн. до ${t.cashOnly.maxFloor} этажа — только наличными. Выше ${t.cashOnly.maxFloor} этажа и 3-комн. на любом этаже — рассрочка. Курс ${CFG.usdRate} сом за $.`
           : `Только наличными. Курс ${CFG.usdRate} сом за $.`;
@@ -956,10 +959,10 @@
       $("#cDownOut").textContent = fmt(q.down);
       $("#cMonthsOut").textContent = q.months;
       $("#cTotalL").textContent = "Цена квартиры";
-      $("#cTotal").textContent = fmt(q.total) + " сом" + (q.totalUsd ? ` (${usd(q.totalUsd)})` : "");
-      $("#cPpm").textContent = q.usd ? `${usd(q.usd)} · ${fmt(q.ppm)} сом` : fmt(q.ppm) + " сом";
+      $("#cTotal").textContent = `${q.totalUsd ? "" : "≈"}${usd(usdOf(q))} · ${fmt(q.total)} сом`;
+      $("#cPpm").textContent = `${q.usd ? usd(q.usd) : "≈" + usd(toUsd(q.ppm))} · ${fmt(q.ppm)} сом`;
       $("#cMonthlyL").textContent = `В месяц, ${q.months} мес.`;
-      $("#cMonthly").textContent = fmt(q.monthly) + " сом";
+      $("#cMonthly").textContent = `≈${usd(toUsd(q.monthly))} · ${fmt(q.monthly)} сом`;
       const tiers = q.plan ? " " + CFG.terms[g.id].plans.map((p) => `взнос ${fmt(p.down)} — ${usd(p.usd)}/м²`).join(", ") + "." : "";
       $("#cNote").textContent = (q.last !== q.monthly ? `Последний платёж ${fmt(q.last)} сом. ` : "") + "Без процентов." + tiers;
     };
@@ -977,6 +980,98 @@
       setFilter({ rooms: r });
       track("calc_show", { rooms: r });
     });
+  }
+
+  // ---------- поиск сразу во всех блоках ----------
+  // Квартиры всех блоков грузятся, когда клиент дошёл до раздела (файлы маленькие). Бюджет — в долларах.
+  function bindFind() {
+    const sec = $("#find");
+    if (!sec) return;
+    const f = { pay: "inst", rooms: 0, budget: Infinity, hand: "", sort: "price" };
+    let all = null, list = [], shown = 0;
+    const hands = [["", "Любой"], ["base", "Блоки 152–190"]].concat(
+      Object.entries(CFG.terms || {}).sort((x, y) => x[1].handover.match(/\d{4}/)[0] - y[1].handover.match(/\d{4}/)[0])
+        .map(([id, t]) => [id, t.handover]));
+    $("#fdHand").innerHTML = hands.map(([v, l]) => `<option value="${v}">${l}</option>`).join("");
+    const budget = $("#fdBudget");
+    const setBudgetRange = () => {
+      if (f.pay === "cash") { budget.min = 30000; budget.max = 250000; budget.step = 5000; }
+      else { budget.min = 300; budget.max = 2000; budget.step = 50; }
+      budget.value = budget.max; f.budget = Infinity;
+      $("#fdBudgetL").firstChild.textContent = f.pay === "cash" ? "Цена до: " : "В месяц до: ";
+      $("#fdBudgetOut").textContent = "любой суммы";
+    };
+    const cashQ = (a) => a.qCash || (a.qCash = Calc.quote(a, CFG, { cash: true }));
+    const view = (a) => (f.pay === "cash" && !a.q.cash ? Object.assign({}, a, { q: cashQ(a) }) : a);
+    const priceKey = (a) => (f.pay === "cash" ? usdOf(cashQ(a)) : a.q.monthly);
+    const apply = () => {
+      if (!all) return;
+      list = all.filter((a) => {
+        const blk = CFG.blocks[a.b];
+        if (f.pay === "cash" ? !blk.terms : !a.q.canInstall) return false;  // наличные — в новых лотах; рассрочка — где она есть
+        if (f.rooms && (f.rooms === 4 ? a.r < 4 : a.r !== f.rooms)) return false;
+        if (f.hand && (f.hand === "base" ? blk.terms : blk.terms !== f.hand)) return false;
+        if (f.budget !== Infinity && (f.pay === "cash" ? usdOf(cashQ(a)) : toUsd(a.q.monthly)) > f.budget) return false;
+        return true;
+      });
+      const sorts = { price: (x, y) => priceKey(x) - priceKey(y), area: (x, y) => y.a - x.a || priceKey(x) - priceKey(y), floor: (x, y) => y.f - x.f || priceKey(x) - priceKey(y) };
+      list.sort(sorts[f.sort]);
+      shown = 0;
+      $("#fdCount").textContent = list.length ? `Найдено ${list.length} ${plural(list.length, "квартира", "квартиры", "квартир")} в ${new Set(list.map((a) => a.b)).size} блоках`
+        : "Под такие условия квартир нет — увеличьте бюджет или выберите другой срок сдачи.";
+      $("#fdCards").innerHTML = "";
+      more();
+    };
+    const more = () => {
+      const part = list.slice(shown, shown + PAGE);
+      $("#fdCards").insertAdjacentHTML("beforeend", part.map((a) => cardHtml(view(a))).join(""));
+      shown += part.length;
+      $("#fdMore").hidden = shown >= list.length;
+    };
+    let loading = null;
+    const load = () => loading || (loading = (async () => {
+      const blocks = [...state.blocksFree.entries()].filter(([b, n]) => n && CFG.blocks[b]).map(([b]) => b);
+      const lists = await Promise.all(blocks.map((b) => loadBlock(b)));
+      all = lists.flat().filter((a) => a.s === "free");
+      apply();
+    })());
+    // грузим, когда раздел почти на экране (или сразу, если наблюдателя нет)
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); load(); } }, { rootMargin: "600px" });
+      io.observe(sec);
+    } else load();
+    setTimeout(load, 3500);                                   // на всякий случай — и без прокрутки
+    sec.addEventListener("click", load, { capture: true });
+    $("#fdPay").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-pay]"); if (!b) return;
+      $$("[data-pay]", sec).forEach((x) => x.classList.toggle("on", x === b));
+      f.pay = b.dataset.pay; setBudgetRange(); apply();
+      track("find_pay", { budget: f.pay });
+    });
+    $("#fdRooms").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-fr]"); if (!b) return;
+      $$("[data-fr]", sec).forEach((x) => x.classList.toggle("on", x === b));
+      f.rooms = +b.dataset.fr; apply();
+    });
+    budget.addEventListener("input", () => {
+      const v = +budget.value;
+      f.budget = v >= +budget.max ? Infinity : v;
+      $("#fdBudgetOut").textContent = f.budget === Infinity ? "любой суммы" : usd(v);
+      apply();
+    });
+    budget.addEventListener("change", () => track("find_budget", { budget: f.pay + ":" + budget.value }));
+    $("#fdHand").addEventListener("change", (e) => { f.hand = e.target.value; apply(); });
+    $("#fdSort").addEventListener("change", (e) => { f.sort = e.target.value; apply(); });
+    $("#fdMore").addEventListener("click", more);
+    $("#fdCards").addEventListener("click", (e) => {
+      const cmp = e.target.closest("[data-cmp]");
+      if (cmp) { e.stopPropagation(); toggleCmp(cmp.dataset.cmp); return; }
+      const fav = e.target.closest("[data-fav]");
+      if (fav) { e.stopPropagation(); toggleFav(fav.dataset.fav); return; }
+      const card = e.target.closest(".card");
+      if (card) { track("find_open", { flat: card.dataset.id }); location.hash = `#/kv/${card.dataset.id}`; }
+    });
+    setBudgetRange();
   }
 
   // ---------- мои клиенты ----------
@@ -1166,6 +1261,7 @@
     renderGenplan();
     bindFilters();
     bindCalc();
+    bindFind();
     bindSheet();
     bindZoom();
     bindLead();
