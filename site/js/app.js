@@ -275,7 +275,8 @@
         need = Math.max(need, Math.min(kx, ky));
       }
       lp.gpNeed = need;
-      const packed = need > s * 1.2;                   // чуть касаются — ещё читаемо, сворачиваем только при сильном наложении
+      // без приближения — всегда значки лотов (сначала лот, потом блок внутри); приблизили — номера блоков
+      const packed = s < 1.05 || need > s * 1.2;
       lp.hidden = !packed;
       list.forEach((h) => { h.hidden = packed && !h.classList.contains("sel"); });
     });
