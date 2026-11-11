@@ -2,7 +2,7 @@
 // Данные приходят только после входа; сессия хранится в этой вкладке (или 6 часов, если «запомнить»).
 (function () {
   "use strict";
-  const API = "";   // адрес веб-приложения «Osh City Admin» (Apps Script), заполняется после развёртывания
+  const API = "https://script.google.com/macros/s/AKfycbyqhmT5Hh7gTgDrPIwhVBsaOlxmr95jrOcAjuY_R9N4_9eqjpAJcZ3HGFiemZ6grzHRMg/exec";   // веб-приложение «Osh City Admin» (Apps Script): проверка входа и данные
   const SITE = "https://ajibekoshcity.com/";
   const TOKEN_KEY = "oc_admin";
   const app = document.getElementById("app");
