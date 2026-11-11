@@ -92,6 +92,7 @@ def site_config():
         "months": int(re.search(r"months:\s*(\d+)", src).group(1)),
         "types": dict(re.findall(r'"([\d/]+)":\s*\{\s*lot:\s*"\d+",\s*type:\s*"(\w*)"', src)),
         "blockTerms": dict(re.findall(r'"([\d/]+)":\s*\{[^}]*?terms:\s*"(\w+)"', src)),
+        "baseHandover": (re.search(r'baseHandover:\s*"([^"]*)"', src) or [0, ""])[1],
         "usdRate": int((re.search(r"usdRate:\s*(\d+)", src) or [0, "88"])[1]),
         "terms": js_object(src, "terms:"),
         "layouts": {},
@@ -111,7 +112,7 @@ def quote(a, cfg):
         ppm = next((p for mx, p in cfg["rules"] if a["f"] <= mx), cfg["rules"][-1][1])
         total = round(area_h * ppm / 100)
         rest = max(total - cfg["down"], 0)
-        return total, rest // cfg["months"], False, 0, "", cfg["down"], cfg["months"]
+        return total, rest // cfg["months"], False, 0, cfg.get("baseHandover", ""), cfg["down"], cfg["months"]
     rate = cfg["usdRate"]
     co = t.get("cashOnly")
     plans = sorted(t.get("plans") or [], key=lambda x: x["down"])

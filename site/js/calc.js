@@ -50,7 +50,7 @@
       const total = totalPrice(apt.a, ppm);
       const down = opts.down != null ? opts.down : cfg.downPayment;
       const months = opts.months != null ? opts.months : cfg.months;
-      return Object.assign({ ppm, cash: false, canInstall: true, minDown: cfg.downPayment, handover: "" }, installment(total, down, months));
+      return Object.assign({ ppm, cash: false, canInstall: true, minDown: cfg.downPayment, handover: cfg.baseHandover || "" }, installment(total, down, months));
     }
     const rate = cfg.usdRate;
     const cashPrice = byUsd(apt.a, t.cashUsd, rate);

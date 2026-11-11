@@ -20,13 +20,13 @@
   const aptId = (a) => `${a.b.replace("/", "_")}-${a.p}-${a.f}-${a.n}`;
   const blockName = (b) => `Блок ${b}`;
   const usd = (n) => "$" + fmt(n);
-  // доллары — главная валюта, сомы — вторая. Платёж в месяц в $ — пересчёт по курсу (≈)
+  // цена квартиры — в долларах и сомах; платёж в месяц — только в сомах
   const toUsd = (som) => Math.round(som / CFG.usdRate);
   const usdOf = (q) => q.totalUsd || toUsd(q.total);
   const mKey = (a) => Calc.monthlyKey(a.q);                  // «сначала дешевле»: квартиры за наличные — после рассрочки
   // короткая цена для списков и сообщений
-  const priceShort = (a) => (a.q.cash ? `${usd(usdOf(a.q))} наличными` : `≈${usd(toUsd(a.q.monthly))}/мес`);
-  const handoverOf = (b) => { const t = CFG.blocks[b] && CFG.blocks[b].terms; return t && CFG.terms[t] ? CFG.terms[t].handover : ""; };
+  const priceShort = (a) => (a.q.cash ? `${usd(usdOf(a.q))} наличными` : `${fmt(a.q.monthly)} сом/мес`);
+  const handoverOf = (b) => { const t = CFG.blocks[b] && CFG.blocks[b].terms; return t && CFG.terms[t] ? CFG.terms[t].handover : CFG.blocks[b] ? CFG.baseHandover || "" : ""; };
   // новые лоты: планировка по блоку и площади (вырезана из PDF, см. tools/new_layouts.py)
   function newLayout(a) {
     const e = (state.byBlock[a.b] || {})[Number(a.a).toFixed(2)];
@@ -404,7 +404,7 @@
         ${a.q.cash
           ? `<div class="card-month"><b>${usd(usdOf(a.q))}</b><span>наличными</span></div>
         <div class="card-total">${fmt(a.q.total)} сом · ${usd(a.q.usd || toUsd(a.q.ppm))} за м²</div>`
-          : `<div class="card-month"><b>≈${usd(toUsd(a.q.monthly))}</b><span>/ мес · ${fmt(a.q.monthly)} сом</span></div>
+          : `<div class="card-month"><b>${fmt(a.q.monthly)}</b><span>сом / мес</span></div>
         <div class="card-total">Цена ${a.q.totalUsd ? "" : "≈"}${usd(usdOf(a.q))} · ${fmt(a.q.total)} сом · взнос ${fmt(a.q.down)} сом</div>`}
       </div>
     </article>`;
@@ -583,7 +583,7 @@
         <div><span>Блок / кв.</span><b>${a.b} / №${a.n}</b></div>
         <div><span>Цена за м²</span><b class="${bPpm(a)}">${a.q.usd ? usd(a.q.usd) : "≈" + usd(toUsd(a.q.ppm))}<small> ${fmt(a.q.ppm)} сом</small></b></div>
         <div><span>Цена</span><b class="${bTotal(a)}">${a.q.totalUsd ? "" : "≈"}${usd(usdOf(a.q))}<small> ${fmt(a.q.total)} сом</small></b></div>
-        <div><span>В месяц</span><b class="${bMonth(a)}">${a.q.cash ? "наличные" : `≈${usd(toUsd(a.q.monthly))}<small> ${fmt(a.q.monthly)} сом</small>`}</b></div>
+        <div><span>В месяц</span><b class="${bMonth(a)}">${a.q.cash ? "наличные" : fmt(a.q.monthly) + " сом"}</b></div>
       </div>
       <a class="btn btn-dark" href="#/kv/${a.id}">Подробнее</a>
       <button class="btn btn-outline" data-cmp-remove="${a.id}">Убрать</button>
@@ -718,7 +718,7 @@
         if (!q.cash) {
           fx("fDownOut").textContent = fmt(q.down);
           fx("fRest").textContent = fmt(q.rest) + " сом";
-          fx("fMonthly").textContent = `≈${usd(toUsd(q.monthly))} · ${fmt(q.monthly)} сом`;
+          fx("fMonthly").textContent = fmt(q.monthly) + " сом";
           fx("fMonths").textContent = q.months;
           fx("fLast").textContent = tiers + (q.last !== q.monthly ? `Последний платёж — ${fmt(q.last)} сом, чтобы сумма сошлась до сома. ` : "") + "Без процентов.";
           $("#schedBox").innerHTML = scheduleHtml(q);
@@ -905,11 +905,13 @@
   // ---------- калькулятор ----------
   // Калькулятор: сначала срок сдачи (у каждой группы блоков свои условия), потом квартира, этаж и взнос
   function bindCalc() {
-    const groups = [{ id: "", label: "Рассрочка от 500 000", block: Object.keys(CFG.blocks).find((b) => !CFG.blocks[b].terms) }];
+    const short = (h) => "Сдача " + h.replace(" квартал", " кв.").replace(" год", "");
+    const groups = [];
     Object.entries(CFG.terms || {}).sort((x, y) => x[1].handover.match(/\d{4}/)[0] - y[1].handover.match(/\d{4}/)[0] || x[0].localeCompare(y[0])).forEach(([id, t]) => {
       const block = Object.keys(CFG.blocks).find((b) => CFG.blocks[b].terms === id && state.byBlock[b]);
-      if (block) groups.push({ id, label: "Сдача " + t.handover.replace(" квартал", " кв.").replace(" год", ""), block });
+      if (block) groups.push({ id, label: short(t.handover), block });
     });
+    groups.push({ id: "", label: short(CFG.baseHandover || "") || "Блоки 152–190", block: Object.keys(CFG.blocks).find((b) => !CFG.blocks[b].terms) });
     const typesOf = (g) => {
       const m = new Map();
       if (!g.id) state.plans.forEach((p) => { if (!/^n\d/.test(p.id)) m.set(p.rooms + "|" + p.area.toFixed(2), { r: p.rooms, a: p.area }); });
@@ -920,8 +922,9 @@
       return [...m.values()].sort((x, y) => x.r - y.r || x.a - y.a);
     };
     const gBox = $("#cGroup"), sel = $("#cType"), floor = $("#cFloor"), down = $("#cDown"), months = $("#cMonths");
-    gBox.innerHTML = groups.map((g, i) => `<button type="button" data-g="${i}" class="${i ? "" : "on"}">${g.label}</button>`).join("");
-    let g = groups[0];
+    const g0 = groups.length - 1;
+    gBox.innerHTML = groups.map((g, i) => `<button type="button" data-g="${i}" class="${i === g0 ? "on" : ""}">${g.label}</button>`).join("");
+    let g = groups[g0];
     const fillTypes = () => {
       const list = typesOf(g);
       sel.innerHTML = list.map((a) => `<option value="${a.r}|${a.a.toFixed(2)}">${roomsLabel(a.r)} ${fmtArea(a.a)} м²</option>`).join("");
@@ -962,7 +965,7 @@
       $("#cTotal").textContent = `${q.totalUsd ? "" : "≈"}${usd(usdOf(q))} · ${fmt(q.total)} сом`;
       $("#cPpm").textContent = `${q.usd ? usd(q.usd) : "≈" + usd(toUsd(q.ppm))} · ${fmt(q.ppm)} сом`;
       $("#cMonthlyL").textContent = `В месяц, ${q.months} мес.`;
-      $("#cMonthly").textContent = `≈${usd(toUsd(q.monthly))} · ${fmt(q.monthly)} сом`;
+      $("#cMonthly").textContent = fmt(q.monthly) + " сом";
       const tiers = q.plan ? " " + CFG.terms[g.id].plans.map((p) => `взнос ${fmt(p.down)} — ${usd(p.usd)}/м²`).join(", ") + "." : "";
       $("#cNote").textContent = (q.last !== q.monthly ? `Последний платёж ${fmt(q.last)} сом. ` : "") + "Без процентов." + tiers;
     };
@@ -989,14 +992,14 @@
     if (!sec) return;
     const f = { pay: "inst", rooms: 0, budget: Infinity, hand: "", sort: "price" };
     let all = null, list = [], shown = 0;
-    const hands = [["", "Любой"], ["base", "Блоки 152–190"]].concat(
+    const hands = [["", "Любой"]].concat(
       Object.entries(CFG.terms || {}).sort((x, y) => x[1].handover.match(/\d{4}/)[0] - y[1].handover.match(/\d{4}/)[0])
-        .map(([id, t]) => [id, t.handover]));
+        .map(([id, t]) => [id, t.handover]), [["base", (CFG.baseHandover || "") + " (блоки 152–190)"]]);
     $("#fdHand").innerHTML = hands.map(([v, l]) => `<option value="${v}">${l}</option>`).join("");
     const budget = $("#fdBudget");
     const setBudgetRange = () => {
       if (f.pay === "cash") { budget.min = 30000; budget.max = 250000; budget.step = 5000; }
-      else { budget.min = 300; budget.max = 2000; budget.step = 50; }
+      else { budget.min = 25000; budget.max = 200000; budget.step = 5000; }
       budget.value = budget.max; f.budget = Infinity;
       $("#fdBudgetL").firstChild.textContent = f.pay === "cash" ? "Цена до: " : "В месяц до: ";
       $("#fdBudgetOut").textContent = "любой суммы";
@@ -1011,7 +1014,7 @@
         if (f.pay === "cash" ? !blk.terms : !a.q.canInstall) return false;  // наличные — в новых лотах; рассрочка — где она есть
         if (f.rooms && (f.rooms === 4 ? a.r < 4 : a.r !== f.rooms)) return false;
         if (f.hand && (f.hand === "base" ? blk.terms : blk.terms !== f.hand)) return false;
-        if (f.budget !== Infinity && (f.pay === "cash" ? usdOf(cashQ(a)) : toUsd(a.q.monthly)) > f.budget) return false;
+        if (f.budget !== Infinity && (f.pay === "cash" ? usdOf(cashQ(a)) : a.q.monthly) > f.budget) return false;
         return true;
       });
       const sorts = { price: (x, y) => priceKey(x) - priceKey(y), area: (x, y) => y.a - x.a || priceKey(x) - priceKey(y), floor: (x, y) => y.f - x.f || priceKey(x) - priceKey(y) };
@@ -1056,7 +1059,7 @@
     budget.addEventListener("input", () => {
       const v = +budget.value;
       f.budget = v >= +budget.max ? Infinity : v;
-      $("#fdBudgetOut").textContent = f.budget === Infinity ? "любой суммы" : usd(v);
+      $("#fdBudgetOut").textContent = f.budget === Infinity ? "любой суммы" : f.pay === "cash" ? usd(v) : fmt(v) + " сом";
       apply();
     });
     budget.addEventListener("change", () => track("find_budget", { budget: f.pay + ":" + budget.value }));

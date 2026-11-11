@@ -20,7 +20,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/photos/aerial-sm.webp" media="(max-width: 900px)">
 <link rel="preload" as="image" href="img/photos/aerial.webp" media="(min-width: 901px)">
-<link rel="stylesheet" href="css/style.css?v=20261111134612">
+<link rel="stylesheet" href="css/style.css?v=20261111135350">
 </head>
 <body>
 
@@ -103,14 +103,14 @@
     <div class="wrap">
       <p class="eyebrow reveal">Поиск</p>
       <h2 class="h2 reveal">Найдите квартиру сразу во всех блоках</h2>
-      <p class="lead reveal">Выберите, как хотите платить, и свой бюджет в долларах — покажем подходящие квартиры из всех блоков.</p>
+      <p class="lead reveal">Выберите, как хотите платить, и свой бюджет: платёж в месяц в сомах или цену за наличные в долларах — покажем подходящие квартиры из всех блоков.</p>
       <div class="find card-glass">
         <div class="field"><span>Оплата</span>
           <div class="pay-modes" id="fdPay" role="tablist"><button type="button" class="on" data-pay="inst">Рассрочка</button><button type="button" data-pay="cash">Наличными</button></div></div>
         <div class="field"><span>Комнат</span>
           <div class="chips" id="fdRooms" role="group" aria-label="Комнат"><button class="chip on" data-fr="0">Все</button><button class="chip" data-fr="1">1</button><button class="chip" data-fr="2">2</button><button class="chip" data-fr="3">3</button><button class="chip" data-fr="4">4+</button></div></div>
         <label class="field"><span id="fdBudgetL">В месяц до: <b id="fdBudgetOut">любой суммы</b></span>
-          <input type="range" id="fdBudget" min="300" max="2000" step="50" value="2000"></label>
+          <input type="range" id="fdBudget" min="25000" max="200000" step="5000" value="200000"></label>
         <div class="find-row">
           <label class="field"><span>Срок сдачи</span><select id="fdHand"></select></label>
           <label class="field"><span>Сортировка</span><select id="fdSort">
@@ -322,7 +322,7 @@
       <details class="qa reveal"><summary>Какие документы нужны для оформления?</summary><p>Только паспорт. Всё остальное подготовим вместе в офисе продаж.</p></details>
       <details class="qa reveal"><summary>Какие условия в разных блоках?</summary><p>Условия зависят от срока сдачи дома:</p>
         <ul class="qa-list">
-          <li><b>Блоки 152–190</b> — рассрочка без процентов до 67 месяцев, первый взнос от 500 000 сом. До 13 этажа — 92 400 сом за м², с 14 этажа — 88 000 сом.</li>
+          <li><b>Сдача IV квартал 2030</b> (блоки 152–190) — рассрочка без процентов до 67 месяцев, первый взнос от 500 000 сом. До 13 этажа — 92 400 сом за м², с 14 этажа — 88 000 сом.</li>
           <li><b>Сдача IV квартал 2028</b> (лоты 3, 4, 13, 18–22) — рассрочка на 67 месяцев: взнос 1 млн сом — $1 050 за м², 1,5 млн — $1 025, 2 млн — $1 000. Наличными — $950 за м². 1–2-комнатные до 11 этажа — только наличными.</li>
           <li><b>Сдача 2027</b> (лоты 28–31) — только наличными, $1 000 за м².</li>
           <li><b>Сдача IV квартал 2026</b> (лоты 28–31) — только наличными, $1 050 за м².</li>
@@ -449,10 +449,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-<script src="js/config.js?v=20261111134612" defer></script>
-<script src="js/calc.js?v=20261111134612" defer></script>
-<script src="js/visitor.js?v=20261111134612" defer></script>
-<script src="js/view3d.js?v=20261111134612" defer></script>
-<script src="js/app.js?v=20261111134612" defer></script>
+<script src="js/config.js?v=20261111135350" defer></script>
+<script src="js/calc.js?v=20261111135350" defer></script>
+<script src="js/visitor.js?v=20261111135350" defer></script>
+<script src="js/view3d.js?v=20261111135350" defer></script>
+<script src="js/app.js?v=20261111135350" defer></script>
 </body>
 </html>
