@@ -1027,3 +1027,10 @@ html.big .infra li span, html.big .infra li b { font-size: 18px; } html.big .inf
 .gp-stage .hot.sel { transform: translate(-50%, -50%) scale(calc(1.15 * var(--inv, 1))); }
 .gp-stage .hot[hidden] { display: none; }
 .gp-stage .lotpin, .gp-stage .lotpin.has { white-space: nowrap; background: var(--green-900); color: var(--gold); border-color: var(--gold); z-index: 2; }
+
+/* калькулятор: выбор срока сдачи */
+.calc-groups { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; border-radius: 18px; }
+.calc-groups button { font-size: 13px; padding: 8px; }
+.calc-groups button { flex: 1 1 auto; }
+.calc [hidden] { display: none !important; }
+.qa-list { margin: 0 0 10px; padding-left: 18px; display: grid; gap: 8px; }

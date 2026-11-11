@@ -20,7 +20,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/photos/aerial-sm.webp" media="(max-width: 900px)">
 <link rel="preload" as="image" href="img/photos/aerial.webp" media="(min-width: 901px)">
-<link rel="stylesheet" href="css/style.css?v=20261111131651">
+<link rel="stylesheet" href="css/style.css?v=20261111132758">
 </head>
 <body>
 
@@ -70,15 +70,15 @@
       <p class="eyebrow reveal">г. Ош · Кызыл-Кыштак · IT городок</p>
       <p class="hero-cap" aria-live="polite"><i></i><span>Город в городе — всё рядом с домом</span></p>
       <h1 class="hero-title reveal"><span>Osh City</span><br>город в&nbsp;городе</h1>
-      <p class="hero-sub reveal">Квартиры в рассрочку <b>без процентов</b> на <b data-cfg="months">67</b> месяцев.
-        Первый взнос всего <b data-cfg="down">500 000</b> сом.</p>
+      <p class="hero-sub reveal">Рассрочка <b>без процентов</b> до <b data-cfg="months">67</b> месяцев, первый взнос от <b data-cfg="down">500 000</b> сом.
+        В новых лотах — квартиры за наличные от <b>$950 за м²</b>, сдача с IV квартала 2026.</p>
       <div class="hero-cta reveal">
         <a href="#genplan" class="btn btn-gold">Подобрать квартиру</a>
         <a href="#calc" class="btn btn-ghost">Рассчитать платёж</a>
       </div>
       <dl class="hero-stats reveal">
         <div><dt>переплата по рассрочке</dt><dd><span class="count" data-to="0">0</span>%</dd></div>
-        <div><dt>месяцев рассрочки</dt><dd><span class="count" data-to="67">0</span></dd></div>
+        <div><dt>месяцев рассрочки, до</dt><dd><span class="count" data-to="67">0</span></dd></div>
         <div><dt>сом — первый взнос от</dt><dd><span class="count" data-to="500000">0</span></dd></div>
       </dl>
     </div>
@@ -270,17 +270,18 @@
       <div>
         <p class="eyebrow reveal">Калькулятор</p>
         <h2 class="h2 reveal">Сколько вы будете платить</h2>
-        <p class="lead reveal">Рассрочка от застройщика <b>без процентов и без банка</b>. Увеличьте взнос, и платёж в месяц станет меньше.</p>
+        <p class="lead reveal">Условия зависят от срока сдачи дома. Выберите срок — калькулятор посчитает по условиям именно этих блоков, <b>без процентов и без банка</b>.</p>
       </div>
       <div class="calc card-glass reveal">
+        <div class="field"><span>Срок сдачи</span><div class="pay-modes calc-groups" id="cGroup" role="tablist"></div></div>
         <label class="field"><span>Квартира</span><select id="cType"></select></label>
         <label class="field"><span>Этаж: <b id="cFloorOut">9</b></span><input type="range" id="cFloor" min="2" max="20" value="9"></label>
-        <label class="field"><span>Первый взнос: <b id="cDownOut">500 000</b> сом</span><input type="range" id="cDown" min="500000" max="4000000" step="50000" value="500000"></label>
-        <label class="field"><span>Срок: <b id="cMonthsOut">67</b> мес.</span><input type="range" id="cMonths" min="12" max="67" value="67"></label>
+        <label class="field" id="cDownF"><span>Первый взнос: <b id="cDownOut">500 000</b> сом</span><input type="range" id="cDown" min="500000" max="4000000" step="50000" value="500000"></label>
+        <label class="field" id="cMonthsF"><span>Срок: <b id="cMonthsOut">67</b> мес.</span><input type="range" id="cMonths" min="12" max="67" value="67"></label>
         <div class="calc-out">
-          <div><span>Цена квартиры</span><b id="cTotal">—</b></div>
+          <div><span id="cTotalL">Цена квартиры</span><b id="cTotal">—</b></div>
           <div><span>Цена за м²</span><b id="cPpm">—</b></div>
-          <div class="big"><span>В месяц</span><b id="cMonthly">—</b></div>
+          <div class="big"><span id="cMonthlyL">В месяц</span><b id="cMonthly">—</b></div>
           <p class="note" id="cNote"></p>
         </div>
         <a class="btn btn-gold w100" href="#flats" id="cShow">Показать такие квартиры</a>
@@ -294,8 +295,15 @@
       <p class="eyebrow reveal">Вопросы</p>
       <h2 class="h2 reveal">Частые вопросы</h2>
       <details class="qa reveal"><summary>Какие документы нужны для оформления?</summary><p>Только паспорт. Всё остальное подготовим вместе в офисе продаж.</p></details>
-      <details class="qa reveal"><summary>Есть ли проценты по рассрочке?</summary><p>Нет. Рассрочка от застройщика без процентов и без банка: вы платите ровно стоимость квартиры. Первый взнос от 500 000 сом, остаток делится на срок до 67 месяцев.</p></details>
-      <details class="qa reveal"><summary>Почему на высоких этажах дешевле?</summary><p>Цена за м² зависит от этажа: до 13 этажа — 92 400 сом, с 14 этажа — 88 000 сом. Это уже учтено во всех расчётах на сайте.</p></details>
+      <details class="qa reveal"><summary>Какие условия в разных блоках?</summary><p>Условия зависят от срока сдачи дома:</p>
+        <ul class="qa-list">
+          <li><b>Блоки 152–190</b> — рассрочка без процентов до 67 месяцев, первый взнос от 500 000 сом. До 13 этажа — 92 400 сом за м², с 14 этажа — 88 000 сом.</li>
+          <li><b>Сдача IV квартал 2028</b> (лоты 3, 4, 13, 18–22) — рассрочка на 67 месяцев: взнос 1 млн сом — $1 050 за м², 1,5 млн — $1 025, 2 млн — $1 000. Наличными — $950 за м². 1–2-комнатные до 11 этажа — только наличными.</li>
+          <li><b>Сдача 2027</b> (лоты 28–31) — только наличными, $1 000 за м².</li>
+          <li><b>Сдача IV квартал 2026</b> (лоты 28–31) — только наличными, $1 050 за м².</li>
+        </ul><p>Цены в сомах считаем по курсу 88 сом за доллар. На странице каждой квартиры условия уже учтены.</p></details>
+      <details class="qa reveal"><summary>Есть ли проценты по рассрочке?</summary><p>Нет. Рассрочка от застройщика без процентов и без банка: вы платите ровно стоимость квартиры. Первый взнос — от 500 000 сом в блоках 152–190 и от 1 млн сом в домах со сдачей в 2028 году.</p></details>
+      <details class="qa reveal"><summary>Можно ли купить за наличные?</summary><p>Да. В домах со сдачей в 2026 и 2027 году квартиры продаются только за наличные, в домах 2028 года — и за наличные, и в рассрочку. Платить можно в сомах или долларах.</p></details>
       <details class="qa reveal"><summary>Можно ли заплатить больше первый взнос?</summary><p>Да. Чем больше взнос, тем меньше платёж в месяц. Поставьте свою сумму в калькуляторе.</p></details>
       <details class="qa reveal"><summary>Как забронировать квартиру?</summary><p>Нажмите «Написать в WhatsApp» на странице квартиры: номер и расчёт уже будут в сообщении. Менеджер ответит, пригласит на просмотр и оформление.</p></details>
       <details class="qa reveal"><summary>Какое отопление?</summary><p>Индивидуальный газовый котёл в каждой квартире. Газоснабжение, водоснабжение и канализация централизованные.</p></details>
@@ -416,10 +424,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-<script src="js/config.js?v=20261111131651" defer></script>
-<script src="js/calc.js?v=20261111131651" defer></script>
-<script src="js/visitor.js?v=20261111131651" defer></script>
-<script src="js/view3d.js?v=20261111131651" defer></script>
-<script src="js/app.js?v=20261111131747" defer></script>
+<script src="js/config.js?v=20261111132758" defer></script>
+<script src="js/calc.js?v=20261111132758" defer></script>
+<script src="js/visitor.js?v=20261111132758" defer></script>
+<script src="js/view3d.js?v=20261111132758" defer></script>
+<script src="js/app.js?v=20261111132758" defer></script>
 </body>
 </html>

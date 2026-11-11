@@ -900,36 +900,77 @@
   }
 
   // ---------- калькулятор ----------
+  // Калькулятор: сначала срок сдачи (у каждой группы блоков свои условия), потом квартира, этаж и взнос
   function bindCalc() {
-    const types = new Map();
-    state.plans.forEach((p) => {
-      const k = p.rooms + "|" + p.area.toFixed(2);
-      if (!types.has(k)) types.set(k, { r: p.rooms, a: p.area });
+    const groups = [{ id: "", label: "Рассрочка от 500 000", block: Object.keys(CFG.blocks).find((b) => !CFG.blocks[b].terms) }];
+    Object.entries(CFG.terms || {}).sort((x, y) => x[1].handover.match(/\d{4}/)[0] - y[1].handover.match(/\d{4}/)[0] || x[0].localeCompare(y[0])).forEach(([id, t]) => {
+      const block = Object.keys(CFG.blocks).find((b) => CFG.blocks[b].terms === id && state.byBlock[b]);
+      if (block) groups.push({ id, label: "Сдача " + t.handover.replace(" квартал", " кв.").replace(" год", ""), block });
     });
-    const sorted = [...types.values()].sort((x, y) => x.r - y.r || x.a - y.a);
-    const sel = $("#cType");
-    sel.innerHTML = sorted.map((a) => `<option value="${a.r}|${a.a.toFixed(2)}">${roomsLabel(a.r)} ${fmtArea(a.a)} м²</option>`).join("");
-    const def = sorted.find((a) => a.a === 40.19) || sorted[0];
-    sel.value = def.r + "|" + def.a.toFixed(2);
-    const floor = $("#cFloor"), down = $("#cDown"), months = $("#cMonths");
-    months.max = CFG.months; months.value = CFG.months;
-    down.min = CFG.downPayment; down.value = CFG.downPayment;
-    const run = () => {
-      const [r, area] = sel.value.split("|");
-      const fake = { a: +area, f: +floor.value };
-      const q = Calc.quote(fake, CFG, { down: +down.value, months: +months.value });
-      down.max = Math.max(CFG.downPayment, Math.floor(q.total * 0.7 / 50000) * 50000);
-      $("#cFloorOut").textContent = floor.value;
-      $("#cDownOut").textContent = fmt(q.down);
-      $("#cMonthsOut").textContent = months.value;
-      $("#cTotal").textContent = fmt(q.total) + " сом";
-      $("#cPpm").textContent = fmt(q.ppm) + " сом";
-      $("#cMonthly").textContent = fmt(q.monthly) + " сом";
-      $("#cNote").textContent = q.last !== q.monthly ? `Последний платёж ${fmt(q.last)} сом. Без процентов.` : "Без процентов.";
-      $("#cShow").dataset.rooms = r;
+    const typesOf = (g) => {
+      const m = new Map();
+      if (!g.id) state.plans.forEach((p) => { if (!/^n\d/.test(p.id)) m.set(p.rooms + "|" + p.area.toFixed(2), { r: p.rooms, a: p.area }); });
+      else Object.entries(state.byBlock).forEach(([b, e]) => {
+        if ((CFG.blocks[b] || {}).terms !== g.id) return;
+        Object.entries(e).forEach(([area, x]) => { const p = state.plans.get(x.plan); if (p) m.set(p.rooms + "|" + area, { r: p.rooms, a: +area }); });
+      });
+      return [...m.values()].sort((x, y) => x.r - y.r || x.a - y.a);
     };
+    const gBox = $("#cGroup"), sel = $("#cType"), floor = $("#cFloor"), down = $("#cDown"), months = $("#cMonths");
+    gBox.innerHTML = groups.map((g, i) => `<button type="button" data-g="${i}" class="${i ? "" : "on"}">${g.label}</button>`).join("");
+    let g = groups[0];
+    const fillTypes = () => {
+      const list = typesOf(g);
+      sel.innerHTML = list.map((a) => `<option value="${a.r}|${a.a.toFixed(2)}">${roomsLabel(a.r)} ${fmtArea(a.a)} м²</option>`).join("");
+      const def = list.find((a) => a.a === 40.19) || list.find((a) => a.r === 2) || list[0];
+      if (def) sel.value = def.r + "|" + def.a.toFixed(2);
+      const t = g.id && CFG.terms[g.id];
+      floor.max = t ? 16 : 20;
+      if (+floor.value > +floor.max) floor.value = floor.max;
+      down.min = t && t.plans ? t.plans[0].down : CFG.downPayment;
+      down.value = down.min;
+      months.max = t && t.months ? t.months : CFG.months; months.value = months.max;
+    };
+    const run = () => {
+      if (!sel.value) return;
+      const [r, area] = sel.value.split("|");
+      const fake = { b: g.block, a: +area, f: +floor.value, r: +r };
+      const q = Calc.quote(fake, CFG, { down: +down.value, months: g.id ? undefined : +months.value });
+      $("#cFloorOut").textContent = floor.value;
+      $("#cShow").dataset.rooms = r;
+      $("#cMonthsF").hidden = !!g.id;                          // у новых лотов срок фиксированный
+      $("#cDownF").hidden = q.cash;
+      if (q.cash) {
+        const t = CFG.terms[g.id];
+        $("#cTotalL").textContent = "Цена в долларах";
+        $("#cTotal").textContent = usd(q.totalUsd);
+        $("#cPpm").textContent = `${usd(q.usd)} · ${fmt(q.ppm)} сом`;
+        $("#cMonthlyL").textContent = "Наличными";
+        $("#cMonthly").textContent = fmt(q.total) + " сом";
+        $("#cNote").textContent = t.plans
+          ? `${t.cashOnly.maxRooms > 1 ? "1–" + t.cashOnly.maxRooms : 1}-комн. до ${t.cashOnly.maxFloor} этажа — только наличными. Выше ${t.cashOnly.maxFloor} этажа и 3-комн. на любом этаже — рассрочка. Курс ${CFG.usdRate} сом за $.`
+          : `Только наличными. Курс ${CFG.usdRate} сом за $.`;
+        return;
+      }
+      down.max = Math.max(+down.min, Math.floor(q.total * 0.7 / 50000) * 50000);
+      $("#cDownOut").textContent = fmt(q.down);
+      $("#cMonthsOut").textContent = q.months;
+      $("#cTotalL").textContent = "Цена квартиры";
+      $("#cTotal").textContent = fmt(q.total) + " сом" + (q.totalUsd ? ` (${usd(q.totalUsd)})` : "");
+      $("#cPpm").textContent = q.usd ? `${usd(q.usd)} · ${fmt(q.ppm)} сом` : fmt(q.ppm) + " сом";
+      $("#cMonthlyL").textContent = `В месяц, ${q.months} мес.`;
+      $("#cMonthly").textContent = fmt(q.monthly) + " сом";
+      const tiers = q.plan ? " " + CFG.terms[g.id].plans.map((p) => `взнос ${fmt(p.down)} — ${usd(p.usd)}/м²`).join(", ") + "." : "";
+      $("#cNote").textContent = (q.last !== q.monthly ? `Последний платёж ${fmt(q.last)} сом. ` : "") + "Без процентов." + tiers;
+    };
+    gBox.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-g]"); if (!btn) return;
+      $$("[data-g]", gBox).forEach((x) => x.classList.toggle("on", x === btn));
+      g = groups[+btn.dataset.g]; fillTypes(); run();
+      track("calc_group", { budget: g.id || "base" });
+    });
     [sel, floor, down, months].forEach((el) => el.addEventListener("input", run));
-    run();
+    fillTypes(); run();
     $("#cShow").addEventListener("click", () => {
       const r = +$("#cShow").dataset.rooms;
       $$("[data-rooms]").forEach((x) => x.classList.toggle("on", +x.dataset.rooms === r));
