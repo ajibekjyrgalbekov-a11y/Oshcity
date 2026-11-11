@@ -1,0 +1,23 @@
+name: Проверить блоки в базе
+# Только чтение: печатает в журнал, какие блоки есть в базе и сколько в них свободных квартир. Сайт не меняет.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Установить браузер
+        run: |
+          pip install playwright==1.64.0
+          python -m playwright install --with-deps chromium
+      - name: Проверить блоки
+        env:
+          BASE_EMAIL: ${{ secrets.BASE_EMAIL }}
+          BASE_PASSWORD: ${{ secrets.BASE_PASSWORD }}
+        run: python -X utf8 tools/probe_blocks.py
