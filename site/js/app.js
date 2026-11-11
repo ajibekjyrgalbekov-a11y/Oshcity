@@ -814,40 +814,6 @@
     });
   }
 
-  // ---------- приветствие менеджера ----------
-  function welcome() {
-    const w = $("#welcome");
-    let seen = false;
-    try { seen = sessionStorage.getItem("oc_welcome") === "1"; } catch (e) { /* приватный режим */ }
-    if (seen || location.hash.startsWith("#/")) return;
-    w.hidden = false;
-    document.documentElement.style.overflow = "hidden";
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const items = $$("[data-delay]", w);
-    const typing = $(".typing", w);
-    items.forEach((el) => {
-      const d = reduce ? 0 : +el.dataset.delay;
-      setTimeout(() => {
-        el.classList.add("show");
-        typing.classList.toggle("show", el !== items[items.length - 1] && !el.classList.contains("w-actions"));
-        if (el === items[items.length - 1]) typing.classList.remove("show");
-      }, d);
-    });
-    requestAnimationFrame(() => w.classList.add("open"));
-    const close = (go) => {
-      try { sessionStorage.setItem("oc_welcome", "1"); } catch (e) { /* ничего */ }
-      w.classList.remove("open"); w.classList.add("leave");
-      document.documentElement.style.overflow = "";
-      setTimeout(() => { w.hidden = true; }, 500);
-      if (go) setTimeout(() => $("#genplan").scrollIntoView({ behavior: "smooth" }), 250);
-      track(go ? "welcome_go" : "welcome_skip");
-    };
-    $("#wGo").addEventListener("click", () => close(true));
-    $("#wSkip").addEventListener("click", () => close(false));
-    bindWa($("#wWa"), null);
-    $("#wWa").addEventListener("click", () => close(false));
-  }
-
   // ---------- мои клиенты ----------
   function bindClients() {
     $("#clientPhotos").addEventListener("click", (e) => {
@@ -1021,7 +987,6 @@
   // ---------- старт ----------
   document.documentElement.classList.add("js-anim");
   window.addEventListener("DOMContentLoaded", async () => {
-    welcome();                       // приветствие сразу, не дожидаясь данных о квартирах
     try {
       await load();
     } catch (e) {
