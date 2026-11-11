@@ -65,6 +65,23 @@ def log(msg):
         f.write(line + "\n")
 
 
+def js_object(src, key):
+    """Простой JS-объект из config.js (как terms: {...}) → dict: вырезаем по скобкам, ключи берём в кавычки."""
+    i = src.find(key)
+    if i < 0:
+        return {}
+    j = src.index("{", i)
+    depth = 0
+    for k in range(j, len(src)):
+        depth += {"{": 1, "}": -1}.get(src[k], 0)
+        if depth == 0:
+            break
+    body = re.sub(r"//[^\n]*", "", src[j:k + 1])
+    body = re.sub(r"([{,\s])([A-Za-z_]\w*)\s*:", r'\1"\2":', body)
+    body = re.sub(r",\s*([}\]])", r"\1", body)
+    return json.loads(body)
+
+
 def site_config():
     """Нужное из site/js/config.js: адрес сайта, цены, рассрочка, тип блоков, планировки."""
     src = open(CONFIG_JS, encoding="utf-8").read()
@@ -73,7 +90,10 @@ def site_config():
         "rules": [(int(a), int(b)) for a, b in re.findall(r"maxFloor:\s*(\d+),\s*price:\s*(\d+)", src)],
         "down": int(re.search(r"downPayment:\s*(\d+)", src).group(1)),
         "months": int(re.search(r"months:\s*(\d+)", src).group(1)),
-        "types": dict(re.findall(r'"([\d/]+)":\s*\{\s*lot:\s*"\d+",\s*type:\s*"(\w+)"', src)),
+        "types": dict(re.findall(r'"([\d/]+)":\s*\{\s*lot:\s*"\d+",\s*type:\s*"(\w*)"', src)),
+        "blockTerms": dict(re.findall(r'"([\d/]+)":\s*\{[^}]*?terms:\s*"(\w+)"', src)),
+        "usdRate": int((re.search(r"usdRate:\s*(\d+)", src) or [0, "88"])[1]),
+        "terms": js_object(src, "terms:"),
         "layouts": {},
     }
     for t in ("k", "s", "l5"):
@@ -83,11 +103,26 @@ def site_config():
 
 
 def quote(a, cfg):
-    """Тот же расчёт, что в site/js/calc.js (целые сомы)."""
-    ppm = next((p for mx, p in cfg["rules"] if a["f"] <= mx), cfg["rules"][-1][1])
-    total = round(round(a["a"] * 100) * ppm / 100)
-    rest = max(total - cfg["down"], 0)
-    return total, rest // cfg["months"]
+    """Тот же расчёт, что в site/js/calc.js (целые сомы). → (цена, в месяц, только_наличные, цена_в_$, срок_сдачи, взнос, месяцев)"""
+    tid = cfg.get("blockTerms", {}).get(a["b"])
+    t = cfg.get("terms", {}).get(tid) if tid else None
+    area_h = round(a["a"] * 100)
+    if not t:
+        ppm = next((p for mx, p in cfg["rules"] if a["f"] <= mx), cfg["rules"][-1][1])
+        total = round(area_h * ppm / 100)
+        rest = max(total - cfg["down"], 0)
+        return total, rest // cfg["months"], False, 0, "", cfg["down"], cfg["months"]
+    rate = cfg["usdRate"]
+    co = t.get("cashOnly")
+    plans = sorted(t.get("plans") or [], key=lambda x: x["down"])
+    can = bool(plans) and not (co and a.get("r", 0) <= co["maxRooms"] and a["f"] <= co["maxFloor"])
+    if not can:
+        usd = t["cashUsd"]
+        return round(area_h * usd * rate / 100), 0, True, round(area_h * usd / 100), t.get("handover", ""), 0, 0
+    pl = plans[0]
+    total = round(area_h * pl["usd"] * rate / 100)
+    rest = max(total - pl["down"], 0)
+    return total, rest // t["months"], False, round(area_h * pl["usd"] / 100), t.get("handover", ""), pl["down"], t["months"]
 
 
 def fmt(n):
@@ -118,11 +153,16 @@ def write_share_pages(free_rows):
         fid = f'{a["b"].replace("/", "_")}-{a["p"]}-{a["f"]}-{a["n"]}'
         t = cfg["types"].get(a["b"], "k")
         key = f'{a["a"]:.2f}' if t == "k" else str(a["n"])
-        lay = cfg["layouts"].get(t, {}).get(key)
-        total, monthly = quote(a, cfg)
+        lay = cfg["layouts"].get(t, {}).get(key) if t else None
+        total, monthly, cash, total_usd, handover, down, months = quote(a, cfg)
         area = f'{a["a"]:.2f}'.rstrip("0").rstrip(".").replace(".", ",")
-        title = f'{ROOMS_KG.get(a["r"], "")} батир {area} м² · {a["f"]}-кабат — {fmt(monthly)} сом/ай'
-        desc = f'Osh City, {a["b"]}-блок. Бөлүп төлөө пайызсыз, {cfg["months"]} айга, баштапкы төлөм {fmt(cfg["down"])} сомдон. Менеджер Ажибек.'
+        hv = f" Тапшыруу: {handover}." if handover else ""
+        if cash:
+            title = f'{ROOMS_KG.get(a["r"], "")} батир {area} м² · {a["f"]}-кабат — {fmt(total)} сом'
+            desc = f'Osh City, {a["b"]}-блок. Накталай төлөм: {fmt(total)} сом (${fmt(total_usd)}).{hv} Менеджер Ажибек.'
+        else:
+            title = f'{ROOMS_KG.get(a["r"], "")} батир {area} м² · {a["f"]}-кабат — {fmt(monthly)} сом/ай'
+            desc = f'Osh City, {a["b"]}-блок. Бөлүп төлөө пайызсыз, {months} айга, баштапкы төлөм {fmt(down)} сомдон.{hv} Менеджер Ажибек.'
         img = base + f"img/og/{lay or 'main'}.jpg"
         target = base + f"#/kv/{fid}"
         html = SHARE_TMPL.format(title=title, desc=desc, img=img, url=base + f"kv/{fid}.html", target=target, target_js=json.dumps(target))

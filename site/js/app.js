@@ -19,16 +19,21 @@
   // ---------- данные ----------
   const aptId = (a) => `${a.b.replace("/", "_")}-${a.p}-${a.f}-${a.n}`;
   const blockName = (b) => `Блок ${b}`;
+  const usd = (n) => "$" + fmt(n);
+  const mKey = (a) => Calc.monthlyKey(a.q);                  // «сначала дешевле»: квартиры за наличные — после рассрочки
+  // короткая цена для списков и сообщений
+  const priceShort = (a) => (a.q.cash ? `${fmt(a.q.total)} сом наличными` : `${fmt(a.q.monthly)} сом/мес`);
+  const handoverOf = (b) => { const t = CFG.blocks[b] && CFG.blocks[b].terms; return t && CFG.terms[t] ? CFG.terms[t].handover : ""; };
   function layoutFor(a) {
     const blk = CFG.blocks[a.b];
-    if (!blk) return null;
+    if (!blk || !CFG.layouts[blk.type]) return null;      // у новых лотов планировки пока не нарисованы
     const map = CFG.layouts[blk.type];
     const key = blk.type === "k" ? a.a.toFixed(2) : a.n;
     return state.plans.get(map[key]) || null;
   }
   function floorPlanFor(a) {
     const blk = CFG.blocks[a.b];
-    return blk ? state.floors.get(CFG.floorPlans[blk.type]) : null;
+    return blk && CFG.floorPlans[blk.type] ? state.floors.get(CFG.floorPlans[blk.type]) : null;
   }
 
   // Клиенту не показываем общее количество: квартиры грузятся по одному блоку, когда его выбрали на генплане
@@ -62,7 +67,7 @@
     });
     // «лучшая цена» — самая доступная квартира каждой планировки внутри блока
     const best = new Map();
-    list.forEach((a) => { const k = a.layout ? a.layout.id : a.a; const c = best.get(k); if (!c || a.q.monthly < c.q.monthly) best.set(k, a); });
+    list.forEach((a) => { const k = a.layout ? a.layout.id : a.a; const c = best.get(k); if (!c || mKey(a) < mKey(c)) best.set(k, a); });
     best.forEach((a, k) => minByLayout.set(b + "|" + k, a.id));
     state.loaded.set(b, list);
     return list;
@@ -96,7 +101,10 @@
     if (!a) return "Здравствуйте! Интересуют квартиры в Osh City. Подскажите, пожалуйста, по наличию и рассрочке.";
     return `Здравствуйте! Интересует квартира в Osh City:\n` +
       `${roomsLabel(a.r)} ${fmtArea(a.a)} м², ${blockName(a.b)}, ${a.f} этаж, кв. №${a.n}\n` +
-      `Цена ${fmt(a.q.total)} сом, взнос ${fmt(a.q.down)}, ${fmt(a.q.monthly)} сом/мес × ${a.q.months} мес.\n${flatLink(a)}`;
+      (a.q.cash
+        ? `Цена ${fmt(a.q.total)} сом (${usd(a.q.totalUsd)}), оплата наличными${a.q.handover ? ", сдача " + a.q.handover : ""}.\n`
+        : `Цена ${fmt(a.q.total)} сом${a.q.usd ? ` (${usd(a.q.usd)}/м²)` : ""}, взнос ${fmt(a.q.down)}, ${fmt(a.q.monthly)} сом/мес × ${a.q.months} мес.${a.q.handover ? " Сдача " + a.q.handover + "." : ""}\n`) +
+      flatLink(a);
   }
   const waHref = (text) => `https://wa.me/${CFG.whatsapp}?text=${encodeURIComponent(text)}`;
   function bindWa(el, a) {
@@ -124,7 +132,7 @@
 
   // ---------- генплан ----------
   // Генплан целиком; при выборе блока — плавный «наезд» камеры на этот блок, потом квартиры.
-  const GP = { w: 1984, h: 722, src: "img/photos/genplan-crop.webp", phoneX: [190, 1870] };
+  const GP = { w: 2332, h: 876, src: "img/photos/genplan-crop.webp", phoneX: [0, 2332] };
   function renderGenplan() {
     const wrap = $("#genplanScroll");
     // на телефоне срезаем пустые края слева и справа — план выше, блоки крупнее
@@ -252,7 +260,13 @@
     $$(".hot").forEach((h) => h.classList.toggle("sel", h.dataset.block === b));
     const n = state.blocksFree.get(b) || 0;
     $("#blockTitle").textContent = `${blockName(b)} · лот ${CFG.blocks[b].lot}`;
-    $("#blockFree").textContent = n ? `Свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "";
+    const hv = handoverOf(b);
+    // подсказка под этажами: для новых лотов — их условия вместо цен по этажам
+    const tid = CFG.blocks[b].terms, tt = tid && CFG.terms[tid];
+    $("#floorNote").textContent = !tt ? "до 13 этажа — 92 400 сом/м², с 14 этажа — 88 000 сом/м²"
+      : tt.plans ? `наличными — $${tt.cashUsd}/м²; рассрочка ${tt.months} мес.: взнос от ${fmt(tt.plans[0].down)} сом — $${tt.plans[0].usd}/м². 1–${tt.cashOnly.maxRooms}-комн. до ${tt.cashOnly.maxFloor} этажа — только наличными`
+      : `только наличными — $${tt.cashUsd}/м² (${fmt(tt.cashUsd * CFG.usdRate)} сом)`;
+    $("#blockFree").textContent = (n ? `Свободно ${n} ${plural(n, "квартира", "квартиры", "квартир")}` : "") + (hv ? ` · сдача ${hv}` : "");
     $("#flatsPick").hidden = true; $("#flatsBlock").hidden = false;
     $("#cards").innerHTML = `<div class="empty">Загружаем квартиры…</div>`;
     $("#flats").scrollIntoView({ behavior: "smooth" });
@@ -267,7 +281,7 @@
   function renderFloors(list) {
     const floors = [...new Set(list.map((a) => a.f))].sort((x, y) => x - y);
     $("#floorChips").innerHTML = `<button class="fl on" data-floor="">Все</button>` +
-      floors.map((f) => `<button class="fl${f >= 14 ? " cheap" : ""}" data-floor="${f}">${f}</button>`).join("");
+      floors.map((f) => `<button class="fl${f >= 14 && !(CFG.blocks[state.block] || {}).terms ? " cheap" : ""}" data-floor="${f}">${f}</button>`).join("");
   }
   function setStep(n) {
     $$("#flatSteps li").forEach((li, i) => { li.classList.toggle("done", i + 1 < n); li.classList.toggle("on", i + 1 === n); });
@@ -277,13 +291,13 @@
     const f = state.filter;
     let list = (state.loaded.get(state.block) || []).filter((a) =>
       (!f.rooms || a.r === f.rooms) &&
-      a.q.monthly <= f.budget &&
+      (f.budget === Infinity || (!a.q.cash && a.q.monthly <= f.budget)) &&
       (!f.floor || a.f === +f.floor));
     const sorts = {
-      month: (x, y) => x.q.monthly - y.q.monthly || y.f - x.f,
-      area: (x, y) => y.a - x.a || x.q.monthly - y.q.monthly,
-      floorDesc: (x, y) => y.f - x.f || x.q.monthly - y.q.monthly,
-      floorAsc: (x, y) => x.f - y.f || x.q.monthly - y.q.monthly
+      month: (x, y) => mKey(x) - mKey(y) || y.f - x.f,
+      area: (x, y) => y.a - x.a || mKey(x) - mKey(y),
+      floorDesc: (x, y) => y.f - x.f || mKey(x) - mKey(y),
+      floorAsc: (x, y) => x.f - y.f || mKey(x) - mKey(y)
     };
     list.sort(sorts[f.sort]);
     state.list = list;
@@ -303,7 +317,7 @@
     const key = a.layout ? a.layout.id : a.a;
     const cheapest = minByLayout.get(a.b + "|" + key) === a.id;
     const on = state.cmp.includes(a.id);
-    return `<article class="card" data-id="${a.id}" tabindex="0" aria-label="${roomsLabel(a.r)} ${fmtArea(a.a)} м², ${fmt(a.q.monthly)} сом в месяц">
+    return `<article class="card" data-id="${a.id}" tabindex="0" aria-label="${roomsLabel(a.r)} ${fmtArea(a.a)} м², ${priceShort(a)}">
       <div class="card-plan">
         ${a.layout ? `<img loading="lazy" decoding="async" src="${a.layout.realThumb || a.layout.thumb || a.layout.img}" alt="Планировка ${fmtArea(a.a)} м²" width="${a.layout.rw || a.layout.w}" height="${a.layout.rh || a.layout.h}">` : `<span class="card-meta">Планировка по запросу</span>`}
         <span class="card-tag">${roomsLabel(a.r)}</span>
@@ -315,9 +329,12 @@
       </div>
       <div class="card-body">
         <div class="card-title">${fmtArea(a.a)} м² · ${a.f} этаж</div>
-        <div class="card-meta">${blockName(a.b)} · лот ${CFG.blocks[a.b].lot} · кв. №${a.n}</div>
-        <div class="card-month"><b>${fmt(a.q.monthly)}</b><span>сом / мес</span></div>
-        <div class="card-total">Цена ${fmt(a.q.total)} сом · взнос ${fmt(a.q.down)}</div>
+        <div class="card-meta">${blockName(a.b)} · лот ${CFG.blocks[a.b].lot} · кв. №${a.n}${a.q.handover ? ` · сдача ${a.q.handover}` : ""}</div>
+        ${a.q.cash
+          ? `<div class="card-month"><b>${fmt(a.q.total)}</b><span>сом · наличными</span></div>
+        <div class="card-total">${usd(a.q.totalUsd)} · ${usd(a.q.usd)} за м²</div>`
+          : `<div class="card-month"><b>${fmt(a.q.monthly)}</b><span>сом / мес</span></div>
+        <div class="card-total">Цена ${fmt(a.q.total)} сом${a.q.totalUsd ? ` (${usd(a.q.totalUsd)})` : ""} · взнос ${fmt(a.q.down)}</div>`}
       </div>
     </article>`;
   }
@@ -425,7 +442,7 @@
         <p><a class="btn btn-gold" href="#genplan" data-close-go>Выбрать квартиры</a></p>`;
     }
     const text = "Здравствуйте, Ажибек! Мне понравились эти квартиры в Osh City:\n" +
-      list.map((a, i) => `${i + 1}) ${roomsLabel(a.r)} ${fmtArea(a.a)} м², блок ${a.b}, ${a.f} этаж, кв. №${a.n} — ${fmt(a.q.monthly)} сом/мес\n${flatLink(a)}`).join("\n") +
+      list.map((a, i) => `${i + 1}) ${roomsLabel(a.r)} ${fmtArea(a.a)} м², блок ${a.b}, ${a.f} этаж, кв. №${a.n} — ${priceShort(a)}\n${flatLink(a)}`).join("\n") +
       "\nПодскажите, пожалуйста, по ним.";
     return `<div class="flat-head"><h3 id="sheetTitle">Избранное · ${list.length}</h3><p>Отправьте подборку — Ажибек сразу увидит, что вам понравилось, и подготовит расчёт.</p></div>
       <div class="actions" style="margin:14px 0"><a class="btn btn-wa" target="_blank" rel="noopener" href="${waHref(text)}" data-track="fav_send">
@@ -444,7 +461,7 @@
     if (!list.length) { box.hidden = true; return; }
     $("#recentList").innerHTML = list.map((a) => `<button class="mini" data-open="${a.id}">
       ${a.layout ? `<img src="${a.layout.realThumb || a.layout.thumb || a.layout.img}" alt="" loading="lazy">` : ""}
-      <b>${fmtArea(a.a)} м² · ${a.f} эт.</b><span>${fmt(a.q.monthly)} сом/мес</span></button>`).join("");
+      <b>${fmtArea(a.a)} м² · ${a.f} эт.</b><span>${priceShort(a)}</span></button>`).join("");
     box.hidden = false;
   }
 
@@ -485,7 +502,7 @@
       const vals = list.map(fn); const b = minIsBest ? Math.min(...vals) : Math.max(...vals);
       return (a) => (list.length > 1 && fn(a) === b ? "best" : "");
     };
-    const bMonth = best((a) => a.q.monthly), bArea = best((a) => a.a, false), bTotal = best((a) => a.q.total), bPpm = best((a) => a.q.ppm);
+    const bMonth = best((a) => mKey(a)), bArea = best((a) => a.a, false), bTotal = best((a) => a.q.total), bPpm = best((a) => a.q.ppm);
     const cols = list.map((a) => `<div class="cmp-col">
       <div class="card-plan">${a.layout ? `<img src="${a.layout.realThumb || a.layout.thumb || a.layout.img}" alt="Планировка ${fmtArea(a.a)} м²">` : ""}</div>
       <div class="cmp-rows">
@@ -495,7 +512,7 @@
         <div><span>Блок / кв.</span><b>${a.b} / №${a.n}</b></div>
         <div><span>Цена за м²</span><b class="${bPpm(a)}">${fmt(a.q.ppm)}</b></div>
         <div><span>Цена</span><b class="${bTotal(a)}">${fmt(a.q.total)}</b></div>
-        <div><span>В месяц</span><b class="${bMonth(a)}">${fmt(a.q.monthly)}</b></div>
+        <div><span>В месяц</span><b class="${bMonth(a)}">${a.q.cash ? "наличные" : fmt(a.q.monthly)}</b></div>
       </div>
       <a class="btn btn-dark" href="#/kv/${a.id}">Подробнее</a>
       <button class="btn btn-outline" data-cmp-remove="${a.id}">Убрать</button>
@@ -504,7 +521,7 @@
     return `<div class="flat-head"><h3 id="sheetTitle">Сравнение квартир</h3><p>Зелёным отмечено лучшее значение.</p></div>
       <div class="cmp-grid" style="margin-top:14px">${cols}</div>
       <div class="actions" style="margin-top:14px">
-        <a class="btn btn-wa" target="_blank" rel="noopener" href="${waHref("Здравствуйте! Выбираю между квартирами в Osh City:\n" + list.map((a) => `• ${roomsLabel(a.r)} ${fmtArea(a.a)} м², блок ${a.b}, ${a.f} эт., кв. №${a.n} — ${fmt(a.q.monthly)} сом/мес`).join("\n") + "\n" + link)}" data-track="whatsapp_compare">
+        <a class="btn btn-wa" target="_blank" rel="noopener" href="${waHref("Здравствуйте! Выбираю между квартирами в Osh City:\n" + list.map((a) => `• ${roomsLabel(a.r)} ${fmtArea(a.a)} м², блок ${a.b}, ${a.f} эт., кв. №${a.n} — ${priceShort(a)}`).join("\n") + "\n" + link)}" data-track="whatsapp_compare">
           <svg class="ico"><use href="#i-wa"/></svg>Обсудить в WhatsApp</a>
         <button class="btn btn-outline" data-share="${link}" data-share-title="Сравнение квартир Osh City"><svg class="ico"><use href="#i-share"/></svg>Поделиться</button>
         <a class="btn btn-outline" href="#flats" data-close-go>Добавить ещё</a>
@@ -514,7 +531,7 @@
   // ---------- карточка квартиры ----------
   function similar(a) {
     return (state.loaded.get(a.b) || []).filter((x) => x.id !== a.id && x.r === a.r && Math.abs(x.a - a.a) < 4)
-      .sort((x, y) => Math.abs(x.f - a.f) - Math.abs(y.f - a.f) || x.q.monthly - y.q.monthly).slice(0, 6);
+      .sort((x, y) => Math.abs(x.f - a.f) - Math.abs(y.f - a.f) || mKey(x) - mKey(y)).slice(0, 6);
   }
 
   function renderFlat(id) {
@@ -553,16 +570,8 @@
           <div><span>Этаж</span><b>${a.f}</b></div>
           <div><span>Комнат</span><b>${a.r}</b></div>
         </div>
-        <div class="pay" id="pay">
-          <div class="pay-row"><span>Цена за м²</span><b>${fmt(q.ppm)} сом</b></div>
-          <div class="pay-row"><span>Стоимость квартиры</span><b>${fmt(q.total)} сом</b></div>
-          <label><span>Первый взнос: <b id="fDownOut">${fmt(q.down)}</b> сом</span>
-            <input type="range" id="fDown" min="${CFG.downPayment}" max="${Math.max(CFG.downPayment, Math.floor(q.total * 0.7 / 50000) * 50000)}" step="50000" value="${q.down}"></label>
-          <div class="pay-row"><span>Остаток в рассрочку</span><b id="fRest">${fmt(q.rest)} сом</b></div>
-          <div class="pay-month"><span>В месяц × <span id="fMonths">${q.months}</span> мес.</span><b id="fMonthly">${fmt(q.monthly)}</b></div>
-          <p class="note" style="margin:0" id="fLast">${q.last !== q.monthly ? `Последний платёж — ${fmt(q.last)} сом, чтобы сумма сошлась до сома.` : ""} Без процентов.</p>
-        </div>
-        <details class="sched"><summary>График платежей</summary><div id="schedBox"></div></details>
+        <div class="pay" id="pay">${payHtml(q)}</div>
+        <details class="sched" ${q.cash && !q.canInstall ? "hidden" : ""}><summary>График платежей</summary><div id="schedBox"></div></details>
         <div class="actions">
           <a class="btn btn-wa" id="flatWa" target="_blank" rel="noopener"><svg class="ico"><use href="#i-wa"/></svg>Написать в WhatsApp</a>
           <button class="btn btn-outline ${state.cmp.includes(a.id) ? "on" : ""}" data-cmp="${a.id}">${state.cmp.includes(a.id) ? "✓ В сравнении" : "+ Сравнить"}</button>
@@ -574,6 +583,28 @@
         <p class="passport"><svg class="ico"><use href="#i-check"/></svg>Для оформления нужен только паспорт</p>
       </div>
     </div>`;
+  }
+
+  // блок оплаты: как раньше для текущих блоков; для новых — наличные и/или рассрочка с ценой в $ по взносу
+  function payHtml(q) {
+    const hand = q.handover ? `<div class="pay-row"><span>Сдача дома</span><b>${q.handover}</b></div>` : "";
+    if (q.cash && !q.canInstall) {
+      return `${hand}<div class="pay-row"><span>Цена за м²</span><b>${fmt(q.ppm)} сом · ${usd(q.usd)}</b></div>
+        <div class="pay-month"><span>Стоимость квартиры, сом</span><b>${fmt(q.total)}</b></div>
+        <p class="note" style="margin:0">${usd(q.totalUsd)} по курсу ${CFG.usdRate} сом за $1. Оплата только наличными.</p>`;
+    }
+    const max = Math.max(q.minDown, Math.floor(q.total * 0.7 / 50000) * 50000);
+    return `${hand}${q.terms ? `<div class="pay-modes" role="tablist"><button type="button" class="on" data-mode="inst">Рассрочка</button><button type="button" data-mode="cash">Наличными</button></div>` : ""}
+      <div class="pay-row"><span>Цена за м²</span><b id="fPpm"></b></div>
+      <div class="pay-row"><span>Стоимость квартиры</span><b id="fTotal"></b></div>
+      <div id="fInst">
+        <label><span>Первый взнос: <b id="fDownOut"></b> сом</span>
+          <input type="range" id="fDown" min="${q.minDown}" max="${max}" step="50000" value="${q.down}"></label>
+        <div class="pay-row"><span>Остаток в рассрочку</span><b id="fRest"></b></div>
+        <div class="pay-month"><span>В месяц × <span id="fMonths"></span> мес.</span><b id="fMonthly"></b></div>
+        <p class="note" style="margin:0" id="fLast"></p>
+      </div>
+      <p class="note" style="margin:0" id="fCashNote" hidden></p>`;
   }
 
   // подсветка квартиры на плане этажа (видна на вкладке «На этаже»)
@@ -601,17 +632,40 @@
     if (!a || a.s !== "free") return;
     let q = a.q;
     const wa = $("#flatWa", body);
+    const tiers = q.terms && CFG.terms[q.terms].plans
+      ? CFG.terms[q.terms].plans.map((p, i) => `${i ? "от" : "взнос от"} ${fmt(p.down)} сом — ${usd(p.usd)}/м²`).join(", ") + ". " : "";
     const refresh = () => {
-      $("#fDownOut").textContent = fmt(q.down);
-      $("#fRest").textContent = fmt(q.rest) + " сом";
-      $("#fMonthly").textContent = fmt(q.monthly);
-      $("#fLast").textContent = (q.last !== q.monthly ? `Последний платёж — ${fmt(q.last)} сом, чтобы сумма сошлась до сома. ` : "") + "Без процентов.";
-      $("#schedBox").innerHTML = scheduleHtml(q);
+      const fx = (id) => $("#" + id, body);
+      if (fx("fPpm")) {
+        fx("fPpm").textContent = `${fmt(q.ppm)} сом` + (q.usd ? ` · ${usd(q.usd)}` : "");
+        fx("fTotal").textContent = `${fmt(q.total)} сом` + (q.totalUsd ? ` · ${usd(q.totalUsd)}` : "");
+        fx("fInst").hidden = q.cash;
+        fx("fCashNote").hidden = !q.cash;
+        fx("fCashNote").textContent = `Оплата наличными по ${usd(q.usd || 0)} за м². Курс ${CFG.usdRate} сом за $1.`;
+        if (!q.cash) {
+          fx("fDownOut").textContent = fmt(q.down);
+          fx("fRest").textContent = fmt(q.rest) + " сом";
+          fx("fMonthly").textContent = fmt(q.monthly);
+          fx("fMonths").textContent = q.months;
+          fx("fLast").textContent = tiers + (q.last !== q.monthly ? `Последний платёж — ${fmt(q.last)} сом, чтобы сумма сошлась до сома. ` : "") + "Без процентов.";
+          $("#schedBox").innerHTML = scheduleHtml(q);
+        }
+      }
+      const sch = $(".sched", body); if (sch) sch.hidden = q.cash;
       wa.href = waHref(waText(Object.assign({}, a, { q })));
     };
     refresh();
     wa.addEventListener("click", () => track("whatsapp", { flat: a.id, area: a.a, monthly: q.monthly }));
-    $("#fDown").addEventListener("input", (e) => { q = Calc.quote(a, CFG, { down: +e.target.value }); refresh(); });
+    const down = $("#fDown", body);
+    if (down) down.addEventListener("input", (e) => { q = Calc.quote(a, CFG, { down: +e.target.value }); refresh(); });
+    const modes = $(".pay-modes", body);
+    if (modes) modes.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-mode]"); if (!b) return;
+      modes.querySelectorAll("[data-mode]").forEach((x) => x.classList.toggle("on", x === b));
+      q = Calc.quote(a, CFG, { cash: b.dataset.mode === "cash", down: down ? +down.value : undefined });
+      refresh();
+      track("pay_mode", { flat: a.id, budget: b.dataset.mode });
+    });
     const showTab = (t) => {
       $$("[data-tab]", body).forEach((x) => x.classList.toggle("on", x === t));
       const is3d = t.dataset.tab === "3d";

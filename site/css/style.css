@@ -1017,3 +1017,7 @@ html.big .infra li span, html.big .infra li b { font-size: 18px; } html.big .inf
 .consent input { width: 18px; height: 18px; flex: none; margin-top: 1px; accent-color: var(--gold); }
 .consent a { color: inherit; text-decoration: underline; }
 .lead-form .consent input[type="checkbox"] { appearance: auto; -webkit-appearance: checkbox; width: 18px; height: 18px; min-height: 0; padding: 0; margin: 2px 0 0; border: 0; border-radius: 3px; background: none; box-shadow: none; flex: none; }
+/* ---------- новые лоты: переключатель рассрочка / наличные ---------- */
+.pay-modes { display: flex; gap: 6px; background: rgba(255,255,255,.08); padding: 4px; border-radius: 999px; }
+.pay-modes button { flex: 1; border: 0; border-radius: 999px; padding: 8px 10px; font: 800 14px var(--font); background: transparent; color: inherit; cursor: pointer; opacity: .75; }
+.pay-modes button.on { background: var(--gold); color: var(--green-950); opacity: 1; }
