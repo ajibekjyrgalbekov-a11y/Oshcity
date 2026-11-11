@@ -1021,3 +1021,9 @@ html.big .infra li span, html.big .infra li b { font-size: 18px; } html.big .inf
 .pay-modes { display: flex; gap: 6px; background: rgba(255,255,255,.08); padding: 4px; border-radius: 999px; }
 .pay-modes button { flex: 1; border: 0; border-radius: 999px; padding: 8px 10px; font: 800 14px var(--font); background: transparent; color: inherit; cursor: pointer; opacity: .75; }
 .pay-modes button.on { background: var(--gold); color: var(--green-950); opacity: 1; }
+
+/* номера блоков не растут при приближении генплана; тесные лоты — одним значком «Лот N» */
+.gp-stage .hot { transform: translate(-50%, -50%) scale(var(--inv, 1)); }
+.gp-stage .hot.sel { transform: translate(-50%, -50%) scale(calc(1.15 * var(--inv, 1))); }
+.gp-stage .hot[hidden] { display: none; }
+.gp-stage .lotpin, .gp-stage .lotpin.has { white-space: nowrap; background: var(--green-900); color: var(--gold); border-color: var(--gold); z-index: 2; }

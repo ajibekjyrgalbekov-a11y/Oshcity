@@ -147,6 +147,19 @@
       return `<button class="hot ${n ? "has" : "none"}" data-block="${b}" data-x="${x}" data-y="${y}" style="left:${x}%;top:${y}%"
         aria-label="${blockName(b)}: ${txt}">${b}<span class="hot-tip">${txt}</span></button>`;
     }).join("");
+    // значок лота: показывается вместо номеров блоков, пока они слишком тесно стоят и налезают друг на друга
+    const byLot = {};
+    Object.entries(CFG.blocks).forEach(([b, blk]) => {
+      if (!(state.blocksFree.get(b) || 0) && /^(185|190)$/.test(b)) return;
+      (byLot[blk.lot] = byLot[blk.lot] || []).push(blk.pos);
+    });
+    const lotPins = Object.entries(byLot).map(([lot, ps]) => {
+      const free = Object.entries(CFG.blocks).filter(([, k]) => k.lot === lot).reduce((t, [b]) => t + (state.blocksFree.get(b) || 0), 0);
+      const mx = ps.reduce((t, p) => t + p[0], 0) / ps.length, my = ps.reduce((t, p) => t + p[1], 0) / ps.length;
+      const x = ((mx - cx0) / (cx1 - cx0)) * 100, y = ((my - cy0) / (cy1 - cy0)) * 100;
+      return `<button class="hot lotpin ${free ? "has" : "none"}" data-lot="${lot}" data-x="${x}" data-y="${y}" style="left:${x}%;top:${y}%" hidden
+        aria-label="Лот ${lot}: приблизить блоки">Лот ${lot}</button>`;
+    }).join("");
     const lots = {};
     Object.entries(CFG.blocks).forEach(([b, blk]) => {
       const n = state.blocksFree.get(b) || 0;
@@ -155,7 +168,7 @@
     const chips = Object.entries(lots).sort((x, y) => +x[0] - +y[0]).map(([lot, list]) =>
       `<div class="gp-lot"><span>Лот ${lot}</span>${list.map(([b, n]) => `<button class="gp-chip" data-go="${b}">${b}<small>${n} кв.</small></button>`).join("")}</div>`).join("");
     wrap.innerHTML = `<div class="genplan" style="aspect-ratio:${vw}/${GP.h}"><div class="gp-stage" style="width:${(GP.w / vw) * 100}%;left:${(-vx0 / vw) * 100}%">
-      <img src="${GP.src}" alt="Генеральный план Osh City" loading="lazy" width="${GP.w}" height="${GP.h}">${pins}</div>
+      <img src="${GP.src}" alt="Генеральный план Osh City" loading="lazy" width="${GP.w}" height="${GP.h}">${pins}${lotPins}</div>
       <div class="gp-flash" aria-hidden="true"></div></div>
       <div class="gp-lots">${chips}</div>`;
     const map = $(".genplan", wrap);
@@ -177,8 +190,21 @@
       if (window.gsap) gsap.set(stage, { x: z.x, y: z.y, scale: z.s });
       map.style.touchAction = z.s > 1.01 ? "none" : "pan-y";
       map.classList.toggle("zoomed", z.s > 1.01);
+      declutter(map, z.s);
     };
     map.gpZoom = z; map.gpClamp = clampZ;
+    requestAnimationFrame(() => declutter(map, z.s));
+    // нажали на значок лота — плавно приближаем этот лот, пока номера блоков не перестанут налезать
+    map.zoomLot = (pin) => {
+      if (!pin.gpNeed) declutter(map, z.s);
+      const W = map.clientWidth, H = map.clientHeight, L = stage.offsetLeft, SW = stage.offsetWidth;
+      const S = Math.min(5, Math.max(1.5, (pin.gpNeed || 2) * 1.1));
+      const px = (+pin.dataset.x / 100) * SW, py = (+pin.dataset.y / 100) * H;
+      const to = { s: S, x: W / 2 - L - px * S, y: H / 2 - py * S };
+      track("genplan_lot", { lot: pin.dataset.lot });
+      if (!window.gsap) { Object.assign(z, to); clampZ(); return; }
+      gsap.to(z, { ...to, duration: .9, ease: "power3.inOut", onUpdate: clampZ });
+    };
     const rel = (e) => { const r = map.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
     map.addEventListener("pointerdown", (e) => {
       pts.set(e.pointerId, rel(e)); moved = false;
@@ -208,11 +234,13 @@
     // на телефоне номера мелкие — выбираем ближайший к пальцу блок
     map.addEventListener("click", (e) => {
       if (moved) return;
+      const lp = e.target.closest(".lotpin");
+      if (lp) { map.zoomLot(lp); return; }
       let el = e.target.closest(".hot.has");
       if (!el) {
         const r = map.getBoundingClientRect();
         let best = 1e9;
-        $$(".hot.has", map).forEach((h) => {
+        $$(".hot.has:not([hidden])", map).forEach((h) => {
           const hr = h.getBoundingClientRect();
           const d = Math.hypot(hr.left + hr.width / 2 - e.clientX, hr.top + hr.height / 2 - e.clientY);
           if (d < best) { best = d; el = h; }
@@ -220,6 +248,36 @@
         if (best > Math.max(28, r.width * 0.04)) el = null;
       }
       if (el) flyToBlock(el);
+    });
+  }
+
+  // Номера блоков: размер на экране постоянный (не растёт вместе с планом), а если номера одного лота
+  // налезают друг на друга — вместо них один значок «Лот N». Приблизили — значок снова раскрывается в номера.
+  function declutter(map, s) {
+    const stage = $(".gp-stage", map);
+    if (!stage) return;
+    stage.style.setProperty("--inv", (1 / s).toFixed(4));
+    const SW = stage.offsetWidth, H = map.clientHeight;
+    if (!SW || !H || map.classList.contains("flying")) return;
+    const pins = {};
+    $$(".hot[data-block]", map).forEach((h) => {
+      const lot = (CFG.blocks[h.dataset.block] || {}).lot;
+      (pins[lot] = pins[lot] || []).push(h);
+    });
+    $$(".lotpin", map).forEach((lp) => {
+      const list = pins[lp.dataset.lot] || [];
+      let need = 1;                                    // во сколько раз нужно приблизить, чтобы номера не налезали
+      list.forEach((h) => { h.hidden = false; });
+      const box = list.map((h) => [(+h.dataset.x / 100) * SW, (+h.dataset.y / 100) * H, h.offsetWidth + 2, h.offsetHeight + 2]);
+      for (let i = 0; i < box.length; i++) for (let j = i + 1; j < box.length; j++) {
+        const [x1, y1, w1, h1] = box[i], [x2, y2, w2, h2] = box[j];
+        const kx = ((w1 + w2) / 2) / Math.max(Math.abs(x1 - x2), .01), ky = ((h1 + h2) / 2) / Math.max(Math.abs(y1 - y2), .01);
+        need = Math.max(need, Math.min(kx, ky));
+      }
+      lp.gpNeed = need;
+      const packed = need > s * 1.2;                   // чуть касаются — ещё читаемо, сворачиваем только при сильном наложении
+      lp.hidden = !packed;
+      list.forEach((h) => { h.hidden = packed && !h.classList.contains("sel"); });
     });
   }
 
@@ -239,6 +297,7 @@
     }
     $$(".hot", map).forEach((h) => h.classList.toggle("sel", h === el));
     map.classList.add("flying");
+    el.hidden = false; $$(".lotpin", map).forEach((lp) => { lp.hidden = true; });
     const W = map.clientWidth, H = map.clientHeight, S = W < 700 ? 4 : 2.6;
     const L = stage.offsetLeft, SW = stage.offsetWidth;               // stage может быть шире окна (телефон)
     const px = (+el.dataset.x / 100) * SW, py = (+el.dataset.y / 100) * H;
@@ -250,7 +309,7 @@
         if (map.gpZoom) { Object.assign(map.gpZoom, { x: 0, y: 0, s: 1 }); map.gpClamp(); }
       }, 1200);
     } })
-      .to(stage, { x, y, scale: S, duration: 1.5, ease: "power3.inOut" })
+      .to(stage, { x, y, scale: S, duration: 1.5, ease: "power3.inOut", onUpdate: () => stage.style.setProperty("--inv", (1 / gsap.getProperty(stage, "scale")).toFixed(4)) })
       .fromTo($(".gp-flash", map), { opacity: 0 }, { opacity: 1, duration: .35, ease: "power1.in" }, "-=.35");
   }
 
@@ -1035,7 +1094,7 @@
     $$(".facts .count").forEach((el) => ScrollTrigger.create({ trigger: el, start: "top 90%", once: true, onEnter: () => animateCount(el) }));
     gsap.from(".g-item", { scrollTrigger: { trigger: ".gallery", start: "top 85%" }, x: 80, opacity: 0, duration: .9, stagger: .08, ease: "power3.out" });
     gsap.from(".c-photo", { scrollTrigger: { trigger: "#clientPhotos", start: "top 88%" }, y: 40, opacity: 0, duration: .7, stagger: .03, ease: "power3.out" });
-    gsap.from(".hot", { scrollTrigger: { trigger: "#genplanScroll", start: "top 75%" }, scale: 0, opacity: 0, duration: .5, stagger: .02, ease: "back.out(2)" });
+    gsap.from(".hot", { scrollTrigger: { trigger: "#genplanScroll", start: "top 75%" }, opacity: 0, duration: .5, stagger: .01, ease: "power1.out", clearProps: "opacity" });
   }
 
   // ---------- старт ----------
