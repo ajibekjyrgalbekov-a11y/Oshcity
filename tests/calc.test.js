@@ -35,7 +35,7 @@ const cfg2 = Object.assign({}, cfg, {
   blocks: { "91": { terms: "d2026" }, "63": { terms: "d2027" }, "43": { terms: "d2028" }, "160": {} },
   terms: {
     d2026: { handover: "IV кв. 2026", cashUsd: 1050 },
-    d2027: { handover: "2027", cashUsd: 1000 },
+    d2027: { handover: "2027", cashUsd: 950 },
     d2028: { handover: "IV кв. 2028", cashUsd: 950, months: 67,
       plans: [{ down: 1000000, usd: 1050 }, { down: 1500000, usd: 1025 }, { down: 2000000, usd: 1000 }],
       cashOnly: { maxRooms: 2, maxFloor: 11 } }
@@ -49,8 +49,8 @@ let q2 = C.quote({ b: "91", a: 50, f: 3, r: 2 }, cfg2);
 assert.ok(q2.cash && !q2.canInstall);
 assert.strictEqual(q2.ppm, 92400); assert.strictEqual(q2.total, 4620000); assert.strictEqual(q2.totalUsd, 52500);
 assert.strictEqual(q2.monthly, 0); assert.strictEqual(q2.handover, "IV кв. 2026");
-// 2027: $1000 = 88 000 сом
-assert.strictEqual(C.quote({ b: "63", a: 40.19, f: 5, r: 1 }, cfg2).total, 3536720);
+// 2027: $950 = 83 600 сом
+assert.strictEqual(C.quote({ b: "63", a: 40.19, f: 5, r: 1 }, cfg2).total, 3359884);
 // 2028: 1–2-комн. до 11 этажа — только наличные по $950
 q2 = C.quote({ b: "43", a: 50, f: 11, r: 2 }, cfg2);
 assert.ok(q2.cash); assert.strictEqual(q2.usd, 950); assert.strictEqual(q2.total, 4180000);

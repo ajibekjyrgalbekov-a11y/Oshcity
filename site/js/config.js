@@ -26,7 +26,7 @@ window.CONFIG = {
   //  cashOnly — кому доступны только наличные (до maxRooms комнат включительно и до maxFloor этажа включительно).
   terms: {
     d2026: { handover: "IV квартал 2026", cashUsd: 1050 },
-    d2027: { handover: "2027 год", cashUsd: 1000 },
+    d2027: { handover: "2027 год", cashUsd: 950 },
     d2028: {
       handover: "IV квартал 2028", cashUsd: 950, months: 67,
       plans: [{ down: 1000000, usd: 1050 }, { down: 1500000, usd: 1025 }, { down: 2000000, usd: 1000 }],
