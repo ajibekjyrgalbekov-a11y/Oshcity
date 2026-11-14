@@ -1452,6 +1452,42 @@
    "thumb": "img/plans/new/thumb/verified22_64_5117.webp",
    "w": 432,
    "h": 550
+  },
+  {
+   "id": "lot4_corner_10587",
+   "area": 105.87,
+   "rooms": 3,
+   "img": "img/plans/new/lot4_corner_10587.webp",
+   "thumb": "img/plans/new/thumb/lot4_corner_10587.webp",
+   "w": 670,
+   "h": 886
+  },
+  {
+   "id": "lot4_corner_7277",
+   "area": 72.77,
+   "rooms": 2,
+   "img": "img/plans/new/lot4_corner_7277.webp",
+   "thumb": "img/plans/new/thumb/lot4_corner_7277.webp",
+   "w": 608,
+   "h": 660
+  },
+  {
+   "id": "lot4_corner_7359",
+   "area": 73.59,
+   "rooms": 2,
+   "img": "img/plans/new/lot4_corner_7359.webp",
+   "thumb": "img/plans/new/thumb/lot4_corner_7359.webp",
+   "w": 608,
+   "h": 606
+  },
+  {
+   "id": "lot4_corner_6730",
+   "area": 67.3,
+   "rooms": 2,
+   "img": "img/plans/new/lot4_corner_6730.webp",
+   "thumb": "img/plans/new/thumb/lot4_corner_6730.webp",
+   "w": 675,
+   "h": 614
   }
  ],
  "floors": [
@@ -3388,6 +3424,32 @@
    "110.49": {
     "plan": "n08_463_166",
     "approx": true
+   }
+  }
+ },
+ "byBlockUnit": {
+  "58": {
+   "5/72.77/2": {
+    "plan": "lot4_corner_7277",
+    "typical": true
+   },
+   "4/73.59/2": {
+    "plan": "lot4_corner_7359",
+    "typical": true
+   }
+  },
+  "62": {
+   "1/105.87/3": {
+    "plan": "lot4_corner_10587",
+    "typical": true
+   },
+   "4/73.59/2": {
+    "plan": "lot4_corner_7359",
+    "typical": true
+   },
+   "5/67.30/2": {
+    "plan": "lot4_corner_6730",
+    "typical": true
    }
   }
  }

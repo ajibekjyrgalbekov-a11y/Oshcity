@@ -11,7 +11,7 @@
   const MAX_CMP = 3;
 
   const state = {
-    blocksFree: new Map(), loaded: new Map(), byId: new Map(), plans: new Map(), floors: new Map(), byBlock: {},
+    blocksFree: new Map(), loaded: new Map(), byId: new Map(), plans: new Map(), floors: new Map(), byBlock: {}, byBlockUnit: {},
     block: null, filter: { rooms: 0, budget: Infinity, floor: "", sort: "month" },
     shown: PAGE, list: [], cmp: loadCmp(), fav: loadList("oc_fav"), recent: loadList("oc_recent"), updated: ""
   };
@@ -29,7 +29,9 @@
   const handoverOf = (b) => { const t = CFG.blocks[b] && CFG.blocks[b].terms; return t && CFG.terms[t] ? CFG.terms[t].handover : CFG.blocks[b] ? CFG.baseHandover || "" : ""; };
   // новые лоты: планировка по блоку и площади (вырезана из PDF, см. tools/new_layouts.py)
   function newLayout(a) {
-    const e = (state.byBlock[a.b] || {})[Number(a.a).toFixed(2)];
+    const area = Number(a.a).toFixed(2);
+    const unit = state.byBlockUnit[a.b]?.[`${a.n}/${area}/${a.r}`];
+    const e = unit || state.byBlock[a.b]?.[area];
     const plan = e && state.plans.get(e.plan);
     return plan && !e.approx && plan.area === a.a && plan.rooms === a.r ? e : null;
   }
@@ -56,6 +58,7 @@
     plans.plans.forEach((p) => state.plans.set(p.id, p));
     plans.floors.forEach((p) => state.floors.set(p.id, p));
     state.byBlock = plans.byBlock || {};
+    state.byBlockUnit = plans.byBlockUnit || {};
     state.updated = index.updated;
     // блок → сколько свободных (старый формат — просто список блоков)
     if (Array.isArray(index.blocks)) index.blocks.forEach((b) => state.blocksFree.set(b, 0));
@@ -623,6 +626,7 @@
         <div style="margin-top:14px">
           ${lay ? `<div class="tabs" role="tablist"><button class="on" data-tab="draw" role="tab">Чертёж</button>${fp ? `<button data-tab="floor" role="tab">На этаже</button>` : ""}${lay.real ? `<button data-tab="plan" role="tab">Планировка</button>` : ""}</div>` : ""}
           <div class="flat-3d" hidden></div>
+          ${newLayout(a)?.typical ? `<p class="card-meta">Типовой чертёж. Расположение на этаже уточняйте у менеджера.</p>` : ""}
           <div class="flat-plan" data-zoom="${lay ? lay.img : ""}">
             ${lay ? `<span class="fp-wrap"><img src="${lay.img}" alt="Чертёж квартиры ${fmtArea(a.a)} м²" data-plan="${lay.real || lay.img}" data-draw="${lay.img}" data-floor="${fp ? fp.img : ""}">${spotHtml(a)}</span>` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
             ${lay ? `<span class="zoom-ico">Увеличить</span>` : ""}
