@@ -30,7 +30,8 @@
   // новые лоты: планировка по блоку и площади (вырезана из PDF, см. tools/new_layouts.py)
   function newLayout(a) {
     const e = (state.byBlock[a.b] || {})[Number(a.a).toFixed(2)];
-    return e && state.plans.has(e.plan) ? e : null;
+    const plan = e && state.plans.get(e.plan);
+    return plan && !e.approx && plan.area === a.a && plan.rooms === a.r ? e : null;
   }
   function layoutFor(a) {
     const blk = CFG.blocks[a.b];
@@ -38,7 +39,8 @@
     if (!blk) return null;
     const map = CFG.layouts[blk.type];
     const key = blk.type === "k" ? a.a.toFixed(2) : a.n;
-    return state.plans.get(map[key]) || null;
+    const plan = state.plans.get(map[key]);
+    return plan && plan.area === a.a && plan.rooms === a.r ? plan : null;
   }
   function floorPlanFor(a) {
     const blk = CFG.blocks[a.b];
@@ -622,7 +624,7 @@
           ${lay ? `<div class="tabs" role="tablist"><button class="on" data-tab="draw" role="tab">Чертёж</button>${fp ? `<button data-tab="floor" role="tab">На этаже</button>` : ""}${lay.real ? `<button data-tab="plan" role="tab">Планировка</button>` : ""}</div>` : ""}
           <div class="flat-3d" hidden></div>
           <div class="flat-plan" data-zoom="${lay ? lay.img : ""}">
-            ${lay ? `<span class="fp-wrap"><img src="${lay.img}" alt="Планировка квартиры ${fmtArea(a.a)} м² с мебелью" data-plan="${lay.real || lay.img}" data-draw="${lay.img}" data-floor="${fp ? fp.img : ""}">${spotHtml(a)}</span>` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
+            ${lay ? `<span class="fp-wrap"><img src="${lay.img}" alt="Чертёж квартиры ${fmtArea(a.a)} м²" data-plan="${lay.real || lay.img}" data-draw="${lay.img}" data-floor="${fp ? fp.img : ""}">${spotHtml(a)}</span>` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
             ${lay ? `<span class="zoom-ico">Увеличить</span>` : ""}
           </div>
           ${lay && lay.area && Math.abs(lay.area - a.a) >= 0.02 ? `<p class="card-meta" style="margin:8px 2px 0">Планировка этого типа из проекта (${fmtArea(lay.area)} м²). Точная площадь квартиры по базе — ${fmtArea(a.a)} м².</p>` : ""}
