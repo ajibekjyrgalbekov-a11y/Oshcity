@@ -124,14 +124,6 @@
   }
 
   // ---------- главный экран ----------
-  function renderStats() {
-    $("#updated").textContent = state.updated.split(" ")[0].split("-").reverse().join(".") + " в " + (state.updated.split(" ")[1] || "");
-    $$('[data-cfg="months"]').forEach((e) => (e.textContent = CFG.months));
-    $$('[data-cfg="down"]').forEach((e) => (e.textContent = fmt(CFG.downPayment)));
-    $$('[data-cfg="phone"]').forEach((e) => (e.textContent = CFG.phoneDisplay));
-    $("#callBtn").href = "tel:+" + CFG.whatsapp;
-  }
-
   function animateCount(el) {
     const to = parseFloat(el.dataset.to || "0");
     const dec = parseInt(el.dataset.dec || "0", 10);
@@ -904,87 +896,6 @@
 
   // ---------- калькулятор ----------
   // Калькулятор: сначала срок сдачи (у каждой группы блоков свои условия), потом квартира, этаж и взнос
-  function bindCalc() {
-    const short = (h) => "Сдача " + h.replace(" квартал", " кв.").replace(" год", "");
-    const groups = [];
-    Object.entries(CFG.terms || {}).sort((x, y) => x[1].handover.match(/\d{4}/)[0] - y[1].handover.match(/\d{4}/)[0] || x[0].localeCompare(y[0])).forEach(([id, t]) => {
-      const block = Object.keys(CFG.blocks).find((b) => CFG.blocks[b].terms === id && state.byBlock[b]);
-      if (block) groups.push({ id, label: short(t.handover), block });
-    });
-    groups.push({ id: "", label: short(CFG.baseHandover || "") || "Блоки 152–190", block: Object.keys(CFG.blocks).find((b) => !CFG.blocks[b].terms) });
-    const typesOf = (g) => {
-      const m = new Map();
-      if (!g.id) state.plans.forEach((p) => { if (!/^n\d/.test(p.id)) m.set(p.rooms + "|" + p.area.toFixed(2), { r: p.rooms, a: p.area }); });
-      else Object.entries(state.byBlock).forEach(([b, e]) => {
-        if ((CFG.blocks[b] || {}).terms !== g.id) return;
-        Object.entries(e).forEach(([area, x]) => { const p = state.plans.get(x.plan); if (p) m.set(p.rooms + "|" + area, { r: p.rooms, a: +area }); });
-      });
-      return [...m.values()].sort((x, y) => x.r - y.r || x.a - y.a);
-    };
-    const gBox = $("#cGroup"), sel = $("#cType"), floor = $("#cFloor"), down = $("#cDown"), months = $("#cMonths");
-    const g0 = groups.length - 1;
-    gBox.innerHTML = groups.map((g, i) => `<button type="button" data-g="${i}" class="${i === g0 ? "on" : ""}">${g.label}</button>`).join("");
-    let g = groups[g0];
-    const fillTypes = () => {
-      const list = typesOf(g);
-      sel.innerHTML = list.map((a) => `<option value="${a.r}|${a.a.toFixed(2)}">${roomsLabel(a.r)} ${fmtArea(a.a)} м²</option>`).join("");
-      const def = list.find((a) => a.a === 40.19) || list.find((a) => a.r === 2) || list[0];
-      if (def) sel.value = def.r + "|" + def.a.toFixed(2);
-      const t = g.id && CFG.terms[g.id];
-      floor.max = t ? 16 : 20;
-      if (+floor.value > +floor.max) floor.value = floor.max;
-      down.min = t && t.plans ? t.plans[0].down : CFG.downPayment;
-      down.value = down.min;
-      months.max = t && t.months ? t.months : CFG.months; months.value = months.max;
-    };
-    const run = () => {
-      if (!sel.value) return;
-      const [r, area] = sel.value.split("|");
-      const fake = { b: g.block, a: +area, f: +floor.value, r: +r };
-      const q = Calc.quote(fake, CFG, { down: +down.value, months: g.id ? undefined : +months.value });
-      $("#cFloorOut").textContent = floor.value;
-      $("#cShow").dataset.rooms = r;
-      $("#cMonthsF").hidden = !!g.id;                          // у новых лотов срок фиксированный
-      $("#cDownF").hidden = q.cash;
-      if (q.cash) {
-        const t = CFG.terms[g.id];
-        $("#cTotalL").textContent = "В сомах";
-        $("#cTotal").textContent = fmt(q.total) + " сом";
-        $("#cPpm").textContent = `${usd(q.usd)} · ${fmt(q.ppm)} сом`;
-        $("#cMonthlyL").textContent = "Цена наличными";
-        $("#cMonthly").textContent = usd(q.totalUsd);
-        $("#cNote").textContent = t.plans
-          ? `${t.cashOnly.maxRooms > 1 ? "1–" + t.cashOnly.maxRooms : 1}-комн. до ${t.cashOnly.maxFloor} этажа — только наличными. Выше ${t.cashOnly.maxFloor} этажа и 3-комн. на любом этаже — рассрочка. Курс ${CFG.usdRate} сом за $.`
-          : `Только наличными. Курс ${CFG.usdRate} сом за $.`;
-        return;
-      }
-      down.max = Math.max(+down.min, Math.floor(q.total * 0.7 / 50000) * 50000);
-      $("#cDownOut").textContent = fmt(q.down);
-      $("#cMonthsOut").textContent = q.months;
-      $("#cTotalL").textContent = "Цена квартиры";
-      $("#cTotal").textContent = `${q.totalUsd ? "" : "≈"}${usd(usdOf(q))} · ${fmt(q.total)} сом`;
-      $("#cPpm").textContent = `${q.usd ? usd(q.usd) : "≈" + usd(toUsd(q.ppm))} · ${fmt(q.ppm)} сом`;
-      $("#cMonthlyL").textContent = `В месяц, ${q.months} мес.`;
-      $("#cMonthly").textContent = fmt(q.monthly) + " сом";
-      const tiers = q.plan ? " " + CFG.terms[g.id].plans.map((p) => `взнос ${fmt(p.down)} — ${usd(p.usd)}/м²`).join(", ") + "." : "";
-      $("#cNote").textContent = (q.last !== q.monthly ? `Последний платёж ${fmt(q.last)} сом. ` : "") + "Без процентов." + tiers;
-    };
-    gBox.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-g]"); if (!btn) return;
-      $$("[data-g]", gBox).forEach((x) => x.classList.toggle("on", x === btn));
-      g = groups[+btn.dataset.g]; fillTypes(); run();
-      track("calc_group", { budget: g.id || "base" });
-    });
-    [sel, floor, down, months].forEach((el) => el.addEventListener("input", run));
-    fillTypes(); run();
-    $("#cShow").addEventListener("click", () => {
-      const r = +$("#cShow").dataset.rooms;
-      $$("[data-rooms]").forEach((x) => x.classList.toggle("on", +x.dataset.rooms === r));
-      setFilter({ rooms: r });
-      track("calc_show", { rooms: r });
-    });
-  }
-
   // ---------- поиск сразу во всех блоках ----------
   // Квартиры всех блоков грузятся, когда клиент дошёл до раздела (файлы маленькие). Бюджет — в долларах.
   function bindFind() {
@@ -1078,17 +989,6 @@
   }
 
   // ---------- мои клиенты ----------
-  function bindClients() {
-    $("#clientPhotos").addEventListener("click", (e) => {
-      const b = e.target.closest("[data-full]");
-      if (b) { openZoom(b.dataset.full); track("client_photo"); }
-    });
-    $$(".video video").forEach((v, i) => v.addEventListener("play", () => {
-      $$(".video video").forEach((o) => o !== v && o.pause());
-      track("review_video", { flat: "video-" + (i + 1) });
-    }));
-  }
-
   // ---------- заявка ----------
   function bindLead() {
     const f = $("#leadForm");
@@ -1122,27 +1022,6 @@
   }
 
   // главный экран: живые фото комплекса сменяют друг друга (сначала эмоция)
-  function heroSlides() {
-    const slides = $$(".hero-slide");
-    if (slides.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const cap = $(".hero-cap span"), bar = $(".hero-cap i");
-    const load = (p) => p.querySelectorAll("[data-src],[data-srcset]").forEach((el) => {
-      if (el.dataset.srcset) { el.srcset = el.dataset.srcset; el.removeAttribute("data-srcset"); }
-      if (el.dataset.src) { el.src = el.dataset.src; el.removeAttribute("data-src"); }
-    });
-    let i = 0;
-    setTimeout(() => slides.forEach(load), 2500);
-    setInterval(() => {
-      if (document.hidden) return;
-      slides[i].classList.remove("on");
-      i = (i + 1) % slides.length;
-      load(slides[i]);
-      slides[i].classList.add("on");
-      cap.textContent = slides[i].dataset.cap;
-      bar.style.animation = "none"; void bar.offsetWidth; bar.style.animation = "";
-    }, 6000);
-  }
-
   // ---------- маршрут от клиента до офиса: только после явного согласия ----------
   const OFFICE = { lat: 40.5135, lon: 72.81461 };
   function kmBetween(a, b) {
@@ -1187,7 +1066,6 @@
 
   function bindExtras() {
     bindRoute();
-    heroSlides();
     const big = $("#bigFont");
     let on = false;
     try { on = localStorage.getItem("oc_big") === "1"; } catch (e) { /* ничего */ }
@@ -1214,12 +1092,8 @@
 
   function chrome() {
     const top = $("#topbar"), tab = $(".tabbar");
-    const onScroll = () => {
-      const y = scrollY;
-      top.classList.toggle("solid", y > 40);
-      tab.classList.toggle("show", y > innerHeight * 0.5);
-    };
-    addEventListener("scroll", onScroll, { passive: true }); onScroll();
+    top.classList.add("solid");
+    tab.classList.add("show");
     $$("[data-wa='general']").forEach((el) => bindWa(el, null));
   }
 
@@ -1232,18 +1106,12 @@
     }
     gsap.registerPlugin(ScrollTrigger);
     // главный экран
-    gsap.fromTo(".hero-img", { scale: 1.18 }, { scale: 1, duration: 2.4, ease: "power2.out" });
-    gsap.to(".hero-media", { yPercent: 18, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
-    gsap.to(".hero .reveal", { opacity: 1, y: 0, duration: 1, stagger: .12, ease: "power3.out", delay: .2 });
-    $$(".hero-stats .count").forEach((el) => setTimeout(() => animateCount(el), 700));
     // остальные секции
     ScrollTrigger.batch(".section .reveal", {
       start: "top 88%",
       onEnter: (els) => gsap.to(els, { opacity: 1, y: 0, duration: .8, stagger: .08, ease: "power3.out" })
     });
     $$(".facts .count").forEach((el) => ScrollTrigger.create({ trigger: el, start: "top 90%", once: true, onEnter: () => animateCount(el) }));
-    gsap.from(".g-item", { scrollTrigger: { trigger: ".gallery", start: "top 85%" }, x: 80, opacity: 0, duration: .9, stagger: .08, ease: "power3.out" });
-    gsap.from(".c-photo", { scrollTrigger: { trigger: "#clientPhotos", start: "top 88%" }, y: 40, opacity: 0, duration: .7, stagger: .03, ease: "power3.out" });
     gsap.from(".hot", { scrollTrigger: { trigger: "#genplanScroll", start: "top 75%" }, opacity: 0, duration: .5, stagger: .01, ease: "power1.out", clearProps: "opacity" });
   }
 
@@ -1260,15 +1128,12 @@
     state.cmp = state.cmp.slice(0, MAX_CMP);
     await loadBlocksFor(state.cmp);
     state.cmp = state.cmp.filter((id) => state.byId.has(id));
-    renderStats();
     renderGenplan();
     bindFilters();
-    bindCalc();
     bindFind();
     bindSheet();
     bindZoom();
     bindLead();
-    bindClients();
     bindExtras();
     saveFav();
     chrome();
