@@ -31,9 +31,10 @@
   function newLayout(a) {
     const area = Number(a.a).toFixed(2);
     const unit = state.byBlockUnit[a.b]?.[`${a.n}/${area}/${a.r}`];
-    const e = unit || state.byBlock[a.b]?.[area];
+    const e = unit && (!unit.maxFloor || a.f <= unit.maxFloor) ? unit : state.byBlock[a.b]?.[area];
     const plan = e && state.plans.get(e.plan);
-    return plan && !e.approx && plan.area === a.a && plan.rooms === a.r ? e : null;
+    const tolerance = e === unit && e?.typical && [1, 2, 3].includes(a.r) ? 200 : 0;
+    return plan && !e.approx && plan.rooms === a.r && Math.abs(Math.round(plan.area * 100) - Math.round(a.a * 100)) <= tolerance ? e : null;
   }
   function layoutFor(a) {
     const blk = CFG.blocks[a.b];
@@ -626,7 +627,7 @@
         <div style="margin-top:14px">
           ${lay ? `<div class="tabs" role="tablist"><button class="on" data-tab="draw" role="tab">Чертёж</button>${fp ? `<button data-tab="floor" role="tab">На этаже</button>` : ""}${lay.real ? `<button data-tab="plan" role="tab">Планировка</button>` : ""}</div>` : ""}
           <div class="flat-3d" hidden></div>
-          ${newLayout(a)?.typical ? `<p class="card-meta">Типовой чертёж. Расположение на этаже уточняйте у менеджера.</p>` : ""}
+          ${newLayout(a)?.typical ? `<p class="card-meta">Типовой чертёж. Площадь указана в карточке. Планировка может быть зеркальной.</p>` : ""}
           <div class="flat-plan" data-zoom="${lay ? lay.img : ""}">
             ${lay ? `<span class="fp-wrap"><img src="${lay.img}" alt="Чертёж квартиры ${fmtArea(a.a)} м²" data-plan="${lay.real || lay.img}" data-draw="${lay.img}" data-floor="${fp ? fp.img : ""}">${spotHtml(a)}</span>` : `<p class="card-meta" style="padding:40px 0;text-align:center">Планировку пришлём в WhatsApp</p>`}
             ${lay ? `<span class="zoom-ico">Увеличить</span>` : ""}
