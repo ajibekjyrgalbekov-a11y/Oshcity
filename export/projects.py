@@ -47,6 +47,7 @@ def export_projects(page, root, updated):
             seed=next(iter(blocks.values())).split('?')[0]
             page.goto('https://dbbase.kutstroy.kg'+seed if seed.startswith('/') else seed,wait_until='networkidle',timeout=60000)
             rows=page.evaluate(SCRAPE,dict(project=project,seed=seed,sector=sector))
+            print(f'::notice::Project {project}, sector {sector}: blocks={len(blocks)}, parsed={len(rows)}, retained={sum(a["b"] in blocks for a in rows)}',flush=True)
             all_rows.extend(a for a in rows if a['b'] in blocks)
     output=root/'site/data/projects.json'
     previous=json.loads(output.read_text(encoding='utf-8')) if output.exists() else {}
