@@ -3,11 +3,21 @@
   const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ru-RU');
   let data,visible=[],limit=24,selectedFlat=new URLSearchParams(location.search).get('flat');
   const ids=['project','sector','block','rooms','year','mode','down','budget','sort'];
+  function openProject(id){
+    $('filters').reset();$('project').value=id;selectedFlat=null;limit=24;render();
+    $('projectTitle').focus();
+  }
   function render(){
     const v=Object.fromEntries(ids.map(id=>[id,$(id).value]));
+    const chosen=!!data.projects[v.project];
+    document.querySelector('.intro').hidden=chosen;
+    $('selection').hidden=!chosen;$('projects').hidden=chosen;$('chooserStatus').hidden=true;
+    if(!chosen){$('results').replaceChildren();$('more').hidden=true;return;}
+    $('projectTitle').textContent=data.projects[v.project].name;
+    $('sector').closest('label').hidden=!data.projects[v.project].sectors;
     visible=data.apartments.filter(a=>(!v.project||a.project===v.project)&&(!v.sector||+a.sector===+v.sector)&&(!v.block||a.b===v.block.trim())&&(!v.rooms||a.r===+v.rooms)).map(a=>({a,t:data.projects[a.project],q:ProjectCalc.quote(a,data.projects[a.project],v.down,v.mode)})).filter(x=>(!v.year||(x.q?.year||x.t.sectors?.[x.a.sector]?.handoverYear||x.t.handoverYear)===+v.year)&&(!v.budget||x.q&&!x.q.cash&&x.q.monthly<=+v.budget)&&(v.mode!=='installment'||!x.q?.cash)&&(v.mode!=='cash'||x.q?.cash));
-    const key=x=>!x.q?Infinity:v.sort==='price'?x.q.total:v.sort==='area'?x.a.a:v.sort==='year'?x.q.year:x.q.cash?1e12+x.q.total:x.q.monthly;
-    visible.sort((a,b)=>(b.a.id===selectedFlat)-(a.a.id===selectedFlat)||key(a)-key(b));
+    const key=x=>v.sort==='floor'?x.a.f:v.sort==='floorDesc'?-x.a.f:v.sort==='area'?x.a.a:!x.q?Infinity:v.sort==='price'?x.q.total:v.sort==='year'?x.q.year:x.q.cash?1e12+x.q.total:x.q.monthly;
+    visible.sort((a,b)=>(b.a.id===selectedFlat)-(a.a.id===selectedFlat)||key(a)-key(b)||a.a.f-b.a.f||a.a.p-b.a.p||a.a.n-b.a.n);
     $('status').textContent=visible.length?'Доступные варианты по выбранным условиям':'По выбранным условиям вариантов нет. Попробуйте изменить фильтры.';
     if(v.project&&!data.apartments.some(a=>a.project===v.project))$('status').textContent='В базе пока нет подтверждённых свободных 1–2–3-комнатных квартир этого комплекса. Снятые с продажи варианты не показываются.';
     $('results').replaceChildren();
@@ -35,11 +45,14 @@
     for(const [id,t]of Object.entries(data.projects)){
       const option=document.createElement('option');option.value=id;option.textContent=t.name;$('project').append(option);
       const b=document.createElement('button');b.type='button';b.className='project';
-      const strong=document.createElement('strong');strong.textContent=t.name;const span=document.createElement('span');span.textContent=!data.apartments.some(a=>a.project===id)?'Свободные квартиры пока не подтверждены':t.sectors?'Сдача 2028 / 2030 · рассрочка 60 мес.':`Сдача ${t.handoverYear} · рассрочка ${t.months} мес.`;b.append(strong,span);b.onclick=()=>{$('project').value=id;limit=24;render();$('filters').scrollIntoView({behavior:'smooth',block:'start'});};$('projects').append(b);
+      const strong=document.createElement('strong');strong.textContent=t.name;const span=document.createElement('span');span.textContent=!data.apartments.some(a=>a.project===id)?'Свободные квартиры пока не подтверждены':t.sectors?'Сдача 2028 / 2030 · рассрочка 60 мес.':`Сдача ${t.handoverYear} · рассрочка ${t.months} мес.`;b.append(strong,span);b.onclick=()=>openProject(id);$('projects').append(b);
     }
     const flat=new URLSearchParams(location.search).get('flat');
     if(flat){const a=data.apartments.find(a=>a.id===flat);if(a){$('project').value=a.project;$('block').value=a.b;$('rooms').value=a.r;const params=new URLSearchParams(location.search);$('mode').value=['cash','installment'].includes(params.get('mode'))?params.get('mode'):'any';$('down').value=Math.max(0,Number(params.get('down'))||0)||'';}else $('updated').textContent='Квартира из ссылки больше не доступна. Выберите другой вариант. ';}
     $('updated').textContent+=`Обновлено: ${data.updated} · время Кыргызстана. Курс: 88 сом за доллар.`;
-    $('filters').oninput=()=>{limit=24;render();};$('filters').onchange=()=>{limit=24;render();};$('filters').onsubmit=e=>e.preventDefault();$('filters').onreset=()=>setTimeout(()=>{limit=24;render();},0);$('more').onclick=()=>{limit+=24;render();};render();
-  }catch{$('status').textContent='Не удалось загрузить квартиры Бишкека. Обновите страницу позже или свяжитесь с Ажибеком: +996 508 890 202.';}
+    $('filters').oninput=()=>{selectedFlat=null;limit=24;render();};$('filters').onchange=()=>{selectedFlat=null;limit=24;render();};$('filters').onsubmit=e=>e.preventDefault();
+    $('filters').onreset=e=>{e.preventDefault();for(const id of ids.filter(id=>id!=='project')){const el=$(id);el.value=id==='mode'?'installment':id==='sort'?'price':'';}selectedFlat=null;limit=24;render();};
+    $('changeProject').onclick=()=>{$('filters').reset();$('project').value='';selectedFlat=null;render();$('projects').querySelector('button')?.focus();};
+    $('more').onclick=()=>{limit+=24;render();};render();
+  }catch{$('chooserStatus').hidden=false;$('chooserStatus').textContent='Не удалось загрузить квартиры Бишкека. Обновите страницу позже или свяжитесь с Ажибеком: +996 508 890 202.';}
 })();
