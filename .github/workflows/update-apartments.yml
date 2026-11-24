@@ -2,6 +2,9 @@ name: Обновить квартиры
 # Запуск с телефона: GitHub → Actions → «Обновить квартиры» → Run workflow.
 # Автоматически каждый день в 09:00 по Бишкеку (03:00 UTC).
 on:
+  push:
+    branches: [main]
+    paths: ['export/projects.py', 'export/project-terms.json', 'export/export.py']
   workflow_dispatch:
   schedule:
     - cron: "0 3 * * *"

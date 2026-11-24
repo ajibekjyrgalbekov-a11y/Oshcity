@@ -1,0 +1,50 @@
+{
+  "sourceDate": "2026-11-24",
+  "usdRate": 88,
+  "excludedProjectIds": [23, 32, 30],
+  "projects": {
+    "42": {
+      "name": "Алтай Ордо",
+      "handoverYear": 2029,
+      "months": 59,
+      "downSom": 1320000,
+      "prices": [
+        { "blocks": [1, 2, 3], "somPerM2": 96800 },
+        { "blocks": [4, 5, 6, 7, 8, 9, 10, 11], "somPerM2": 92400 }
+      ]
+    },
+    "41": {
+      "name": "Алтай",
+      "sectors": {
+        "1": { "handoverYear": 2028 },
+        "2": { "handoverYear": 2028 },
+        "3": { "handoverYear": 2030 },
+        "4": { "handoverYear": 2030 }
+      },
+      "prices": [
+        { "sectors": [1, 2], "rooms": [1, 2], "minFloor": 2, "maxFloor": 4, "payment": "cash", "somPerM2": 71200 },
+        { "sectors": [1, 2], "rooms": [2], "minFloor": 1, "maxFloor": 5, "payment": "installment", "somPerM2": 80000, "downSom": 1000000, "months": 60 },
+        { "sectors": [1, 2], "rooms": [1], "minFloor": 5, "maxFloor": 5, "payment": "installment", "somPerM2": 80000, "downSom": 1000000, "months": 60 },
+        { "sectors": [1, 2], "rooms": [3, 4], "payment": "installment", "somPerM2": 80000, "downSom": 1000000, "months": 60 },
+        { "sectors": [3, 4], "payment": "installment", "somPerM2": 80000, "downSom": 500000, "months": 60 }
+      ],
+      "unlistedCombinations": "require_confirmation"
+    },
+    "34": {
+      "name": "Алтай Плюс",
+      "handoverYear": 2029,
+      "somPerM2": 92400,
+      "months": 59,
+      "downSom": 880000
+    },
+    "24": {
+      "name": "Алтай Голд",
+      "handoverYear": 2029,
+      "somPerM2": 113000,
+      "months": 59,
+      "downSom": 1760000,
+      "pending": []
+    }
+  },
+  "pending": ["approved_plans_and_genplans"]
+}

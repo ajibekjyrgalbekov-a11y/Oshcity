@@ -268,6 +268,8 @@ def export(ci=False):
             log("ОШИБКА: вход в базу истёк." + ("" if ci else " Запустите: python export/export.py --login"))
             return 2
         rows = page.evaluate(SCRAPE_JS, blocks)
+        from projects import export_projects
+        export_projects(page, ROOT, now_local().strftime("%Y-%m-%d %H:%M"))
         ctx.close()
 
     rows.sort(key=lambda a: (int(re.match(r"\d+", a["b"]).group()), a["b"], a["p"], a["f"], a["n"]))

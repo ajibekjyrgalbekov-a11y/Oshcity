@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Бишкек · Подбор квартир — Ажибек</title><meta name="theme-color" content="#0d3326"><script src="js/gate.js?v=20261124"></script><link rel="icon" href="img/favicon.svg"><link rel="stylesheet" href="css/catalog.css?v=1"><script defer src="js/project-calc.js?v=1"></script><script defer src="js/catalog.js?v=1"></script></head>
+<body><header><a class="brand" href="index.html">Ажибек · Недвижимость</a><nav aria-label="Город"><a href="index.html">Ош · Osh City</a><a href="catalog.html" aria-current="page">Бишкек</a></nav></header>
+<main><section class="intro"><p class="eyebrow">Бишкек · подбор для клиента</p><h1>Квартира под ваш бюджет</h1><p>Четыре жилых комплекса. Выберите срок сдачи, комнаты и комфортный платёж.</p><small>Курс для расчёта: 1 $ = 88 сом. Менеджер Жыргалбеков Ажибек · ежедневно 9:00–21:00.</small></section>
+<div id="projects" class="projects" aria-label="Жилые комплексы"></div>
+<form id="filters" class="filters">
+<label>Комплекс<select id="project"><option value="">Все комплексы Бишкека</option></select></label>
+<label>Сектор<select id="sector"><option value="">Любой</option><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+<label>Блок<input id="block" placeholder="Например, 3" inputmode="numeric"></label>
+<label>Комнаты<select id="rooms"><option value="">Любые</option><option value="1">1-комнатная</option><option value="2">2-комнатная</option><option value="3">3-комнатная</option></select></label>
+<label>Сдача<select id="year"><option value="">Любой год</option><option>2028</option><option>2029</option><option>2030</option></select></label>
+<label>Оплата<select id="mode"><option value="installment">Рассрочка</option><option value="cash">Наличные по таблице «Алтай»</option><option value="any">Любая</option></select></label>
+<label>Первый взнос, сом<input id="down" type="number" min="0" step="10000" placeholder="Минимальный по условиям"></label>
+<label>До сом в месяц<input id="budget" type="number" min="0" step="1000" placeholder="Без ограничения"></label>
+<label>Сортировка<select id="sort"><option value="monthly">По платежу</option><option value="price">По цене</option><option value="area">По площади</option><option value="year">По сдаче</option></select></label>
+<button type="reset" class="secondary">Сбросить фильтры</button></form>
+<p id="status" role="status" aria-live="polite">Загружаем актуальные квартиры…</p><p id="updated" class="muted"></p><div id="results" class="results"></div><button id="more" hidden>Показать ещё</button>
+<p class="note">В разделе представлены только свободные 1–2–3-комнатные квартиры. Планировки новых комплексов добавим после проверки соответствия. По «Алтай» расчёт доступен только для сочетаний комнат и этажей из утверждённой таблицы.</p></main>
+</body></html>

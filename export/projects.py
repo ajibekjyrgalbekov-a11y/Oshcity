@@ -1,0 +1,54 @@
+"""Additional projects: allowlisted public unit fields only, no customer data."""
+import json
+from pathlib import Path
+
+SCRAPE = r"""async ({project, seed, sector}) => {
+  const rows = new Map();
+  for (let r=1;r<=3;r++) {
+    const response = await fetch(`${seed}?fname=&fstatus=1&fcurator=0&fetaj=0&froom=${r}&blokradio=1`);
+    if (!response.ok) throw Error('Project fetch failed');
+    const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+    if (doc.querySelector('input[name="password"]')) throw Error('Login expired');
+    for (const raw of doc.body.textContent.split('\n')) {
+      const m=raw.trim().replace(/\s+/g,' ').match(/^(\S+)-б, (\d+)-под, (-?\d+)-этаж, (\d+)-кв, \(\s*([\d.]+) м2\)$/);
+      if (!m || +m[3]<=0) continue;
+      const b=m[1].replace('\\','/');
+      const a={project,sector,b,p:+m[2],f:+m[3],n:+m[4],a:+m[5],r};
+      if (!(a.a>0)) throw Error('Invalid area');
+      a.id=[project,sector||0,b.replace('/','_'),a.p,a.f,a.n].join('-');
+      rows.set(a.id,a);
+    }
+  }
+  return [...rows.values()];
+}"""
+
+def export_projects(page, root, updated):
+    root=Path(root)
+    terms=json.loads((root/'export/project-terms.json').read_text(encoding='utf-8'))
+    all_rows=[]
+    for project in terms['projects']:
+        sectors=[1,2,3,4] if project=='41' else [None]
+        for sector in sectors:
+            url=f'https://dbbase.kutstroy.kg/object/{project}'
+            if sector:
+                url+=f'?kvartal={sector}'
+            page.goto(url,wait_until='networkidle',timeout=60000)
+            if '/login' in page.url:
+                raise RuntimeError('Project login expired')
+            links=page.locator(f'a[href*="/object/{project}/"]').evaluate_all("els => els.map(e=>({href:e.getAttribute('href'),text:e.textContent.trim()}))")
+            blocks={x['text']:x['href'] for x in links if x['text'].replace('/','').isdigit()}
+            if not blocks:
+                raise RuntimeError(f'No residential blocks for project {project}, sector {sector}')
+            # Search each sector from its block page. Restrict results to its visible blocks.
+            seed=next(iter(blocks.values())).split('?')[0]
+            page.goto('https://dbbase.kutstroy.kg'+seed if seed.startswith('/') else seed,wait_until='networkidle',timeout=60000)
+            rows=page.evaluate(SCRAPE,dict(project=project,seed=seed,sector=sector))
+            all_rows.extend(a for a in rows if a['b'] in blocks)
+    output=root/'site/data/projects.json'
+    previous=json.loads(output.read_text(encoding='utf-8')) if output.exists() else {}
+    for project in terms['projects']:
+        before=sum(a['project']==project for a in previous.get('apartments',[]))
+        after=sum(a['project']==project for a in all_rows)
+        if after==0 or (before and after<before*.5):
+            raise RuntimeError(f'Suspicious project export {project}: {after}, was {before}; previous data preserved')
+    output.write_text(json.dumps(dict(updated=updated,usdRate=terms['usdRate'],projects=terms['projects'],apartments=all_rows),ensure_ascii=False,separators=(',',':')),encoding='utf-8')
