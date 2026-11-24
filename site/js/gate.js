@@ -3,7 +3,7 @@
 // Сменить пароль: новый хеш = SHA-256(SALT + пароль маленькими буквами) — попросите Claude. Регистр и пробелы по краям не важны.
 (function () {
   "use strict";
-  var HASH = "ca7313d22901dc5d1d54478eb69b62c5b4ec482559c9168fb1a2233e61f03a0d";
+  var HASH = "671dbd738c9127df9ad6236e09ac6418feeed2009e1b180c51268f92aea56606";
   var SALT = "oshcity-gate-2";
   var KEY = "oc_gate", DAYS = 30;
 
@@ -63,7 +63,7 @@
         if (h !== HASH) { err.textContent = "Неверный пароль"; input.select(); return; }
         try {
           if (form.elements.remember.checked) localStorage.setItem(KEY, JSON.stringify({ h: HASH, until: Date.now() + DAYS * 864e5 }));
-          else sessionStorage.setItem(KEY, "1");
+          else sessionStorage.setItem(KEY, HASH);
         } catch (x) { /* приватный режим: пустим только на эту вкладку */ }
         g.remove();
         var st = document.getElementById("gate-hide");
@@ -72,7 +72,7 @@
     });
   }
 
-  try { if (sessionStorage.getItem(KEY) === "1") { hide.remove(); return; } } catch (e) { /* нет */ }
+  try { if (sessionStorage.getItem(KEY) === HASH) { hide.remove(); return; } } catch (e) { /* нет */ }
   if (document.body) show();
   else document.addEventListener("DOMContentLoaded", show);
 })();
