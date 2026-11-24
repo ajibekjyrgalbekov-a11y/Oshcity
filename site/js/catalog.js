@@ -9,6 +9,7 @@
     const key=x=>!x.q?Infinity:v.sort==='price'?x.q.total:v.sort==='area'?x.a.a:v.sort==='year'?x.q.year:x.q.cash?1e12+x.q.total:x.q.monthly;
     visible.sort((a,b)=>(b.a.id===selectedFlat)-(a.a.id===selectedFlat)||key(a)-key(b));
     $('status').textContent=visible.length?'Доступные варианты по выбранным условиям':'По выбранным условиям вариантов нет. Попробуйте изменить фильтры.';
+    if(v.project&&!data.apartments.some(a=>a.project===v.project))$('status').textContent='В базе пока нет подтверждённых свободных 1–2–3-комнатных квартир этого комплекса. Снятые с продажи варианты не показываются.';
     $('results').replaceChildren();
     visible.slice(0,limit).forEach(({a,t,q})=>{
       const card=document.createElement('article');card.className='flat';if(a.id===selectedFlat)card.style.outline='3px solid #358264';
@@ -34,7 +35,7 @@
     for(const [id,t]of Object.entries(data.projects)){
       const option=document.createElement('option');option.value=id;option.textContent=t.name;$('project').append(option);
       const b=document.createElement('button');b.type='button';b.className='project';
-      const strong=document.createElement('strong');strong.textContent=t.name;const span=document.createElement('span');span.textContent=t.sectors?'Сдача 2028 / 2030 · рассрочка 60 мес.':`Сдача ${t.handoverYear} · рассрочка ${t.months} мес.`;b.append(strong,span);b.onclick=()=>{$('project').value=id;limit=24;render();$('filters').scrollIntoView({behavior:'smooth',block:'start'});};$('projects').append(b);
+      const strong=document.createElement('strong');strong.textContent=t.name;const span=document.createElement('span');span.textContent=!data.apartments.some(a=>a.project===id)?'Свободные квартиры пока не подтверждены':t.sectors?'Сдача 2028 / 2030 · рассрочка 60 мес.':`Сдача ${t.handoverYear} · рассрочка ${t.months} мес.`;b.append(strong,span);b.onclick=()=>{$('project').value=id;limit=24;render();$('filters').scrollIntoView({behavior:'smooth',block:'start'});};$('projects').append(b);
     }
     const flat=new URLSearchParams(location.search).get('flat');
     if(flat){const a=data.apartments.find(a=>a.id===flat);if(a){$('project').value=a.project;$('block').value=a.b;$('rooms').value=a.r;const params=new URLSearchParams(location.search);$('mode').value=['cash','installment'].includes(params.get('mode'))?params.get('mode'):'any';$('down').value=Math.max(0,Number(params.get('down'))||0)||'';}else $('updated').textContent='Квартира из ссылки больше не доступна. Выберите другой вариант. ';}
