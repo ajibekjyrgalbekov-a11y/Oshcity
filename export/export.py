@@ -269,7 +269,11 @@ def export(ci=False):
             return 2
         rows = page.evaluate(SCRAPE_JS, blocks)
         from projects import export_projects
-        export_projects(page, ROOT, now_local().strftime("%Y-%m-%d %H:%M"))
+        try:
+            export_projects(page, ROOT, now_local().strftime("%Y-%m-%d %H:%M"))
+        except Exception as exc:
+            print(f"::error::Bishkek export: {type(exc).__name__}: {str(exc)[:1500]}", flush=True)
+            raise
         ctx.close()
 
     rows.sort(key=lambda a: (int(re.match(r"\d+", a["b"]).group()), a["b"], a["p"], a["f"], a["n"]))
