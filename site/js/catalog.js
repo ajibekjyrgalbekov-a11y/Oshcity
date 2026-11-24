@@ -51,8 +51,9 @@
     if(flat){const a=data.apartments.find(a=>a.id===flat);if(a){$('project').value=a.project;$('block').value=a.b;$('rooms').value=a.r;const params=new URLSearchParams(location.search);$('mode').value=['cash','installment'].includes(params.get('mode'))?params.get('mode'):'any';$('down').value=Math.max(0,Number(params.get('down'))||0)||'';}else $('updated').textContent='Квартира из ссылки больше не доступна. Выберите другой вариант. ';}
     $('updated').textContent+=`Обновлено: ${data.updated} · время Кыргызстана. Курс: 88 сом за доллар.`;
     $('filters').oninput=()=>{selectedFlat=null;limit=24;render();};$('filters').onchange=()=>{selectedFlat=null;limit=24;render();};$('filters').onsubmit=e=>e.preventDefault();
-    $('filters').onreset=e=>{e.preventDefault();for(const id of ids.filter(id=>id!=='project')){const el=$(id);el.value=id==='mode'?'installment':id==='sort'?'price':'';}selectedFlat=null;limit=24;render();};
+    $('filters').onreset=e=>{e.preventDefault();for(const id of ids.filter(id=>id!=='project')){const el=$(id);el.value=id==='mode'?'any':id==='sort'?'price':'';}selectedFlat=null;limit=24;render();};
     $('changeProject').onclick=()=>{$('filters').reset();$('project').value='';selectedFlat=null;render();$('projects').querySelector('button')?.focus();};
     $('more').onclick=()=>{limit+=24;render();};render();
   }catch{$('chooserStatus').hidden=false;$('chooserStatus').textContent='Не удалось загрузить квартиры Бишкека. Обновите страницу позже или свяжитесь с Ажибеком: +996 508 890 202.';}
 })();
+
