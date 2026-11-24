@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.first-deploy.outputs.page_url || steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -53,5 +53,12 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
+      - id: first-deploy
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+      - name: Подождать доступности файлов публикации
+        if: steps.first-deploy.outcome == 'failure'
+        run: sleep 20
       - id: deployment
+        if: steps.first-deploy.outcome == 'failure'
         uses: actions/deploy-pages@v4
