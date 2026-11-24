@@ -21,7 +21,9 @@ const fn=SCRAPER;
 fn({project:'41',seed:'/object/41/1',sector:1}).then(rows=>process.stdout.write(JSON.stringify(rows)));
 '''.replace('FIXTURE',json.dumps(fixture)).replace('SCRAPER',module.SCRAPE)
 result=subprocess.run(['node','-e',script],capture_output=True,text=True,check=True,encoding='utf-8')
-rows=json.loads(result.stdout)
+parsed=json.loads(result.stdout)
+rows=parsed['rows']
+assert parsed['withdrawn']==1
 assert [a['b'] for a in rows]==['1','2'], rows
 assert all(set(a)=={'project','sector','b','p','f','n','a','r','id'} for a in rows)
 print('Project exporter formats and withdrawn filtering passed')
