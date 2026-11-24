@@ -6,7 +6,7 @@ SCRAPE = r"""async ({project, seed, sector}) => {
   const rows = new Map();
   let matched=0,withdrawn=0;
   for (let r=1;r<=3;r++) {
-    const response = await fetch(`${seed}?fname=&fstatus=1&fcurator=0&fetaj=0&froom=${r}&blokradio=1${project==='41'?'&fsectors='+sector:''}`);
+    const response = await fetch(`${seed}?fname=&fstatus=1&fcurator=0&fetaj=0&froom=${r}&blokradio=1${project==='41'&&sector?'&fsectors='+sector:''}`);
     if (!response.ok) throw Error('Project fetch failed');
     const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
     if (doc.querySelector('input[name="password"]')) throw Error('Login expired');
@@ -49,6 +49,9 @@ def export_projects(page, root, updated):
             # Search each sector from its block page. Restrict results to its visible blocks.
             seed=next(iter(blocks.values())).split('?')[0]
             page.goto('https://dbbase.kutstroy.kg'+seed if seed.startswith('/') else seed,wait_until='networkidle',timeout=60000)
+            if project=='41' and sector==1:
+                unfiltered=page.evaluate(SCRAPE,dict(project=project,seed=seed,sector=None))
+                print(f'::notice::Altai all sectors: matched={unfiltered["matched"]}, withdrawn={unfiltered["withdrawn"]}, without_mark={len(unfiltered["rows"])}',flush=True)
             result=page.evaluate(SCRAPE,dict(project=project,seed=seed,sector=sector))
             rows=result['rows']
             retained=rows if project=='41' else [a for a in rows if a['b'] in blocks]
