@@ -935,7 +935,7 @@
         if (f.budget !== Infinity && (f.pay === "cash" ? usdOf(cashQ(a)) : a.q.monthly) > f.budget) return false;
         return true;
       });
-      const sorts = { price: (x, y) => priceKey(x) - priceKey(y), area: (x, y) => y.a - x.a || priceKey(x) - priceKey(y), floor: (x, y) => y.f - x.f || priceKey(x) - priceKey(y) };
+      const sorts = { price: (x, y) => priceKey(x) - priceKey(y), area: (x, y) => y.a - x.a || priceKey(x) - priceKey(y), floor: (x, y) => y.f - x.f || priceKey(x) - priceKey(y), floorAsc: (x, y) => x.f - y.f || priceKey(x) - priceKey(y) };
       list.sort(sorts[f.sort]);
       shown = 0;
       $("#fdCount").textContent = list.length ? `Найдено ${list.length} ${plural(list.length, "квартира", "квартиры", "квартир")} в ${new Set(list.map((a) => a.b)).size} блоках`
