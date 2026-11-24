@@ -9,11 +9,13 @@ SCRAPE = r"""async ({project, seed, sector}) => {
     if (!response.ok) throw Error('Project fetch failed');
     const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
     if (doc.querySelector('input[name="password"]')) throw Error('Login expired');
-    const lines=doc.body.textContent.split('\n').map(s=>s.trim().replace(/\s+/g,' ')).filter(Boolean);
-    for (let i=0;i<lines.length;i++) {
-      const m=lines[i].match(/^(\S+)-б, (\d+)-под, (-?\d+)-этаж, (\d+)-кв, \(?\s*([\d.]+) м(?:2|²)\)?$/);
+    const text=doc.body.textContent.replace(/\s+/g,' ');
+    const matches=[...text.matchAll(/([\d/\\-]+)-б,\s*(\d+)-под,\s*(-?\d+)-этаж,\s*(\d+)-кв,\s*\(?\s*([\d.]+)\s*м(?:2|²)\)?/g)];
+    for (let i=0;i<matches.length;i++) {
+      const m=matches[i];
       if (!m || +m[3]<=0) continue;
-      if (/Квартира снята с продажи|Квартира продана|Забронировано/i.test(lines[i+1]||'')) continue;
+      const status=text.slice(m.index+m[0].length,Math.min(matches[i+1]?.index||text.length,m.index+m[0].length+300));
+      if (/Квартира снята с продажи|Квартира продана|Забронировано/i.test(status)) continue;
       const b=m[1].replace('\\','/');
       const a={project,sector,b,p:+m[2],f:+m[3],n:+m[4],a:+m[5],r};
       if (!(a.a>0)) throw Error('Invalid area');
