@@ -9,9 +9,11 @@ SCRAPE = r"""async ({project, seed, sector}) => {
     if (!response.ok) throw Error('Project fetch failed');
     const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
     if (doc.querySelector('input[name="password"]')) throw Error('Login expired');
-    for (const raw of doc.body.textContent.split('\n')) {
-      const m=raw.trim().replace(/\s+/g,' ').match(/^(\S+)-б, (\d+)-под, (-?\d+)-этаж, (\d+)-кв, \(\s*([\d.]+) м2\)$/);
+    const lines=doc.body.textContent.split('\n').map(s=>s.trim().replace(/\s+/g,' ')).filter(Boolean);
+    for (let i=0;i<lines.length;i++) {
+      const m=lines[i].match(/^(\S+)-б, (\d+)-под, (-?\d+)-этаж, (\d+)-кв, \(?\s*([\d.]+) м(?:2|²)\)?$/);
       if (!m || +m[3]<=0) continue;
+      if (/Квартира снята с продажи|Квартира продана|Забронировано/i.test(lines[i+1]||'')) continue;
       const b=m[1].replace('\\','/');
       const a={project,sector,b,p:+m[2],f:+m[3],n:+m[4],a:+m[5],r};
       if (!(a.a>0)) throw Error('Invalid area');
