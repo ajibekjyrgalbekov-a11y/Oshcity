@@ -8,7 +8,7 @@ root=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('projects',root/'export/projects.py')
 module=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-fixture='\n'.join([
+fixture=''.join([
     '1-б, 1-под, 5-этаж, 1-кв, (40.19 м2)',
     '2-б, 1-под, 5-этаж, 2-кв, 56.29 м²',
     '3-б, 1-под, 5-этаж, 3-кв, 56.29 м²',
@@ -16,7 +16,7 @@ fixture='\n'.join([
     '4-б, 1-под, -1-этаж, 1-кв, 20 м²',
 ])
 script='''global.DOMParser=class {parseFromString(s){return {body:{textContent:s},querySelector(){return null}}}};
-global.fetch=async url=>({ok:true,text:async()=>url.includes('froom=1')?FIXTURE:''});
+global.fetch=async url=>{if(!url.includes('fsectors=1'))throw Error('Missing authoritative sector filter');return {ok:true,text:async()=>url.includes('froom=1')?FIXTURE:''}};
 const fn=SCRAPER;
 fn({project:'41',seed:'/object/41/1',sector:1}).then(rows=>process.stdout.write(JSON.stringify(rows)));
 '''.replace('FIXTURE',json.dumps(fixture)).replace('SCRAPER',module.SCRAPE)
